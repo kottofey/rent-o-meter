@@ -1,0 +1,5 @@
+node_modules
+_lint-backups
+.env*
+dist
+tsconfig.tsbuildinfo

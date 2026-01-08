@@ -1,0 +1,53 @@
+{
+  "name": "rent-o-meter-backend",
+  "version": "0.0.1",
+  "description": "",
+  "license": "ISC",
+  "author": "kottofey",
+  "type": "module",
+  "scripts": {
+    "lint": "vue-tsc --build --force && eslint --config eslint.config.js --ext .ts,.js --fix ./src",
+    "lint:old": "eslint --config eslint.config.js \"**/*.{js,ts}\" --fix --format stylish",
+    "start": "nodemon --exec tsx --env-file=.env src/express/bin/www.ts",
+    "build": "tsc -b --verbose"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.18",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "morgan": "^1.10.1",
+    "mysql2": "^3.14.0",
+    "qs": "^6.14.0",
+    "sequelize": "^6.37.7",
+    "sequelize-typescript": "^2.1.6",
+    "umzug": "^3.8.2"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.2.9",
+    "@eslint/js": "^9.39.2",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.0.3",
+    "eslint": "^9.39.2",
+    "eslint-import-resolver-typescript": "^4.3.2",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^16.0.0",
+    "jiti": "^2.4.2",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0",
+    "vue-tsc": "^2.2.10"
+  },
+  "imports": {
+    "@/*": "./src/*",
+    "@/routes": "./src/express/routes"
+  }
+}

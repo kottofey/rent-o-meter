@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Rent-o-Meter",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "baseUrl": ".",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strictPropertyInitialization": false,
+    "paths": {
+      "@/routes": ["src/express/routes"],
+      "@/models": ["src/sequelize/models"],
+      "@/helpers": ["src/helpers"],
+      "@/sequelize": ["src/sequelize"],
+    },
+  },
+
+  "include": ["src/**/*.ts"],
+//  "exclude": ["node_modules"]
+}
