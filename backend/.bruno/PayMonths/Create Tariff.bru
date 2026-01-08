@@ -1,0 +1,29 @@
+meta {
+  name: Create Tariff
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/paymonths
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "month": "2025-11-01",
+    "date_start": "2025-10-27",
+    "date_end": "2025-12-26",
+    "agreementId": 4,
+    "counter_water": 536,
+    "counter_electricity": 7480,
+    "tarifId": 1,
+    "comment": "Какой то коммент о месяце"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

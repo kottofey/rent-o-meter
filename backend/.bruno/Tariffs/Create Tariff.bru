@@ -1,0 +1,30 @@
+meta {
+  name: Create Tariff
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_URL}}/tariffs
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "water": 5851,
+    "electricity": 393,
+    "heat": 84843,
+    "gas": 16809,
+    "renovation": 29700,
+    "tko": 7480,
+    "managing_company": 53159,
+    "domofon": 22000,
+    "comment": "Какой то коммент о тарифе"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

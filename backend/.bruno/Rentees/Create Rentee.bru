@@ -1,0 +1,30 @@
+meta {
+  name: Create Rentee
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/rentees
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "surname": "Лавроsв",
+    "firstname": "Романs",
+    "patronymic": "Дмитрsиевич",
+    "status": 1,
+    "date_start": "2025-06-07",
+    "date_end": "2025-12-07",
+    "phone": "79780342436",
+    "email": "romeokontakt@yandex.ru",
+    "comment": "Какой то коммент 2"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

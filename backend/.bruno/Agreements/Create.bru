@@ -1,0 +1,27 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/agreements
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "2025-06-01_001s",
+    "renteeId": 1,
+    "status": 1,
+    "date_start": "2025-06-07",
+    "date_end": "2025-06-07",
+    "comment": "65q14adw6q54"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
