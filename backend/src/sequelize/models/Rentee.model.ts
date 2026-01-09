@@ -1,9 +1,13 @@
-import { Model, Table, Column, NotNull, Default } from 'sequelize-typescript';
+import { Model, Table, Column, NotNull, Default, ForeignKey, HasMany } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
 import { dayjs } from '@/helpers';
+import Agreement from 'src/sequelize/models/Agreement.model.ts';
 
 @Table({ paranoid: true })
 export default class Rentee extends Model {
+  @HasMany(() => Agreement, { onDelete: 'CASCADE' })
+  agreements: Agreement[];
+
   @NotNull
   @Column({ type: DataTypes.STRING, allowNull: false })
   declare surname: string;
@@ -24,7 +28,6 @@ export default class Rentee extends Model {
   declare status: boolean;
 
   @NotNull
-  @Default(true)
   @Column({ type: DataTypes.DATEONLY, allowNull: false })
   set date_start(date: number) {
     this.setDataValue('date_start', dayjs(date).toDate());
@@ -34,7 +37,6 @@ export default class Rentee extends Model {
     return dayjs(raw).toDate().valueOf();
   }
 
-  @Default(true)
   @Column({ type: DataTypes.DATEONLY })
   set date_end(date: number) {
     this.setDataValue('date_end', dayjs(date).toDate());

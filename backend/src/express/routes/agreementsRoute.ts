@@ -1,18 +1,40 @@
 import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
-import { Op, UniqueConstraintError } from 'sequelize';
-// import { getIdParam, isClientDeleted } from '../helpers.ts';
-import { Agreement } from '@/models';
+import { UniqueConstraintError } from 'sequelize';
+import QueryString from 'qs';
+
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
+import { Rentee } from '@/models';
 
-const model = sequelize.models.Rentee;
+const model = sequelize.models.Agreement;
 
 async function getAll(req: Request, res: Response) {
+  const parsedQuery: QueryString.ParsedQs = req.query;
+
+  const scopes: {
+    withPaymonth: boolean;
+    isDebt: boolean;
+    toSend: any[];
+  } = {
+    withPaymonth: false,
+    isDebt: false,
+    toSend: [],
+  };
+
+  if (Object(parsedQuery).scopes.includes('withPaymonth')) {
+    scopes.toSend.push({ method: ['withPaymonth'] });
+  }
+
+  if (Object(parsedQuery).scopes.includes('isDebt')) {
+    scopes.toSend.push({ method: ['isDebt'] });
+  }
+
+  console.log(scopes.toSend);
   const found =
-    (await model.findAll({
+    (await model.scope(scopes.toSend).findAll({
       include: {
-        model: Agreement,
+        model: Rentee,
         attributes: {
           exclude: ['deletedAt', 'createdAt', 'updatedAt'],
         },
@@ -40,7 +62,7 @@ async function getById(req: Request, res: Response) {
         id,
       },
       include: {
-        model: Agreement,
+        model: Rentee,
         attributes: {
           exclude: ['deletedAt', 'createdAt', 'updatedAt'],
         },
@@ -77,7 +99,6 @@ async function remove(req: Request, res: Response) {
   const count = await model.count({
     where: { id },
   });
-
   if (count === 0) {
     res.status(404).send({ message: 'Record not found' }).end();
     return;
@@ -109,7 +130,18 @@ async function update(req: Request, res: Response) {
 async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
-  await model.restore({ where: { id } });
+  // const isDeleted = id && (await isClientDeleted(id));
+
+  // if (!isDeleted) {
+  //   res.status(404).send({ message: 'This client either not deleted or does not exist' }).end();
+  //   return;
+  // }
+
+  await model.restore({
+    where: {
+      id,
+    },
+  });
 
   res.status(200).send({ message: 'Restored' }).end();
 }

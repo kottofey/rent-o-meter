@@ -2,9 +2,9 @@ import { Sequelize } from 'sequelize-typescript';
 
 import options from './seqOptions';
 
-import { Rentee } from '@/models';
+import { Agreement, Rentee, PayMonth, Tarif } from '@/models';
 
 export const sequelize = new Sequelize({
   ...options,
-  models: [Rentee],
+  models: [Rentee, Agreement, PayMonth, Tarif],
 });

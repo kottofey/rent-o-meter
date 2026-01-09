@@ -5,7 +5,7 @@ import type { Migration } from '../../tools/umzug.ts';
 
 export const up: Migration = async ({ context: sequelize }: { context: Sequelize }) => {
   await sequelize.getQueryInterface().createTable(
-    'Rentees',
+    'Agreements',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -13,16 +13,18 @@ export const up: Migration = async ({ context: sequelize }: { context: Sequelize
         primaryKey: true,
       },
 
-      surname: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      firstname: {
-        type: DataTypes.STRING,
+
+      renteeId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-      },
-      patronymic: {
-        type: DataTypes.STRING,
+        references: {
+          model: 'Rentees',
+          key: 'id',
+        },
       },
 
       status: {
@@ -38,14 +40,7 @@ export const up: Migration = async ({ context: sequelize }: { context: Sequelize
 
       date_end: {
         type: DataTypes.DATEONLY,
-      },
-
-      phone: {
-        type: DataTypes.STRING,
-      },
-
-      email: {
-        type: DataTypes.STRING,
+        allowNull: false,
       },
 
       comment: {
@@ -68,8 +63,8 @@ export const up: Migration = async ({ context: sequelize }: { context: Sequelize
     },
     {
       uniqueKeys: {
-        rentee_uniqueness_constraint: {
-          fields: ['surname', 'firstname', 'patronymic'],
+        agreement_uniqueness_constraint: {
+          fields: ['renteeId', 'name'],
         },
       },
     },
@@ -77,5 +72,5 @@ export const up: Migration = async ({ context: sequelize }: { context: Sequelize
 };
 
 export const down: Migration = async ({ context: sequelize }: { context: Sequelize }) => {
-  await sequelize.getQueryInterface().dropTable('Rentees');
+  await sequelize.getQueryInterface().dropTable('Agreements');
 };

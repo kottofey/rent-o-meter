@@ -2,21 +2,29 @@ import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
 import { Op, UniqueConstraintError } from 'sequelize';
 // import { getIdParam, isClientDeleted } from '../helpers.ts';
-import { Agreement } from '@/models';
+import { Agreement, Tarif } from '@/models';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 
-const model = sequelize.models.Rentee;
+const model = sequelize.models.PayMonth;
 
 async function getAll(req: Request, res: Response) {
   const found =
     (await model.findAll({
-      include: {
-        model: Agreement,
-        attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+      include: [
+        {
+          model: Agreement,
+          attributes: {
+            exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          },
         },
-      },
+        {
+          model: Tarif,
+          attributes: {
+            exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          },
+        },
+      ],
       attributes: {
         exclude: ['deletedAt', 'createdAt', 'updatedAt'],
       },
@@ -67,6 +75,8 @@ async function create(req: Request, res: Response) {
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
       res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
+    } else {
+      res.status(500).send({ error: e }).end();
     }
   }
 }

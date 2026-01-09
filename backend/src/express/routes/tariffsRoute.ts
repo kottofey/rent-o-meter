@@ -1,27 +1,30 @@
 import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
-import { Op, UniqueConstraintError } from 'sequelize';
-// import { getIdParam, isClientDeleted } from '../helpers.ts';
-import { Agreement } from '@/models';
+import { UniqueConstraintError } from 'sequelize';
+import { PayMonth } from '@/models';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 
-const model = sequelize.models.Rentee;
+const model = sequelize.models.Tarif;
 
 async function getAll(req: Request, res: Response) {
-  const found =
-    (await model.findAll({
-      include: {
-        model: Agreement,
+  try {
+    const found =
+      (await model.findAll({
+        include: {
+          model: PayMonth,
+          attributes: {
+            exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          },
+        },
         attributes: {
           exclude: ['deletedAt', 'createdAt', 'updatedAt'],
         },
-      },
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
-  res.status(200).send(found).end();
+      })) ?? {};
+    res.status(200).send(found).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function getById(req: Request, res: Response) {
@@ -34,23 +37,27 @@ async function getById(req: Request, res: Response) {
     return;
   }
 
-  const found =
-    (await model.findOne({
-      where: {
-        id,
-      },
-      include: {
-        model: Agreement,
+  try {
+    const found =
+      (await model.findOne({
+        where: {
+          id,
+        },
+        include: {
+          model: PayMonth,
+          attributes: {
+            exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          },
+        },
         attributes: {
           exclude: ['deletedAt', 'createdAt', 'updatedAt'],
         },
-      },
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
+      })) ?? {};
 
-  res.status(200).send(found).end();
+    res.status(200).send(found).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function create(req: Request, res: Response) {
