@@ -22,15 +22,14 @@ async function getAll(req: Request, res: Response) {
     toSend: [],
   };
 
-  if (Object(parsedQuery).scopes.includes('withPaymonth')) {
+  if (Object(parsedQuery).scopes?.includes('withPaymonth')) {
     scopes.toSend.push({ method: ['withPaymonth'] });
   }
 
-  if (Object(parsedQuery).scopes.includes('isDebt')) {
+  if (Object(parsedQuery).scopes?.includes('isDebt')) {
     scopes.toSend.push({ method: ['isDebt'] });
   }
 
-  console.log(scopes.toSend);
   const found =
     (await model.scope(scopes.toSend).findAll({
       include: {
