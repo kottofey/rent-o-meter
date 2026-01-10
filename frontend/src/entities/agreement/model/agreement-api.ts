@@ -1,4 +1,4 @@
-import { serializeScopes, httpMethod, useApi } from '@/shared/api';
+import { httpMethod, useApi, serializeQuery } from '@/shared/api';
 import { IRentee } from '@/entities/rentee/@x/agreement';
 import { IPayMonth } from '@/entities/payMonth/@x/agreement';
 
@@ -16,17 +16,22 @@ export interface IAgreement {
   comment: string;
 }
 
-export type IAgreementScopes = Array<'withPaymonth' | 'isDebt'>;
+export type IAgreementScopes = Array<
+  'isActive' | 'isActual' | 'isExpired' | 'isExpiredAndActive'
+>;
+export type IAgreementIncludes = Array<'PayMonth' | 'Rentee'>;
 
 export async function getAllAgreements({
   scopes = [],
+  includes = [],
 }: {
   scopes?: IAgreementScopes;
+  includes?: IAgreementIncludes;
 }): Promise<IAgreement[]> {
   return await useApi<IAgreement[]>({
     route: 'agreements',
     method: httpMethod.GET,
-    query: serializeScopes(scopes),
+    query: serializeQuery({ scopes, includes }),
   });
 }
 

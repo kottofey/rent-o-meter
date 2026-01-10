@@ -9,6 +9,7 @@ import {
   getAgreement,
   type IAgreement,
   type IAgreementScopes,
+  type IAgreementIncludes,
 } from './agreement-api';
 import { agreementKeys } from './agreement-keys';
 
@@ -17,12 +18,14 @@ import { agreementKeys } from './agreement-keys';
 
 export const useAgreementsQuery = ({
   scopes,
+  includes,
 }: {
   scopes?: IAgreementScopes;
+  includes?: IAgreementIncludes;
 }) => {
   return useQuery({
-    queryKey: agreementKeys.list(scopes),
-    queryFn: () => getAllAgreements({ scopes }),
+    queryKey: agreementKeys.list(scopes, includes),
+    queryFn: () => getAllAgreements({ scopes, includes }),
   });
 };
 

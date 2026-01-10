@@ -1,4 +1,4 @@
-import { useApi, httpMethod, serializeScopes } from '@/shared/api';
+import { useApi, httpMethod, serializeQuery } from '@/shared/api';
 import { IAgreement } from '@/entities/agreement/@x/rentee';
 
 export interface IRentee {
@@ -19,16 +19,19 @@ export interface IRentee {
 // TODO дописать скоупы если будут
 // TODO написать алгоритм сериализации с проверкой через zod
 export type IRenteeScopes = Array<''>;
+export type IRenteeIncludes = Array<'Agreement'>;
 
 export async function getAllRentees({
   scopes = [],
+  includes = [],
 }: {
   scopes?: IRenteeScopes;
+  includes?: IRenteeIncludes;
 }): Promise<IRentee[]> {
   return await useApi<IRentee[]>({
     route: 'rentees',
     method: httpMethod.GET,
-    query: serializeScopes(scopes),
+    query: serializeQuery({ scopes, includes }),
   });
 }
 

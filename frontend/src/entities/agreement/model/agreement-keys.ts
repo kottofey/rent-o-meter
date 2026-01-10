@@ -1,5 +1,5 @@
 const AGREEMENT_QUERY_KEY = 'agreement' as const;
-import { type IAgreementScopes } from './agreement-api';
+import type { IAgreementIncludes, IAgreementScopes } from './agreement-api';
 
 export const agreementKeys = {
   all: [AGREEMENT_QUERY_KEY] as const,
@@ -8,8 +8,12 @@ export const agreementKeys = {
 
   list: (
     scopes?: IAgreementScopes,
-  ): ['agreement', 'list', { scopes: typeof scopes }] =>
-    [...agreementKeys.lists(), { scopes }] as const,
+    includes?: IAgreementIncludes,
+  ): [
+    'agreement',
+    'list',
+    { scopes: typeof scopes; includes: typeof includes },
+  ] => [...agreementKeys.lists(), { scopes, includes }] as const,
 
   details: () => [...agreementKeys.all, 'detail'] as const,
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NButton } from 'naive-ui';
 
-import { useAgreementsQuery } from '@/entities/agreement';
+import { usePayMonthsQuery } from '@/entities/payMonth';
 
 const q = {
   date_start: 1735678800000,
@@ -15,12 +15,21 @@ const q = {
   email: 'iasdgiaduyfg@!asdgiua',
 };
 
-const { data: rentees } = useAgreementsQuery({ scopes: ['isDebt'] });
+const { data: agreements } = usePayMonthsQuery({
+  scopes: {
+    withPeriod: {
+      start: '2025-11-01',
+      end: '2025-12-01',
+    },
+    byAgreement: 1,
+  },
+});
 </script>
 
 <template>
   <h1>Rentees</h1>
-  <pre>{{ rentees }}</pre>
+  <p>Calling ALL PAYMONTHS:</p>
+  <pre>{{ agreements }}</pre>
   <!--  <NButton @click="createRentee({ rentee: q })">+</NButton>-->
   <!--  <NButton @click="deleteRentee({ id: 2 })">-</NButton>-->
 </template>

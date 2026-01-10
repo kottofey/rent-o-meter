@@ -14,19 +14,41 @@ import { dayjs } from '@/helpers';
 import { PayMonth, Rentee } from '@/models';
 
 @Scopes(() => ({
-  withPaymonth() {
+  isActive() {
     return {
-      include: [PayMonth],
+      where: {
+        status: {
+          [Op.eq]: true,
+        },
+      },
     };
   },
-  isDebt() {
+  isActual() {
     return {
-      include: {
-        model: PayMonth,
-        where: {
-          status: {
-            [Op.eq]: false,
-          },
+      where: {
+        date_end: {
+          [Op.gte]: dayjs().toDate(),
+        },
+      },
+    };
+  },
+  isExpired() {
+    return {
+      where: {
+        date_end: {
+          [Op.lt]: dayjs().toDate(),
+        },
+      },
+    };
+  },
+  isExpiredAndActive() {
+    return {
+      where: {
+        date_end: {
+          [Op.lt]: dayjs().toDate(),
+        },
+        status: {
+          [Op.eq]: true,
         },
       },
     };

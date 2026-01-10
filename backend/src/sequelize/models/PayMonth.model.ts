@@ -6,11 +6,42 @@ import {
   NotNull,
   Default,
   ForeignKey,
+  Scopes,
 } from 'sequelize-typescript';
-import { DataTypes } from 'sequelize';
+import { DataTypes, Op } from 'sequelize';
 import { dayjs } from '@/helpers';
 import { Agreement, Tarif } from '@/models';
 
+@Scopes(() => ({
+  isDebt() {
+    return {
+      where: {
+        status: {
+          [Op.eq]: false,
+        },
+      },
+    };
+  },
+  withPeriod({ start, end }: { start: number; end: number }) {
+    return {
+      where: {
+        month: {
+          [Op.gte]: dayjs(start).startOf('month').toDate(),
+          [Op.lt]: dayjs(end).endOf('month').toDate(),
+        },
+      },
+    };
+  },
+  byAgreement({ agreementId }: { agreementId: number }) {
+    return {
+      where: {
+        agreementId: {
+          [Op.eq]: agreementId,
+        },
+      },
+    };
+  },
+}))
 @Table({ paranoid: true })
 export default class PayMonth extends Model {
   @NotNull
