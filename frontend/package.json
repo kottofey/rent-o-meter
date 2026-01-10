@@ -8,6 +8,7 @@
   "scripts": {
     "start:front": "vite",
     "build": "vue-tsc -b && vite build",
+    "lint:front": "vue-tsc -b",
     "preview": "vite preview",
     "fsd": "steiger ./src",
     "fsd:fix": "steiger ./src --fix"
