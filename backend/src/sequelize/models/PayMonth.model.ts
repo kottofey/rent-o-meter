@@ -44,14 +44,6 @@ export default class PayMonth extends Model {
   }
 
   @NotNull
-  @ForeignKey(() => Agreement)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare agreementId: number;
-
-  @BelongsTo(() => Agreement, { onDelete: 'CASCADE' })
-  agreement: Agreement;
-
-  @NotNull
   @Default(true)
   @Column({ type: DataTypes.BOOLEAN, allowNull: false })
   declare status: boolean;
@@ -65,14 +57,6 @@ export default class PayMonth extends Model {
   declare counter_electricity: number;
 
   @NotNull
-  @ForeignKey(() => Tarif)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare tarifId: number;
-
-  @BelongsTo(() => Tarif, { onDelete: 'CASCADE' })
-  tarif: Tarif;
-
-  @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
   declare penalty: number;
 
@@ -82,4 +66,23 @@ export default class PayMonth extends Model {
 
   @Column(DataTypes.TEXT)
   declare comment: string;
+
+  // -----------------------------------------------------------------------------
+  // Relations
+  // -----------------------------------------------------------------------------
+  @NotNull
+  @ForeignKey(() => Tarif)
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare tarifId: number;
+
+  @BelongsTo(() => Tarif, { onDelete: 'CASCADE' })
+  tarif: Tarif;
+
+  @NotNull
+  @ForeignKey(() => Agreement)
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare agreementId: number;
+
+  @BelongsTo(() => Agreement, { onDelete: 'CASCADE' })
+  agreement: Agreement;
 }

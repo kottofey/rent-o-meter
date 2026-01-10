@@ -1,43 +1,19 @@
 import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
 import { UniqueConstraintError } from 'sequelize';
-import QueryString from 'qs';
 
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
-import { Rentee } from '@/models';
+import { parseQuery } from '@/helpers';
 
 const model = sequelize.models.Agreement;
 
 async function getAll(req: Request, res: Response) {
-  const parsedQuery: QueryString.ParsedQs = req.query;
-
-  const scopes: {
-    withPaymonth: boolean;
-    isDebt: boolean;
-    toSend: any[];
-  } = {
-    withPaymonth: false,
-    isDebt: false,
-    toSend: [],
-  };
-
-  if (Object(parsedQuery).scopes?.includes('withPaymonth')) {
-    scopes.toSend.push({ method: ['withPaymonth'] });
-  }
-
-  if (Object(parsedQuery).scopes?.includes('isDebt')) {
-    scopes.toSend.push({ method: ['isDebt'] });
-  }
+  const { includes, scopes } = parseQuery(req.query);
 
   const found =
-    (await model.scope(scopes.toSend).findAll({
-      include: {
-        model: Rentee,
-        attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-        },
-      },
+    (await model.scope(scopes).findAll({
+      include: includes,
       attributes: {
         exclude: ['deletedAt', 'createdAt', 'updatedAt'],
       },
@@ -47,6 +23,7 @@ async function getAll(req: Request, res: Response) {
 
 async function getById(req: Request, res: Response) {
   const id = getIdParam(req);
+  const { includes, scopes } = parseQuery(req.query);
 
   if (!id) {
     res.status(400).send({
@@ -56,16 +33,11 @@ async function getById(req: Request, res: Response) {
   }
 
   const found =
-    (await model.findOne({
+    (await model.scope(scopes).findOne({
       where: {
         id,
       },
-      include: {
-        model: Rentee,
-        attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-        },
-      },
+      include: includes,
       attributes: {
         exclude: ['deletedAt', 'createdAt', 'updatedAt'],
       },

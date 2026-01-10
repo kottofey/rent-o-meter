@@ -9,12 +9,11 @@ import weekOfYear from 'dayjs/plugin/weekOfYear.js';
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
 dayjs.extend(weekOfYear);
-dayjs.locale('ru');
-
 dayjs.extend(timezone);
-dayjs.tz.setDefault('Europe/Moscow');
+dayjs.extend(utc);
 
 dayjs.locale('ru');
-dayjs.extend(utc);
+
+dayjs.tz.setDefault('Europe/Moscow');
 
 export default dayjs;

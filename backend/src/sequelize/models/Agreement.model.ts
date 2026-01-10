@@ -35,17 +35,6 @@ import { PayMonth, Rentee } from '@/models';
 @Table({ paranoid: true })
 export default class Agreement extends Model {
   @NotNull
-  @ForeignKey(() => Rentee)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare renteeId: number;
-
-  @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
-  rentee: Rentee;
-
-  @HasMany(() => PayMonth, { onDelete: 'CASCADE' })
-  pay_months: PayMonth[];
-
-  @NotNull
   @Column({ type: DataTypes.STRING, allowNull: false })
   declare name: string;
 
@@ -76,4 +65,18 @@ export default class Agreement extends Model {
 
   @Column(DataTypes.TEXT)
   declare comment: string;
+
+  // -----------------------------------------------------------------------------
+  // Relations
+  // -----------------------------------------------------------------------------
+  @NotNull
+  @ForeignKey(() => Rentee)
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare renteeId: number;
+
+  @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
+  rentee: Rentee;
+
+  @HasMany(() => PayMonth, { onDelete: 'CASCADE' })
+  pay_months: PayMonth[];
 }

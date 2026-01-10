@@ -5,9 +5,6 @@ import Agreement from 'src/sequelize/models/Agreement.model.ts';
 
 @Table({ paranoid: true })
 export default class Rentee extends Model {
-  @HasMany(() => Agreement, { onDelete: 'CASCADE' })
-  agreements: Agreement[];
-
   @NotNull
   @Column({ type: DataTypes.STRING, allowNull: false })
   declare surname: string;
@@ -51,4 +48,10 @@ export default class Rentee extends Model {
 
   @Column({ type: DataTypes.STRING, defaultValue: '' })
   declare email: string;
+
+  // -----------------------------------------------------------------------------
+  // Relations
+  // -----------------------------------------------------------------------------
+  @HasMany(() => Agreement, { onDelete: 'CASCADE' })
+  agreements: Agreement[];
 }

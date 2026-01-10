@@ -4,18 +4,16 @@ import { UniqueConstraintError } from 'sequelize';
 import { Agreement, Rentee } from '@/models';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
+import { parseQuery } from '@/helpers';
 
 const model = sequelize.models.Rentee;
 
 async function getAll(req: Request, res: Response) {
+  const { includes, scopes } = parseQuery(req.query);
+
   const found =
-    (await model.findAll({
-      include: {
-        model: Agreement,
-        attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-        },
-      },
+    (await model.scope(scopes).findAll({
+      include: includes,
       attributes: {
         exclude: ['deletedAt', 'createdAt', 'updatedAt'],
       },
@@ -25,6 +23,7 @@ async function getAll(req: Request, res: Response) {
 
 async function getById(req: Request, res: Response) {
   const id = getIdParam(req);
+  const { includes, scopes } = parseQuery(req.query);
 
   if (!id) {
     res.status(400).send({
@@ -34,16 +33,11 @@ async function getById(req: Request, res: Response) {
   }
 
   const found =
-    (await model.findOne({
+    (await model.scope(scopes).findOne({
       where: {
         id,
       },
-      include: {
-        model: Agreement,
-        attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-        },
-      },
+      include: includes,
       attributes: {
         exclude: ['deletedAt', 'createdAt', 'updatedAt'],
       },

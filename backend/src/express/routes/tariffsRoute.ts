@@ -1,34 +1,32 @@
 import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
 import { UniqueConstraintError } from 'sequelize';
-import { PayMonth } from '@/models';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
+import { parseQuery } from '@/helpers';
 
 const model = sequelize.models.Tarif;
 
 async function getAll(req: Request, res: Response) {
   try {
+    const { includes, scopes } = parseQuery(req.query);
+
     const found =
-      (await model.findAll({
-        include: {
-          model: PayMonth,
-          attributes: {
-            exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-          },
-        },
+      (await model.scope(scopes).findAll({
+        include: includes,
         attributes: {
           exclude: ['deletedAt', 'createdAt', 'updatedAt'],
         },
       })) ?? {};
     res.status(200).send(found).end();
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    res.status(500).send({ e }).end();
   }
 }
 
 async function getById(req: Request, res: Response) {
   const id = getIdParam(req);
+  const { includes, scopes } = parseQuery(req.query);
 
   if (!id) {
     res.status(400).send({
@@ -39,16 +37,11 @@ async function getById(req: Request, res: Response) {
 
   try {
     const found =
-      (await model.findOne({
+      (await model.scope(scopes).findOne({
         where: {
           id,
         },
-        include: {
-          model: PayMonth,
-          attributes: {
-            exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-          },
-        },
+        include: includes,
         attributes: {
           exclude: ['deletedAt', 'createdAt', 'updatedAt'],
         },
