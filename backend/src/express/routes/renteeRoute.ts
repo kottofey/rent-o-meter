@@ -1,8 +1,7 @@
 import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
-import { Op, UniqueConstraintError } from 'sequelize';
-// import { getIdParam, isClientDeleted } from '../helpers.ts';
-import { Agreement } from '@/models';
+import { UniqueConstraintError } from 'sequelize';
+import { Agreement, Rentee } from '@/models';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 
@@ -63,10 +62,15 @@ async function create(req: Request, res: Response) {
 
   try {
     await model.create(req.body);
-    res.status(201).send({ message: 'Created', statusCode: 201 }).end();
+    res
+      .status(201)
+      .send({ ...req.body })
+      .end();
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
-      res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
+      res.status(409).send({ error: e.parent.message }).end();
+    } else {
+      res.status(500).send({ e }).end();
     }
   }
 }
@@ -94,7 +98,7 @@ async function remove(req: Request, res: Response) {
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { body }: { body: Partial<unknown> } = req;
+  const { body }: { body: Partial<Rentee> } = req;
 
   const [rows] = await model.update(body, {
     where: {
@@ -103,7 +107,14 @@ async function update(req: Request, res: Response) {
     paranoid: false,
   });
 
-  res.status(200).send({ rowsAffected: rows }).end();
+  if (rows === 0) {
+    res.status(404).send({}).end();
+  } else {
+    res
+      .status(200)
+      .send({ ...req.body })
+      .end();
+  }
 }
 
 async function restore(req: Request, res: Response) {
