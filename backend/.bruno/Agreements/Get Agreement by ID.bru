@@ -1,18 +1,13 @@
 meta {
-  name: Get All
+  name: Get Agreement by ID
   type: http
   seq: 3
 }
 
 get {
-  url: {{BASE_URL}}/agreements
+  url: {{BASE_URL}}/agreements/1
   body: none
   auth: inherit
-}
-
-params:query {
-  ~scopes[]: isDebt
-  ~scopes[]: withPaymonth
 }
 
 settings {

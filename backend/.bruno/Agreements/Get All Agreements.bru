@@ -1,0 +1,23 @@
+meta {
+  name: Get All Agreements
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{BASE_URL}}/agreements?scopes[]=isExpiredAndActive
+  body: none
+  auth: inherit
+}
+
+params:query {
+  scopes[]: isExpiredAndActive
+  ~scopes[]: isActual
+  ~scopes[]: isActive
+  ~scopes[]: isExpired
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
