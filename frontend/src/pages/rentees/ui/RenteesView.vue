@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { NButton } from 'naive-ui';
 
-import {
-  useRenteesQuery,
-  useDeleteRenteeMutation,
-  useRestoreRenteeMutation,
-  useCreateRenteeMutation,
-} from '@/entities/rentee';
+import { useAgreementsQuery } from '@/entities/agreement';
 
 const q = {
   date_start: 1735678800000,
@@ -20,17 +15,14 @@ const q = {
   email: 'iasdgiaduyfg@!asdgiua',
 };
 
-const { data: rentees } = useRenteesQuery();
-const { mutate: deleteRentee } = useDeleteRenteeMutation();
-const { mutate: createRentee } = useCreateRenteeMutation();
-const { mutate: restoreRentee } = useRestoreRenteeMutation();
+const { data: rentees } = useAgreementsQuery({ scopes: ['isDebt'] });
 </script>
 
 <template>
   <h1>Rentees</h1>
   <pre>{{ rentees }}</pre>
-  <NButton @click="createRentee({ rentee: q })">+</NButton>
-  <NButton @click="deleteRentee({ id: 2 })">-</NButton>
+  <!--  <NButton @click="createRentee({ rentee: q })">+</NButton>-->
+  <!--  <NButton @click="deleteRentee({ id: 2 })">-</NButton>-->
 </template>
 
 <style scoped></style>

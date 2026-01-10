@@ -1,2 +1,3 @@
 export { default as useApi } from './useApi';
-export * as method from './methods';
+export * as httpMethod from './methods';
+export { serializeScopes } from './serializeScopes';

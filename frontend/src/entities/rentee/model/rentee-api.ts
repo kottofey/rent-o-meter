@@ -1,4 +1,4 @@
-import { useApi, method } from '@/shared/api';
+import { useApi, httpMethod, serializeScopes } from '@/shared/api';
 import { IAgreement } from '@/entities/agreement/@x/rentee';
 
 export interface IRentee {
@@ -16,49 +16,65 @@ export interface IRentee {
   agreements: IAgreement[];
 }
 
-export async function getAllRentees(): Promise<IRentee[]> {
+// TODO дописать скоупы если будут
+// TODO написать алгоритм сериализации с проверкой через zod
+export type IRenteeScopes = Array<''>;
+
+export async function getAllRentees({
+  scopes = [],
+}: {
+  scopes?: IRenteeScopes;
+}): Promise<IRentee[]> {
   return await useApi<IRentee[]>({
     route: 'rentees',
-    method: method.GET,
+    method: httpMethod.GET,
+    query: serializeScopes(scopes),
   });
 }
 
-export async function getRentee(id: number): Promise<IRentee> {
+export async function getRentee({ id }: { id: number }): Promise<IRentee> {
   return await useApi<IRentee>({
     route: `rentees/${id}`,
-    method: method.GET,
+    method: httpMethod.GET,
   });
 }
 
-export async function createRentee(rentee: IRentee): Promise<IRentee> {
+export async function createRentee({
+  rentee,
+}: {
+  rentee: Partial<IRentee>;
+}): Promise<IRentee> {
   return await useApi<IRentee>({
     route: `rentees`,
-    method: method.POST,
+    method: httpMethod.POST,
     body: JSON.stringify(rentee),
   });
 }
 
-export async function deleteRentee(id: number): Promise<void> {
+export async function deleteRentee({ id }: { id: number }): Promise<void> {
   return await useApi({
     route: `rentees/${id}`,
-    method: method.DELETE,
+    method: httpMethod.DELETE,
   });
 }
 
-export async function restoreRentee(id: number): Promise<void> {
+export async function restoreRentee({ id }: { id: number }): Promise<void> {
   return await useApi({
     route: `rentees/${id}/restore`,
-    method: method.PUT,
+    method: httpMethod.PUT,
   });
 }
 
-export async function editRentee(
-  id: number,
-  updatedRentee: Partial<IRentee>,
-): Promise<IRentee> {
+export async function editRentee({
+  id,
+  updatedRentee,
+}: {
+  id: number;
+  updatedRentee: Partial<IRentee>;
+}): Promise<IRentee> {
   return await useApi<IRentee>({
     route: `rentees/${id}`,
-    method: method.PUT,
+    method: httpMethod.PUT,
     body: JSON.stringify(updatedRentee),
   });
 }
