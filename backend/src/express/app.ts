@@ -45,7 +45,7 @@ const routes: { [routeName: string]: IRouteController } = {
   rentees: renteeRoute,
   agreements: agreementsRoute,
   paymonths: paymonthsRoute,
-  tariffs: tariffsRoute,
+  tarifs: tariffsRoute,
 };
 
 // We create a wrapper to workaround async errors not being transmitted correctly.
