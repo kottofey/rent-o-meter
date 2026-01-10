@@ -8,7 +8,8 @@
   "scripts": {
     "start:front": "vite",
     "build": "vue-tsc -b && vite build",
-    "lint:front": "vue-tsc -b",
+    "type-check": "vue-tsc --build",
+    "lint:front": "prettier --log-level silent --write src/ && eslint src/**/*.{ts,js,vue} --config eslint.config.ts --format stylish --fix",
     "preview": "vite preview",
     "fsd": "steiger ./src",
     "fsd:fix": "steiger ./src --fix"

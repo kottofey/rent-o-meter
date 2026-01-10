@@ -6,6 +6,9 @@ import localizedFormat from 'dayjs/plugin/localizedFormat.js';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import weekOfYear from 'dayjs/plugin/weekOfYear.js';
 
+// TODO проверить можно ли использовать именованные импорты для extend, locale и tz
+
+/* eslint-disable */
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
 dayjs.extend(weekOfYear);

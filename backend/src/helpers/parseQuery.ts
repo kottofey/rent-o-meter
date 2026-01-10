@@ -92,10 +92,20 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     }
 
     if (Object(query).scopes?.hasOwnProperty('byAgreement')) {
-      console.log(chalk.yellow('parse', JSON.stringify(Object(query).scopes.byAgreement)));
       scopes.push({
         method: [
           'byAgreement',
+          {
+            agreementId: Object(query).scopes.byAgreement,
+          },
+        ],
+      });
+    }
+
+    if (Object(query).scopes?.hasOwnProperty('isDebt')) {
+      scopes.push({
+        method: [
+          'isDebt',
           {
             agreementId: Object(query).scopes.byAgreement,
           },

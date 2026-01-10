@@ -22,7 +22,7 @@ export type IRenteeScopes = Array<''>;
 export type IRenteeIncludes = Array<'Agreement'>;
 
 export async function getAllRentees({
-  scopes = [],
+  scopes,
   includes = [],
 }: {
   scopes?: IRenteeScopes;

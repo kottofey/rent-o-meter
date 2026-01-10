@@ -22,7 +22,7 @@ export type IAgreementScopes = Array<
 export type IAgreementIncludes = Array<'PayMonth' | 'Rentee'>;
 
 export async function getAllAgreements({
-  scopes = [],
+  scopes,
   includes = [],
 }: {
   scopes?: IAgreementScopes;

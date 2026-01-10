@@ -4,9 +4,6 @@ import { PayMonth } from '@/models';
 
 @Table({ paranoid: true })
 export default class Tarif extends Model {
-  @HasMany(() => PayMonth, { onDelete: 'CASCADE' })
-  payMonths: PayMonth[];
-
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
   declare water: string;
@@ -41,4 +38,11 @@ export default class Tarif extends Model {
 
   @Column(DataTypes.TEXT)
   declare comment: string;
+
+  // -----------------------------------------------------------------------------
+  // Relations
+  // -----------------------------------------------------------------------------
+
+  @HasMany(() => PayMonth, { onDelete: 'CASCADE' })
+  payMonths: PayMonth[];
 }

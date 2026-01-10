@@ -19,18 +19,17 @@ export interface IPayMonth {
 }
 
 export type IPayMonthIncludes = Array<'Tarif' | 'Agreement'>;
-export type IPayMonthScopes =
-  | Array<'isDebt'>
-  | {
-      byAgreement?: number;
-      withPeriod?: {
-        start: number | string;
-        end: number | string;
-      };
-    };
+export type IPayMonthScopes = {
+  isDebt: '';
+  byAgreement?: number;
+  withPeriod?: {
+    start: string;
+    end: string;
+  };
+};
 
 export async function getAllPayMonths({
-  scopes = [],
+  scopes,
   includes = [],
 }: {
   scopes?: IPayMonthScopes;

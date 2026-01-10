@@ -1,4 +1,4 @@
-export function serializeQuery({
+export default function serializeQuery({
   includes,
   scopes,
 }: {
