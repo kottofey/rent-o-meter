@@ -11,6 +11,6 @@ RUN npm ci --verbose
 
 COPY . .
 
-EXPOSE 8891
+EXPOSE 8892
 
 CMD [ "./start-express" ]

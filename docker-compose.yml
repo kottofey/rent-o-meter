@@ -17,7 +17,6 @@ services:
       - rent-o-meter
     volumes:
 #   относительный путь относительно файла docker-compose.yml : абсолютный путь внутри контейнера
-#      - ./backend/src:/usr/src/app/src/
       - ./backend/.env:/usr/src/app/.env
 
   frontend:
@@ -28,8 +27,7 @@ services:
       context: ./frontend
     volumes:
       #   относительный путь относительно файла docker-compose.yml : абсолютный путь внутри контейнера
-#      - ./frontend/src:/usr/src/app/src/
-      - ./frontend/.env/:/usr/src/app/.env/
+      - ./frontend/src/app/env/:/usr/src/app/.env/
 
     networks:
       - rent-o-meter
