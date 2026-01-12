@@ -8,7 +8,8 @@ import {
   deleteRentee,
   getRentee,
   type IRentee,
-  IRenteeScopes,
+  type IRenteeScopes,
+  type IRenteeIncludes,
 } from './rentee-api';
 import { renteeKeys } from './rentee-keys';
 
@@ -17,15 +18,23 @@ import { renteeKeys } from './rentee-keys';
 
 export const useRenteesQuery = ({ scopes }: { scopes?: IRenteeScopes }) => {
   return useQuery({
-    queryKey: renteeKeys.list(scopes),
+    queryKey: renteeKeys.list({ scopes }),
     queryFn: () => getAllRentees({ scopes }),
   });
 };
 
-export const useRenteeQuery = (id: number) => {
+export const useRenteeQuery = ({
+  id,
+  includes,
+  scopes,
+}: {
+  id: number;
+  scopes?: IRenteeScopes;
+  includes?: IRenteeIncludes;
+}) => {
   return useQuery({
-    queryKey: renteeKeys.detail(id),
-    queryFn: () => getRentee({ id }),
+    queryKey: renteeKeys.detail({ scopes, includes, id }),
+    queryFn: () => getRentee({ id, scopes, includes }),
   });
 };
 
@@ -55,7 +64,7 @@ export const useEditRenteeMutation = () => {
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: renteeKeys.lists() });
       await queryClient.invalidateQueries({
-        queryKey: renteeKeys.detail(variables.id),
+        queryKey: renteeKeys.detail({ id: variables.id }),
       });
     },
   });
@@ -68,7 +77,7 @@ export const useDeleteRenteeMutation = () => {
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: renteeKeys.lists() });
       await queryClient.invalidateQueries({
-        queryKey: renteeKeys.detail(variables.id),
+        queryKey: renteeKeys.detail({ id: variables.id }),
       });
     },
   });
@@ -81,7 +90,7 @@ export const useRestoreRenteeMutation = () => {
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: renteeKeys.lists() });
       await queryClient.invalidateQueries({
-        queryKey: renteeKeys.detail(variables.id),
+        queryKey: renteeKeys.detail({ id: variables.id }),
       });
     },
   });

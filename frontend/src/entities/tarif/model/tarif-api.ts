@@ -4,6 +4,15 @@ import { useApi, httpMethod, serializeQuery } from '@/shared/api';
 // TODO написать алгоритм сериализации с проверкой через zod
 export interface ITarif {
   id: number;
+  water: number;
+  electricity: number;
+  heat: number;
+  gas: number;
+  renovation: number;
+  tko: number;
+  managing_company: number;
+  domofon: number;
+  comment?: string;
 }
 
 export type ITarifScopes = Array<''>;

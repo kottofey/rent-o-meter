@@ -3,7 +3,9 @@ import { PageLayout } from '@/app/layouts';
 </script>
 
 <template>
-  <PageLayout> </PageLayout>
+  <PageLayout>
+    <h1>Counters</h1>
+  </PageLayout>
 </template>
-<!---->
-<style scoped lang="scss"></style>
+
+<style scoped></style>

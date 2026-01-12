@@ -4,21 +4,20 @@ import {
   ruRU,
   NConfigProvider,
   darkTheme,
-  type GlobalTheme,
   NGlobalStyle,
   NNotificationProvider,
   NDialogProvider,
 } from 'naive-ui';
-import { ref } from 'vue';
+import { useLocalStorage } from '@vueuse/core';
 
-const theme = ref<GlobalTheme | null>(darkTheme);
+const settings = useLocalStorage('settings', { theme: 'light' });
 </script>
 
 <template>
   <NConfigProvider
     :locale="ruRU"
     :date-locale="dateRuRU"
-    :theme="theme"
+    :theme="settings.theme === 'light' ? null : darkTheme"
   >
     <NGlobalStyle />
     <NDialogProvider>

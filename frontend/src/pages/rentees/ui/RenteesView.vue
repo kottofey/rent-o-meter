@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { NButton } from 'naive-ui';
-
 import { useTarifsQuery } from '@/entities/tarif';
+import { PageLayout } from '@/app/layouts';
 
 const q = {
   status: false,
@@ -16,12 +15,14 @@ const { data: tarifs } = useTarifsQuery({});
 </script>
 
 <template>
-  <h1>Rentees</h1>
-  <p>Calling ALL Tarif:</p>
-  <pre>{{ tarifs }}</pre>
-  <!--  <NButton @click="createRentee({ rentee: q })">+</NButton>-->
-  <!--  <NButton @click="deleteRentee({ id: 2 })">-</NButton>-->
-  <!--  <NButton @click="editPayMonth({ id: 21, updatedPayMonth: q })">edit</NButton>-->
+  <PageLayout>
+    <h1>Rentees</h1>
+    <p>Calling ALL Tarif:</p>
+    <pre>{{ tarifs }}</pre>
+    <!--  <NButton @click="createRentee({ rentee: q })">+</NButton>-->
+    <!--  <NButton @click="deleteRentee({ id: 2 })">-</NButton>-->
+    <!--  <NButton @click="editPayMonth({ id: 21, updatedPayMonth: q })">edit</NButton>-->
+  </PageLayout>
 </template>
 
 <style scoped></style>

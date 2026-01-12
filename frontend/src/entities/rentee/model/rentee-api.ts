@@ -35,10 +35,19 @@ export async function getAllRentees({
   });
 }
 
-export async function getRentee({ id }: { id: number }): Promise<IRentee> {
+export async function getRentee({
+  id,
+  scopes,
+  includes,
+}: {
+  id: number;
+  scopes?: IRenteeScopes;
+  includes?: IRenteeIncludes;
+}): Promise<IRentee> {
   return await useApi<IRentee>({
     route: `rentees/${id}`,
     method: httpMethod.GET,
+    query: serializeQuery({ scopes, includes }),
   });
 }
 
