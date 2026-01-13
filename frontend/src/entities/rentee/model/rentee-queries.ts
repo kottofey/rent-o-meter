@@ -16,10 +16,16 @@ import { renteeKeys } from './rentee-keys';
 // TODO дописать фильтры, они пойдут в queryKeys: renteeKeys.list(filters)
 // TODO дописать оптимистичные апдейты
 
-export const useRenteesQuery = ({ scopes }: { scopes?: IRenteeScopes }) => {
+export const useRenteesQuery = ({
+  scopes,
+  includes,
+}: {
+  scopes?: IRenteeScopes;
+  includes?: IRenteeIncludes;
+}) => {
   return useQuery({
-    queryKey: renteeKeys.list({ scopes }),
-    queryFn: () => getAllRentees({ scopes }),
+    queryKey: renteeKeys.list({ scopes, includes }),
+    queryFn: () => getAllRentees({ scopes, includes }),
   });
 };
 

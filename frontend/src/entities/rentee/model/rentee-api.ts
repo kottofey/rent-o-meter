@@ -6,12 +6,12 @@ export interface IRentee {
   surname: string;
   firstname: string;
   patronymic?: string;
-  comment?: string;
+  phone: string;
+  email: string;
   status: boolean;
   date_start: number;
   date_end: number;
-  phone: string;
-  email: string;
+  comment?: string;
 
   agreements: IAgreement[];
 }
