@@ -1,8 +1,7 @@
 import { type DataTableColumns, NTag } from 'naive-ui';
 import { h } from 'vue';
 
-import { checkExpiry } from '../lib/checkExpiry';
-
+import { checkExpiry } from '@/shared/lib/checkExpiry';
 import { RenteeInfoPopover } from '@/widgets/rentee-info-popover';
 import { type IAgreement } from '@/entities/agreement';
 import { dayjs } from '@/shared/lib/dayjs';
@@ -30,6 +29,13 @@ export const columns: DataTableColumns<IAgreement> = [
   {
     title: 'Арендатор ФИО',
     key: 'rentee.id',
+    defaultSortOrder: 'ascend',
+
+    sorter: {
+      compare: (row1: IAgreement, row2: IAgreement) =>
+        row1.rentee.id - row2.rentee.id,
+      multiple: 2,
+    },
     render: (row: IAgreement) => {
       return h(
         RenteeInfoPopover,
@@ -46,6 +52,12 @@ export const columns: DataTableColumns<IAgreement> = [
   {
     title: 'Начало',
     key: 'date_start',
+    defaultSortOrder: 'descend',
+    sorter: {
+      compare: (row1: IAgreement, row2: IAgreement) =>
+        row1.date_start - row2.date_start,
+      multiple: 1,
+    },
     render: (row: IAgreement) => dayjs(row.date_start).format('YYYY-MM-DD'),
   },
   {

@@ -6,7 +6,7 @@ import { columns } from '../config/tableColumns';
 
 import { PageLayout } from '@/app/layouts';
 import { type IAgreement, useAgreementsQuery } from '@/entities/agreement';
-import { ManageAgreementModal } from '@/features/agreement';
+import { ManageAgreementModal } from '@/features/manage-agreement-modal';
 import { AddButton } from '@/shared/ui';
 
 // -----------------------------------------------------------------------------
@@ -50,8 +50,6 @@ const createRow = () => {
 
 <template>
   <PageLayout>
-    <template #header-buttons> </template>
-
     <template #buttons-extra>
       <AddButton @click="createRow">Новый договор</AddButton>
     </template>

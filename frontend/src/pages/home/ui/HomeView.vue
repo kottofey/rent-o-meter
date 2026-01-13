@@ -5,5 +5,4 @@ import { PageLayout } from '@/app/layouts';
 <template>
   <PageLayout> </PageLayout>
 </template>
-<!---->
 <style scoped lang="scss"></style>

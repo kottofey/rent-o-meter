@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { useTarifsQuery } from '@/entities/tarif';
+import { computed, ref } from 'vue';
 import { PageLayout } from '@/app/layouts';
+import { AddButton } from '@/shared/ui';
+import { useRenteesQuery } from '@/entities/rentee';
+import { IRentee } from '@/entities/rentee/model/rentee-api';
+import { ManageRenteeModal } from '@/features/manage-rentee-modal';
 
-const q = {
-  status: false,
-  counter_water: 999,
-  counter_electricity: 9999,
-  penalty: 10000,
-  debt: 1000000,
-  comment: 'nudthll',
-};
+// -----------------------------------------------------------------------------
+// State
+// -----------------------------------------------------------------------------
 
-const { data: tarifs } = useTarifsQuery({});
+
+const rowProps = (row: IRentee) => {
 </script>
 
 <template>
   <PageLayout>
-    <h1>Rentees</h1>
-    <p>Calling ALL Tarif:</p>
-    <pre>{{ tarifs }}</pre>
-    <!--  <NButton @click="createRentee({ rentee: q })">+</NButton>-->
-    <!--  <NButton @click="deleteRentee({ id: 2 })">-</NButton>-->
-    <!--  <NButton @click="editPayMonth({ id: 21, updatedPayMonth: q })">edit</NButton>-->
+    <template #buttons-extra>
+      <AddButton @click="createRow">Новый арендатор</AddButton>
+    </template>
+
+    <NDataTable
+      :data="rentees"
   </PageLayout>
 </template>
 
