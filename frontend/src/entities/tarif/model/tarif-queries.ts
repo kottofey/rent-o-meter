@@ -29,7 +29,7 @@ export const useTarifsQuery = ({
   });
 };
 
-export const useTarifQuery = (id: number) => {
+export const useTarifQuery = ({ id }: { id: number }) => {
   return useQuery({
     queryKey: tarifKeys.detail(id),
     queryFn: () => getTarif({ id }),
