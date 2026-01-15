@@ -1,73 +1,70 @@
 import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
 import { type FormInst } from 'naive-ui';
 
-import { type ITarif } from '@/entities/tarif';
-import { useCreateTarifMutation, useEditTarifMutation } from '@/entities/tarif';
+import { type ICounter } from '@/entities/counter';
+import {
+  useCreateCounterMutation,
+  useEditCounterMutation,
+} from '@/entities/counter';
 
-export function useTarifModal({
+export function useCountersModal({
   initialData,
   formRef,
 }: {
-  initialData: MaybeRef<Partial<ITarif> | undefined>;
+  initialData: MaybeRef<Partial<ICounter> | undefined>;
   formRef: Ref<FormInst | null>;
 }) {
   const isFormValidateError = ref(false);
 
-  // Init form data
-  const formData = ref<Partial<ITarif>>({
-    water: undefined,
-    electricity: undefined,
-    heat: undefined,
-    gas: undefined,
-    renovation: undefined,
-    tko: undefined,
-    managing_company: undefined,
-    domofon: undefined,
+  const initState = {
+    month: undefined,
+    date_start: undefined,
+    date_end: undefined,
+    renteeId: undefined,
+    status: false,
+    counter_water: undefined,
+    counter_electricity: undefined,
+    penalty: undefined,
+    debt: undefined,
     comment: '',
-  });
+  };
+
+  // Init form data
+  const formData = ref<Partial<ICounter>>({ ...initState });
 
   watch(
     () => unref(initialData),
-    (tarif) => {
-      if (tarif) {
+    (counter) => {
+      if (counter !== undefined) {
         formData.value = {
-          water: tarif.water,
-          electricity: tarif.electricity,
-          heat: tarif.heat,
-          gas: tarif.gas,
-          renovation: tarif.renovation,
-          tko: tarif.tko,
-          managing_company: tarif.managing_company,
-          domofon: tarif.domofon,
-          comment: tarif.comment,
+          month: counter.month,
+          date_start: counter.date_start,
+          date_end: counter.date_end,
+          renteeId: counter.renteeId,
+          status: counter.status,
+          counter_water: counter.counter_water,
+          counter_electricity: counter.counter_electricity,
+          penalty: counter.penalty,
+          debt: counter.debt,
+          comment: counter.comment,
         };
       } else {
         // Сброс при создании нового
-        formData.value = {
-          water: undefined,
-          electricity: undefined,
-          heat: undefined,
-          gas: undefined,
-          renovation: undefined,
-          tko: undefined,
-          managing_company: undefined,
-          domofon: undefined,
-          comment: '',
-        };
+        formData.value = { ...initState };
       }
     },
   );
 
   const {
-    mutate: createTarif,
+    mutate: createCounter,
     isPending: isCreatePending,
     error: createError,
-  } = useCreateTarifMutation();
+  } = useCreateCounterMutation();
   const {
-    mutate: editTarif,
+    mutate: editCounter,
     isPending: isEditPending,
     error: editError,
-  } = useEditTarifMutation();
+  } = useEditCounterMutation();
 
   const submit = async () => {
     // можно добавить валидацию
@@ -77,15 +74,17 @@ export function useTarifModal({
 
         if (!errors) {
           if (isRef(initialData) && initialData.value) {
-            editTarif({
+            editCounter({
               id: initialData.value.id!,
-              updatedTarif: formData.value,
+              updatedCounter: formData.value,
             });
           } else {
-            createTarif({
-              tarif: formData.value,
+            createCounter({
+              counter: formData.value,
             });
           }
+
+          formData.value = { ...initState };
         }
       });
     } catch (errors) {

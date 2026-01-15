@@ -18,8 +18,7 @@ export function useRenteeModal({
 }) {
   const isFormValidateError = ref(false);
 
-  // Init form data
-  const formData = ref<Partial<IRentee>>({
+  const initState = {
     surname: '',
     firstname: '',
     patronymic: '',
@@ -29,7 +28,10 @@ export function useRenteeModal({
     date_start: dayjs().valueOf(),
     date_end: undefined,
     comment: '',
-  });
+  };
+
+  // Init form data
+  const formData = ref<Partial<IRentee>>({ ...initState });
 
   watch(
     () => unref(initialData),
@@ -48,17 +50,7 @@ export function useRenteeModal({
         };
       } else {
         // Сброс при создании нового
-        formData.value = {
-          surname: '',
-          firstname: '',
-          patronymic: '',
-          phone: '',
-          email: '',
-          status: true,
-          date_start: dayjs().valueOf(),
-          date_end: undefined,
-          comment: '',
-        };
+        formData.value = { ...initState };
       }
     },
   );
@@ -91,6 +83,8 @@ export function useRenteeModal({
               rentee: formData.value,
             });
           }
+
+          formData.value = { ...initState };
         }
       });
     } catch (errors) {

@@ -3,13 +3,14 @@ import { h } from 'vue';
 
 import { dayjs } from '@/shared/lib/dayjs';
 
-export function checkExpiry(date_end: number) {
+export function checkExpiry(date_end: number, format?: string) {
   if (dayjs(date_end).isAfter(dayjs().add(1, 'month'))) {
     return h(
       NText,
       { type: 'success' },
       {
-        default: () => dayjs(date_end).format('YYYY-MM-DD'),
+        default: () =>
+          dayjs(date_end).format(`${format ? format : 'DD MMM YYYY'}`),
       },
     );
   } else if (
@@ -20,7 +21,8 @@ export function checkExpiry(date_end: number) {
       NText,
       { type: 'warning' },
       {
-        default: () => dayjs(date_end).format('YYYY-MM-DD'),
+        default: () =>
+          dayjs(date_end).format(`${format ? format : 'DD MMM YYYY'}`),
       },
     );
   } else if (dayjs(date_end).isBefore(dayjs())) {
@@ -28,7 +30,8 @@ export function checkExpiry(date_end: number) {
       NText,
       { type: 'error', bold: true, italic: true },
       {
-        default: () => dayjs(date_end).format('YYYY-MM-DD'),
+        default: () =>
+          dayjs(date_end).format(`${format ? format : 'DD MMM YYYY'}`),
       },
     );
   }

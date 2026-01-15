@@ -10,12 +10,21 @@ import { useRenteesQuery } from '@/entities/rentee';
 
 const value = defineModel<number>('value');
 
+const { withActiveAgreements = false } = defineProps<{
+  withActiveAgreements?: boolean;
+}>();
+
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
 
-const { data: rentees, isLoading } = useRenteesQuery({});
+const { data: rentees, isLoading } = useRenteesQuery({
+  scopes: withActiveAgreements ? ['withActiveAgreementsOnly'] : undefined,
+});
 
+// -----------------------------------------------------------------------------
+// Computed
+// -----------------------------------------------------------------------------
 const renteesOptions = computed(() =>
   rentees.value?.map((rentee) => ({
     value: rentee.id,

@@ -27,7 +27,7 @@ const isModalOpened = ref(false);
 // -----------------------------------------------------------------------------
 const agreementToEditId = ref<number | undefined>(undefined);
 
-const agrrementToEdit = computed(() =>
+const agreementToEdit = computed(() =>
   agreements.value?.find(
     (agreement) => agreement.id === agreementToEditId.value,
   ),
@@ -64,7 +64,7 @@ const createRow = () => {
 
   <ManageAgreementModal
     v-model:is-opened="isModalOpened"
-    :agreement="agrrementToEdit"
+    :agreement="agreementToEdit"
   />
 </template>
 

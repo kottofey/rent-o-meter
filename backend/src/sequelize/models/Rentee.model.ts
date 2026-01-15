@@ -1,8 +1,39 @@
-import { Model, Table, Column, NotNull, Default, ForeignKey, HasMany } from 'sequelize-typescript';
-import { DataTypes } from 'sequelize';
-import { dayjs } from '@/helpers';
-import Agreement from 'src/sequelize/models/Agreement.model.ts';
+import {
+  Model,
+  Table,
+  Column,
+  NotNull,
+  Default,
+  HasMany,
+  Scopes,
+  DefaultScope,
+} from 'sequelize-typescript';
+import { DataTypes, Op } from 'sequelize';
 
+import Agreement from './Agreement.model.ts';
+
+import { dayjs } from '@/helpers';
+
+@DefaultScope(() => ({
+  include: {
+    model: Agreement,
+  },
+}))
+@Scopes(() => ({
+  withActiveAgreementsOnly() {
+    console.log('withActiveAgreementsOnly');
+    return {
+      include: {
+        model: Agreement,
+        where: {
+          status: {
+            [Op.eq]: true,
+          },
+        },
+      },
+    };
+  },
+}))
 @Table({ paranoid: true })
 export default class Rentee extends Model {
   @NotNull

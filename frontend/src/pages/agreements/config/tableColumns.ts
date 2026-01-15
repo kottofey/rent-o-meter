@@ -4,7 +4,7 @@ import { h } from 'vue';
 import { checkExpiry } from '@/shared/lib/checkExpiry';
 import { RenteeInfoPopover } from '@/widgets/rentee-info-popover';
 import { type IAgreement } from '@/entities/agreement';
-import { dayjs } from '@/shared/lib/dayjs';
+import { parseDate } from '@/shared/lib/parseDate';
 
 const statusColors = {
   active: {
@@ -21,16 +21,19 @@ export const columns: DataTableColumns<IAgreement> = [
   {
     title: 'id',
     key: 'id',
+    align: 'center',
   },
   {
     title: 'Название',
     key: 'name',
+    align: 'center',
   },
   {
     title: 'Арендатор ФИО',
     key: 'rentee.id',
     defaultSortOrder: 'ascend',
 
+    align: 'center',
     sorter: {
       compare: (row1: IAgreement, row2: IAgreement) =>
         row1.rentee.id - row2.rentee.id,
@@ -52,17 +55,19 @@ export const columns: DataTableColumns<IAgreement> = [
   {
     title: 'Начало',
     key: 'date_start',
+    align: 'center',
     defaultSortOrder: 'descend',
     sorter: {
       compare: (row1: IAgreement, row2: IAgreement) =>
         row1.date_start - row2.date_start,
       multiple: 1,
     },
-    render: (row: IAgreement) => dayjs(row.date_start).format('YYYY-MM-DD'),
+    render: (row: IAgreement) => parseDate(row.date_start),
   },
   {
     title: 'Окончание',
     key: 'date_end',
+    align: 'center',
     render: (row: IAgreement) => checkExpiry(row.date_end),
   },
   {

@@ -4,7 +4,6 @@ import {
   NButton,
   NButtonGroup,
   NCard,
-  NCheckbox,
   NDatePicker,
   NForm,
   NFormItem,
@@ -14,62 +13,68 @@ import {
 } from 'naive-ui';
 import { ref, toRef, unref } from 'vue';
 
-import { useTarifModal } from '../lib/useTarifModal';
+import { useCountersModal } from '../lib/useCountersModal';
 
-import { ITarif } from '@/entities/tarif';
+import { ICounter } from '@/entities/counter';
+import { SelectRentees } from '@/widgets/select-rentees';
 
 // -----------------------------------------------------------------------------
 // State
 // -----------------------------------------------------------------------------
 
 const formRef = ref();
-
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
 const isOpened = defineModel('isOpened', { default: false });
 
-const { tarif = undefined } = defineProps<{
-  tarif?: ITarif;
+const { counter = undefined } = defineProps<{
+  counter?: ICounter;
 }>();
 
-const tarifRef = toRef(() => tarif);
+const counterRef = toRef(() => counter);
 
-const { formData, submit, isPending, isFormValidateError } = useTarifModal({
-  initialData: tarifRef,
+const { formData, submit, isPending, isFormValidateError } = useCountersModal({
+  initialData: counterRef,
   formRef: formRef,
 });
 
 const rules: FormRules = {
-  water: {
+  month: {
     required: true,
     message: 'Обязательное поле',
   },
-  electricity: {
+  date_start: {
     required: true,
     message: 'Обязательное поле',
   },
-  heat: {
+  date_end: [
+    {
+      required: true,
+      message: 'Обязательное поле',
+    },
+    {
+      message: 'Эта дата не может быть раньше начальной',
+      validator: (_rule, value) => {
+        return !(
+          formData.value.date_start && formData.value.date_start > value
+        );
+      },
+    },
+  ],
+  agreementId: {
     required: true,
     message: 'Обязательное поле',
   },
-  gas: {
+  counter_water: {
     required: true,
     message: 'Обязательное поле',
   },
-  renovation: {
+  counter_electricity: {
     required: true,
     message: 'Обязательное поле',
   },
-  tko: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  managing_company: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  domofon: {
+  renteeId: {
     required: true,
     message: 'Обязательное поле',
   },
@@ -89,8 +94,8 @@ const rules: FormRules = {
     "
   >
     <NCard
-      class="manage-tarif-modal"
-      :title="tarif ? 'Редактирование тарифа' : 'Создание тарифа'"
+      class="manage-counter-modal"
+      :title="counter ? 'Редактирование показаний' : 'Создание показаний'"
     >
       <NForm
         :disabled="isPending"
@@ -98,107 +103,97 @@ const rules: FormRules = {
         ref="formRef"
         :rules="rules"
         @submit.prevent
+        class="fields"
       >
-        <div class="fields">
-          <div class="fields__group">
-            <NFormItem
-              label="Вода"
-              path="water"
-            >
-              <NInputNumber
-                v-model:value="formData.water"
-                :show-button="false"
-              />
-            </NFormItem>
+        <NFormItem
+          class="fields__item--grid-month"
+          label="Месяц на оплату"
+          path="month"
+        >
+          <NDatePicker
+            type="month"
+            month-format="LLLL"
+            format="LLLL yyyy"
+            :actions="['confirm']"
+            close-on-select
+            clearable
+            v-model:value="formData.month"
+          />
+        </NFormItem>
 
-            <NFormItem
-              label="Электричество"
-              path="electricity"
-            >
-              <NInputNumber
-                v-model:value="formData.electricity"
-                :show-button="false"
-              />
-            </NFormItem>
+        <NFormItem
+          class="fields__item--grid-start"
+          label="От"
+          path="date_start"
+        >
+          <NDatePicker
+            type="date"
+            close-on-select
+            clearable
+            v-model:value="formData.date_start"
+          />
+        </NFormItem>
 
-            <NFormItem
-              label="Тепло"
-              path="heat"
-            >
-              <NInputNumber
-                v-model:value="formData.heat"
-                :show-button="false"
-              />
-            </NFormItem>
-          </div>
+        <NFormItem
+          class="fields__item--grid-end"
+          label="До"
+          path="date_end"
+        >
+          <NDatePicker
+            type="date"
+            close-on-select
+            clearable
+            v-model:value="formData.date_end"
+          />
+        </NFormItem>
 
-          <div class="fields__group">
-            <NFormItem
-              label="Газ"
-              path="gas"
-            >
-              <NInputNumber
-                v-model:value="formData.gas"
-                :show-button="false"
-              />
-            </NFormItem>
-            <NFormItem
-              label="Капремонт"
-              path="renovation"
-            >
-              <NInputNumber
-                v-model:value="formData.renovation"
-                :show-button="false"
-              />
-            </NFormItem>
+        <NFormItem
+          class="fields__item--grid-agreement"
+          label="Арендатор"
+          path="renteeId"
+        >
+          <SelectRentees
+            v-model:value="formData.renteeId"
+            withActiveAgreements
+          />
+        </NFormItem>
+        <NFormItem
+          class="fields__item--grid-water"
+          label="Показания для воды"
+          path="counter_water"
+        >
+          <NInputNumber
+            v-model:value="formData.counter_water"
+            :show-button="false"
+          />
+        </NFormItem>
 
-            <NFormItem
-              label="ТКО"
-              path="tko"
-            >
-              <NInputNumber
-                v-model:value="formData.tko"
-                :show-button="false"
-              />
-            </NFormItem>
-          </div>
-
-          <div class="fields__group">
-            <NFormItem
-              label="УК (квартплата)"
-              path="managing_company"
-            >
-              <NInputNumber
-                v-model:value="formData.managing_company"
-                :show-button="false"
-              />
-            </NFormItem>
-
-            <NFormItem
-              label="Домофон"
-              path="domofon"
-            >
-              <NInputNumber
-                v-model:value="formData.domofon"
-                :show-button="false"
-              />
-            </NFormItem>
-          </div>
-        </div>
+        <NFormItem
+          class="fields__item--grid-elec"
+          label="Показания для электричества"
+          path="counter_electricity"
+        >
+          <NInputNumber
+            v-model:value="formData.counter_electricity"
+            :show-button="false"
+          />
+        </NFormItem>
 
         <!--  Комментарий  -->
         <NFormItem
+          class="fields__item--grid-comment"
           label="Комментарий"
           path="comment"
         >
           <NInput
             type="textarea"
+            rows="5"
             v-model:value="formData.comment"
           />
         </NFormItem>
       </NForm>
 
-      <NButtonGroup class="manage-tarif-modal__buttons">
+      <NButtonGroup class="manage-counter-modal__buttons">
         <NButton
           type="success"
           @click="
@@ -207,7 +202,7 @@ const rules: FormRules = {
               isOpened = isFormValidateError;
             }
           "
-          >{{ tarif ? 'Сохранить' : 'Создать' }}
+          >{{ counter ? 'Сохранить' : 'Создать' }}
         </NButton>
         <NButton
           type="error"
@@ -220,13 +215,14 @@ const rules: FormRules = {
 </template>
 
 <style scoped lang="scss">
-.manage-tarif-modal {
+.manage-counter-modal {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 500px;
-  max-width: 800px;
+  height: 100%;
+  width: auto;
+  max-width: 1000px;
   border-radius: 12px;
 
   &__buttons {
@@ -240,14 +236,49 @@ const rules: FormRules = {
 }
 
 .fields {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+  display: grid;
+  column-gap: 20px;
 
-  &__group {
-    display: flex;
-    flex-direction: row;
-    column-gap: 20px;
+  grid-template-areas:
+    'month start end'
+    'agreement tarif comment'
+    'water elec comment';
+
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  &__item {
+    &--grid-month {
+      grid-area: month;
+    }
+
+    &--grid-start {
+      grid-area: start;
+    }
+
+    &--grid-end {
+      grid-area: end;
+    }
+
+    &--grid-water {
+      grid-area: water;
+    }
+
+    &--grid-elec {
+      grid-area: elec;
+    }
+
+    &--grid-agreement {
+      grid-area: agreement;
+    }
+
+    &--grid-tarif {
+      grid-area: tarif;
+    }
+
+    &--grid-comment {
+      grid-area: comment;
+    }
   }
 }
 </style>

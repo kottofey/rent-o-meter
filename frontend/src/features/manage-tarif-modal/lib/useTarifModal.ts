@@ -14,7 +14,7 @@ export function useTarifModal({
   const isFormValidateError = ref(false);
 
   // Init form data
-  const formData = ref<Partial<ITarif>>({
+  const initState = {
     water: undefined,
     electricity: undefined,
     heat: undefined,
@@ -24,7 +24,9 @@ export function useTarifModal({
     managing_company: undefined,
     domofon: undefined,
     comment: '',
-  });
+  };
+
+  const formData = ref<Partial<ITarif>>({ ...initState });
 
   watch(
     () => unref(initialData),
@@ -43,17 +45,7 @@ export function useTarifModal({
         };
       } else {
         // Сброс при создании нового
-        formData.value = {
-          water: undefined,
-          electricity: undefined,
-          heat: undefined,
-          gas: undefined,
-          renovation: undefined,
-          tko: undefined,
-          managing_company: undefined,
-          domofon: undefined,
-          comment: '',
-        };
+        formData.value = { ...initState };
       }
     },
   );
@@ -86,6 +78,8 @@ export function useTarifModal({
               tarif: formData.value,
             });
           }
+
+          formData.value = { ...initState };
         }
       });
     } catch (errors) {

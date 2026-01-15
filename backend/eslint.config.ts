@@ -40,7 +40,7 @@ export default defineConfig([
         ecmaVersion: 'latest',
         projectService: true,
         tsconfigRootDir: __dirname,
-        project: './tsconfig.json',
+        // project: './tsconfig.json',
       },
     },
 
@@ -49,7 +49,7 @@ export default defineConfig([
         typescript: {
           alwaysTryTypes: true,
           extensions: ['.ts'],
-          project: './tsconfig.json',
+          // project: './tsconfig.json',
         },
         node: {
           extensions: ['.ts'],

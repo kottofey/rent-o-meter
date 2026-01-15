@@ -8,8 +8,10 @@ import {
   ForeignKey,
   HasMany,
   Scopes,
+  DefaultScope,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
+
 import { dayjs } from '@/helpers';
 import { Counter, Rentee } from '@/models';
 
@@ -99,6 +101,15 @@ export default class Agreement extends Model {
   @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
   rentee: Rentee;
 
-  @HasMany(() => Counter, { onDelete: 'CASCADE' })
-  counters: Counter[];
+  // -----------------------------------------------------------------------------
+  // Virtual fields
+  // -----------------------------------------------------------------------------
+
+  // @Column(DataTypes.VIRTUAL)
+  // get renteeFullName() {
+  //   return `${this.rentee}`;
+  // }
+  // set renteeFullName(value) {
+  //   throw new Error('Do not try to set the `renteeFullName` value!');
+  // }
 }

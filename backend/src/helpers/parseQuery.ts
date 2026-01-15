@@ -1,7 +1,8 @@
 import QueryString from 'qs';
-import { Agreement, Counter, Rentee, Tarif } from '@/models';
 import { Includeable, ScopeOptions } from 'sequelize';
 import chalk from 'chalk';
+
+import { Agreement, Counter, Rentee, Tarif } from '@/models';
 
 export default function parseQuery(query: QueryString.ParsedQs) {
   const scopes: ScopeOptions | ScopeOptions[] = [];
@@ -79,9 +80,9 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       scopes.push({ method: ['withActiveAgreementsOnly'] });
     }
 
-    if (Object(query).scopes?.includes('withRentees')) {
-      scopes.push({ method: ['withRentees'] });
-    }
+    // if (Object(query).scopes?.includes('withRentees')) {
+    //   scopes.push({ method: ['withRentees'] });
+    // }
   } else {
     // -----------------------------------------------------------------------------
     // Скоупы с параметрами

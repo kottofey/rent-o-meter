@@ -17,15 +17,17 @@ export function useAgreementModal({
 }) {
   const isFormValidateError = ref(false);
 
-  // Init form data
-  const formData = ref<Partial<IAgreement>>({
+  const initState = {
     name: '',
-    status: true,
-    comment: '',
-    renteeId: undefined,
     date_start: dayjs().valueOf(),
     date_end: dayjs().add(6, 'months').valueOf(),
-  });
+    renteeId: undefined,
+    status: true,
+    comment: '',
+  };
+
+  // Init form data
+  const formData = ref<Partial<IAgreement>>({ ...initState });
 
   watch(
     () => unref(initialData),
@@ -41,14 +43,7 @@ export function useAgreementModal({
         };
       } else {
         // Сброс при создании нового
-        formData.value = {
-          name: '',
-          date_start: dayjs().valueOf(),
-          date_end: dayjs().add(6, 'months').valueOf(),
-          renteeId: undefined,
-          status: true,
-          comment: '',
-        };
+        formData.value = { ...initState };
       }
     },
   );
@@ -81,6 +76,8 @@ export function useAgreementModal({
               agreement: formData.value,
             });
           }
+
+          formData.value = { ...initState };
         }
       });
     } catch (errors) {

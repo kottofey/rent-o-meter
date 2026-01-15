@@ -16,7 +16,7 @@ export interface ITarif {
 }
 
 export type ITarifScopes = Array<''>;
-export type ITarifIncludes = Array<'PayMonth'>;
+export type ITarifIncludes = Array<'Counter'>;
 
 export async function getAllTarifs({
   scopes,

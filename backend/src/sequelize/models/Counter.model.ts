@@ -7,25 +7,25 @@ import {
   Default,
   ForeignKey,
   Scopes,
-  DefaultScope,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
+
 import { dayjs } from '@/helpers';
 import { Agreement, Rentee, Tarif } from '@/models';
 
 @Scopes(() => ({
-  withRentees() {
-    return {
-      include: {
-        model: Agreement,
-        include: [
-          {
-            model: Rentee,
-          },
-        ],
-      },
-    };
-  },
+  // withRentees() {
+  //   return {
+  //     include: {
+  //       model: Agreement,
+  //       include: [
+  //         {
+  //           model: Rentee,
+  //         },
+  //       ],
+  //     },
+  //   };
+  // },
   isDebt() {
     return {
       where: {
@@ -45,15 +45,15 @@ import { Agreement, Rentee, Tarif } from '@/models';
       },
     };
   },
-  byAgreement({ agreementId }: { agreementId: number }) {
-    return {
-      where: {
-        agreementId: {
-          [Op.eq]: agreementId,
-        },
-      },
-    };
-  },
+  // byAgreement({ agreementId }: { agreementId: number }) {
+  //   return {
+  //     where: {
+  //       agreementId: {
+  //         [Op.eq]: agreementId,
+  //       },
+  //     },
+  //   };
+  // },
 }))
 @Table({ paranoid: true })
 export default class Counters extends Model {
@@ -115,18 +115,10 @@ export default class Counters extends Model {
   // Relations
   // -----------------------------------------------------------------------------
   @NotNull
-  @ForeignKey(() => Tarif)
+  @ForeignKey(() => Rentee)
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare tarifId: number;
+  declare renteeId: number;
 
-  @BelongsTo(() => Tarif, { onDelete: 'CASCADE' })
-  tarif: Tarif;
-
-  @NotNull
-  @ForeignKey(() => Agreement)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare agreementId: number;
-
-  @BelongsTo(() => Agreement, { onDelete: 'CASCADE' })
-  agreement: Agreement;
+  @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
+  rentee: Rentee;
 }
