@@ -79,8 +79,10 @@ export default class Agreement extends Model {
 
   @NotNull
   @Column({ type: DataTypes.DATEONLY, allowNull: false })
-  set date_end(date: number) {
-    this.setDataValue('date_end', dayjs(date).toDate());
+  set date_end(date: number | null) {
+    if (date) {
+      this.setDataValue('date_end', dayjs(date).toDate());
+    }
   }
   get date_end() {
     const raw: string = this.getDataValue('date_end') as string;

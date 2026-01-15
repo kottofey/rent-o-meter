@@ -66,8 +66,10 @@ export default class Rentee extends Model {
   }
 
   @Column({ type: DataTypes.DATEONLY })
-  set date_end(date: number) {
-    this.setDataValue('date_end', dayjs(date).toDate());
+  set date_end(date: number | null) {
+    if (date) {
+      this.setDataValue('date_end', dayjs(date).toDate());
+    }
   }
   get date_end() {
     const raw: string = this.getDataValue('date_end') as string;
