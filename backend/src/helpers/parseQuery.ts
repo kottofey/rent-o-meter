@@ -1,5 +1,5 @@
 import QueryString from 'qs';
-import { Agreement, PayMonth, Rentee, Tarif } from '@/models';
+import { Agreement, Counter, Rentee, Tarif } from '@/models';
 import { Includeable, ScopeOptions } from 'sequelize';
 import chalk from 'chalk';
 
@@ -20,9 +20,9 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     });
   }
 
-  if (Object(query).includes?.includes('PayMonth')) {
+  if (Object(query).includes?.includes('Counter')) {
     includes.push({
-      model: PayMonth,
+      model: Counter,
       attributes: {
         exclude: ['deletedAt', 'createdAt', 'updatedAt'],
       },
@@ -73,6 +73,14 @@ export default function parseQuery(query: QueryString.ParsedQs) {
 
     if (Object(query).scopes?.includes('isExpiredAndActive')) {
       scopes.push({ method: ['isExpiredAndActive'] });
+    }
+
+    if (Object(query).scopes?.includes('withActiveAgreementsOnly')) {
+      scopes.push({ method: ['withActiveAgreementsOnly'] });
+    }
+
+    if (Object(query).scopes?.includes('withRentees')) {
+      scopes.push({ method: ['withRentees'] });
     }
   } else {
     // -----------------------------------------------------------------------------

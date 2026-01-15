@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 import { parseQuery } from '@/helpers';
 
-const model = sequelize.models.PayMonth;
+const model = sequelize.models.Counters;
 
 async function getAll(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);

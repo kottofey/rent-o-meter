@@ -1,6 +1,6 @@
 import { Model, Table, Column, NotNull, HasMany } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
-import { PayMonth } from '@/models';
+import { Counter } from '@/models';
 
 @Table({ paranoid: true })
 export default class Tarif extends Model {
@@ -43,6 +43,6 @@ export default class Tarif extends Model {
   // Relations
   // -----------------------------------------------------------------------------
 
-  @HasMany(() => PayMonth, { onDelete: 'CASCADE' })
-  payMonths: PayMonth[];
+  @HasMany(() => Counter, { onDelete: 'CASCADE' })
+  counters: Counter[];
 }

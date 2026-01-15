@@ -1,0 +1,23 @@
+meta {
+  name: Get All Counters
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{BASE_URL}}/counters
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~scopes[withPeriod][start]: 2025-11-01
+  ~scopes[withPeriod][end]: 2025-12-01
+  ~scopes[byAgreement]: 2
+  ~scopes[]: isDebt
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

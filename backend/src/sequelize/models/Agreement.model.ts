@@ -11,7 +11,7 @@ import {
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 import { dayjs } from '@/helpers';
-import { PayMonth, Rentee } from '@/models';
+import { Counter, Rentee } from '@/models';
 
 @Scopes(() => ({
   isActive() {
@@ -99,6 +99,6 @@ export default class Agreement extends Model {
   @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
   rentee: Rentee;
 
-  @HasMany(() => PayMonth, { onDelete: 'CASCADE' })
-  pay_months: PayMonth[];
+  @HasMany(() => Counter, { onDelete: 'CASCADE' })
+  counters: Counter[];
 }

@@ -7,12 +7,25 @@ import {
   Default,
   ForeignKey,
   Scopes,
+  DefaultScope,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 import { dayjs } from '@/helpers';
-import { Agreement, Tarif } from '@/models';
+import { Agreement, Rentee, Tarif } from '@/models';
 
 @Scopes(() => ({
+  withRentees() {
+    return {
+      include: {
+        model: Agreement,
+        include: [
+          {
+            model: Rentee,
+          },
+        ],
+      },
+    };
+  },
   isDebt() {
     return {
       where: {
@@ -43,7 +56,7 @@ import { Agreement, Tarif } from '@/models';
   },
 }))
 @Table({ paranoid: true })
-export default class PayMonth extends Model {
+export default class Counters extends Model {
   @NotNull
   @Column({ type: DataTypes.DATEONLY, allowNull: false })
   set month(date: number) {

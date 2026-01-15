@@ -9,7 +9,7 @@ import logger from 'morgan';
 import cors from 'cors';
 import qs from 'qs';
 
-import { agreementsRoute, paymonthsRoute, renteeRoute, tariffsRoute } from '@/routes';
+import { agreementsRoute, countersRoute, renteeRoute, tariffsRoute } from '@/routes';
 
 // import jwt from 'jsonwebtoken';
 // import dotenv from 'dotenv';
@@ -44,7 +44,7 @@ interface IRouteController {
 const routes: { [routeName: string]: IRouteController } = {
   rentees: renteeRoute,
   agreements: agreementsRoute,
-  paymonths: paymonthsRoute,
+  counters: countersRoute,
   tarifs: tariffsRoute,
 };
 
