@@ -9,7 +9,7 @@ import logger from 'morgan';
 import cors from 'cors';
 import qs from 'qs';
 
-import { agreementsRoute, countersRoute, renteeRoute, tariffsRoute } from '@/routes';
+import { agreementsRoute, countersRoute, renteeRoute, tariffsRoute, billsRoute } from '@/routes';
 
 // import jwt from 'jsonwebtoken';
 // import dotenv from 'dotenv';
@@ -46,6 +46,7 @@ const routes: { [routeName: string]: IRouteController } = {
   agreements: agreementsRoute,
   counters: countersRoute,
   tarifs: tariffsRoute,
+  bills: billsRoute,
 };
 
 // We create a wrapper to workaround async errors not being transmitted correctly.

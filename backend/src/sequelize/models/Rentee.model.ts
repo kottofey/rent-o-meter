@@ -10,8 +10,7 @@ import {
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import Agreement from './Agreement.model.ts';
-
+import { Bill, Agreement } from '@/models';
 import { dayjs } from '@/helpers';
 
 @DefaultScope(() => ({
@@ -87,6 +86,9 @@ export default class Rentee extends Model {
   // -----------------------------------------------------------------------------
   @HasMany(() => Agreement, { onDelete: 'CASCADE' })
   agreements: Agreement[];
+
+  @HasMany(() => Bill, { onDelete: 'CASCADE' })
+  bills: Bill[];
 
   // -----------------------------------------------------------------------------
   // Virtuals
