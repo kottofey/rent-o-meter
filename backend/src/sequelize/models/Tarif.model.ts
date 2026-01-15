@@ -1,9 +1,5 @@
-import { Model, Table, Column, NotNull, HasMany } from 'sequelize-typescript';
+import { Model, Table, Column, NotNull } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
-
-import { Counter } from '@/models';
-
-// import Agreement from 'src/sequelize/models/Agreement.model.ts';
 
 @Table({ paranoid: true })
 export default class Tarif extends Model {

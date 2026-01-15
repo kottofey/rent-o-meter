@@ -98,6 +98,12 @@ const rules: FormRules = {
         ref="formRef"
         :rules="rules"
         @submit.prevent
+        @keyup.prevent.enter="
+          async () => {
+            await submit();
+            isOpened = isFormValidateError;
+          }
+        "
       >
         <div class="fields">
           <div class="fields__group">

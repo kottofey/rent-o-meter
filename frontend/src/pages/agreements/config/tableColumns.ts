@@ -2,9 +2,9 @@ import { type DataTableColumns, NTag } from 'naive-ui';
 import { h } from 'vue';
 
 import { checkExpiry } from '@/shared/lib/checkExpiry';
-import { RenteeInfoPopover } from '@/widgets/rentee-info-popover';
 import { type IAgreement } from '@/entities/agreement';
 import { parseDate } from '@/shared/lib/parseDate';
+import { RenteeInfoPopover } from '@/shared/ui';
 
 const statusColors = {
   active: {
@@ -32,7 +32,6 @@ export const columns: DataTableColumns<IAgreement> = [
     title: 'Арендатор ФИО',
     key: 'rentee.id',
     defaultSortOrder: 'ascend',
-
     align: 'center',
     sorter: {
       compare: (row1: IAgreement, row2: IAgreement) =>
@@ -46,8 +45,7 @@ export const columns: DataTableColumns<IAgreement> = [
           rentee: row.rentee,
         },
         {
-          default: () =>
-            `${row.rentee.surname} ${row.rentee.firstname} ${row.rentee.patronymic}`,
+          default: () => row.rentee.fullName,
         },
       );
     },

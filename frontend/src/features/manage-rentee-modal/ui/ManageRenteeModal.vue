@@ -40,6 +40,7 @@ const {
   checkActiveAgreements,
   isPending,
   isFormValidateError,
+  parsePhone,
 } = useRenteeModal({
   initialData: renteeRef,
   formRef: formRef,
@@ -93,6 +94,12 @@ const rules: FormRules = {
         ref="formRef"
         :rules="rules"
         @submit.prevent
+        @keyup.prevent.enter="
+          async () => {
+            await submit();
+            isOpened = isFormValidateError;
+          }
+        "
       >
         <!--  ФИО  -->
         <NFormItem

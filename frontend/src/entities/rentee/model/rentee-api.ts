@@ -14,6 +14,9 @@ export interface IRentee {
   comment?: string;
 
   agreements: IAgreement[];
+
+  // Virtuals
+  fullName: string;
 }
 
 // TODO дописать скоупы если будут

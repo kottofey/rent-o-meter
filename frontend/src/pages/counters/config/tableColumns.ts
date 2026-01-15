@@ -3,6 +3,7 @@ import { h } from 'vue';
 
 import { type ICounter } from '@/entities/counter';
 import { parseDate } from '@/shared/lib/parseDate';
+import { RenteeInfoPopover } from '@/shared/ui';
 
 const statusColors = {
   active: {
@@ -26,10 +27,22 @@ export const columns: DataTableColumns<ICounter> = [
     key: 'renteeId',
     align: 'center',
 
+    // render: (row: ICounter) => {
+    //   if (row.rentee) {
+    //     return `${row.rentee.surname} ${row.rentee.firstname} ${row.rentee.patronymic}`;
+    //   }
+    // },
+
     render: (row: ICounter) => {
-      if (row.rentee) {
-        return `${row.rentee.surname} ${row.rentee.firstname} ${row.rentee.patronymic}`;
-      }
+      return h(
+        RenteeInfoPopover,
+        {
+          rentee: row.rentee,
+        },
+        {
+          default: () => row.rentee?.fullName,
+        },
+      );
     },
   },
   {

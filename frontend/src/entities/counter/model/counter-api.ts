@@ -15,7 +15,7 @@ export interface ICounter {
 
   renteeId: number;
 
-  rentee?: IRentee;
+  rentee: IRentee;
 }
 
 export type ICounterIncludes = Array<'Rentee'>;

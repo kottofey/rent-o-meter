@@ -85,4 +85,15 @@ export default class Rentee extends Model {
   // -----------------------------------------------------------------------------
   @HasMany(() => Agreement, { onDelete: 'CASCADE' })
   agreements: Agreement[];
+
+  // -----------------------------------------------------------------------------
+  // Virtuals
+  // -----------------------------------------------------------------------------
+  @Column({ type: DataTypes.VIRTUAL })
+  get fullName() {
+    return `${this.surname} ${this.firstname} ${this.patronymic}`;
+  }
+  set fullName(value) {
+    throw new Error('Do not try to set the `renteeFullName` value!');
+  }
 }

@@ -4,6 +4,7 @@ import {
   NButton,
   NButtonGroup,
   NCard,
+  NCheckbox,
   NDatePicker,
   NForm,
   NFormItem,
@@ -157,6 +158,18 @@ const rules: FormRules = {
             withActiveAgreements
           />
         </NFormItem>
+
+        <NFormItem
+          class="fields__item--grid-status"
+          label="Статус оплаты"
+          path="status"
+        >
+          <NCheckbox
+            v-model:checked="formData.status"
+            :label="formData.status ? 'Оплачено' : 'Не оплачено'"
+          />
+        </NFormItem>
+
         <NFormItem
           class="fields__item--grid-water"
           label="Показания для воды"

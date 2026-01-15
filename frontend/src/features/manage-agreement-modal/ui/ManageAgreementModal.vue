@@ -87,6 +87,12 @@ const rules: FormRules = {
         ref="formRef"
         :rules="rules"
         @submit.prevent
+        @keyup.prevent.enter="
+          async () => {
+            await submit();
+            isOpened = isFormValidateError;
+          }
+        "
       >
         <!--  Название  -->
         <NFormItem

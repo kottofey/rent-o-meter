@@ -87,6 +87,7 @@ export default class Counters extends Model {
     return dayjs(raw).toDate().valueOf();
   }
 
+  //TODO Выпилить статус из счетчиков и сделать для счетов
   @NotNull
   @Default(true)
   @Column({ type: DataTypes.BOOLEAN, allowNull: false })
