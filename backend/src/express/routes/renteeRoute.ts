@@ -11,14 +11,18 @@ const model = sequelize.models.Rentee;
 async function getAll(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
 
-  const found =
-    (await model.scope(scopes).findAll({
-      include: includes,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
-  res.status(200).send(found).end();
+  try {
+    const found =
+      (await model.scope(scopes).findAll({
+        include: includes,
+        attributes: {
+          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+        },
+      })) ?? {};
+    res.status(200).send(found).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function getById(req: Request, res: Response) {
@@ -31,19 +35,22 @@ async function getById(req: Request, res: Response) {
     });
     return;
   }
+  try {
+    const found =
+      (await model.scope(scopes).findOne({
+        where: {
+          id,
+        },
+        include: includes,
+        attributes: {
+          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+        },
+      })) ?? {};
 
-  const found =
-    (await model.scope(scopes).findOne({
-      where: {
-        id,
-      },
-      include: includes,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
-
-  res.status(200).send(found).end();
+    res.status(200).send(found).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function create(req: Request, res: Response) {
@@ -80,43 +87,54 @@ async function remove(req: Request, res: Response) {
     res.status(404).send({ message: 'Record not found' }).end();
     return;
   }
+  try {
+    await model.destroy({
+      where: {
+        id,
+      },
+    });
 
-  await model.destroy({
-    where: {
-      id,
-    },
-  });
-
-  res.status(200).send({ message: 'Deleted' }).end();
+    res.status(200).send({ message: 'Deleted' }).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
   const { body }: { body: Partial<Rentee> } = req;
 
-  const [rows] = await model.update(body, {
-    where: {
-      id,
-    },
-    paranoid: false,
-  });
+  try {
+    const [rows] = await model.update(body, {
+      where: {
+        id,
+      },
+      paranoid: false,
+    });
 
-  if (rows === 0) {
-    res.status(404).send({}).end();
-  } else {
-    res
-      .status(200)
-      .send({ ...req.body })
-      .end();
+    if (rows === 0) {
+      res.status(404).send({}).end();
+    } else {
+      res
+        .status(200)
+        .send({ ...req.body })
+        .end();
+    }
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
   }
 }
 
 async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
-  await model.restore({ where: { id } });
+  try {
+    await model.restore({ where: { id } });
 
-  res.status(200).send({ message: 'Restored' }).end();
+    res.status(200).send({ message: 'Restored' }).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 export default { getById, getAll, create, update, remove, restore };

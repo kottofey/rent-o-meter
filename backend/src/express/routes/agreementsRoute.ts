@@ -10,15 +10,18 @@ const model = sequelize.models.Agreement;
 
 async function getAll(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
-
-  const found =
-    (await model.scope(scopes).findAll({
-      include: includes,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
-  res.status(200).send(found).end();
+  try {
+    const found =
+      (await model.scope(scopes).findAll({
+        include: includes,
+        attributes: {
+          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+        },
+      })) ?? {};
+    res.status(200).send(found).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function getById(req: Request, res: Response) {
@@ -32,18 +35,25 @@ async function getById(req: Request, res: Response) {
     return;
   }
 
-  const found =
-    (await model.scope(scopes).findOne({
-      where: {
-        id,
-      },
-      include: includes,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
+  try {
+    const found =
+      (await model.scope(scopes).findOne({
+        where: {
+          id,
+        },
+        include: includes,
+        attributes: {
+          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+        },
+      })) ?? {};
 
-  res.status(200).send(found).end();
+    res
+      .status(200)
+      .send({ ...found })
+      .end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function create(req: Request, res: Response) {
@@ -60,6 +70,8 @@ async function create(req: Request, res: Response) {
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
       res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
+    } else {
+      res.status(500).send({ error: e }).end();
     }
   }
 }
@@ -74,28 +86,35 @@ async function remove(req: Request, res: Response) {
     res.status(404).send({ message: 'Record not found' }).end();
     return;
   }
+  try {
+    await model.destroy({
+      where: {
+        id,
+      },
+    });
 
-  await model.destroy({
-    where: {
-      id,
-    },
-  });
-
-  res.status(200).send({ message: 'Deleted' }).end();
+    res.status(200).send({ message: 'Deleted' }).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
   const { body }: { body: Partial<unknown> } = req;
 
-  const [rows] = await model.update(body, {
-    where: {
-      id,
-    },
-    paranoid: false,
-  });
+  try {
+    const [rows] = await model.update(body, {
+      where: {
+        id,
+      },
+      paranoid: false,
+    });
 
-  res.status(200).send({ rowsAffected: rows }).end();
+    res.status(200).send({ rowsAffected: rows }).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 async function restore(req: Request, res: Response) {
@@ -107,14 +126,17 @@ async function restore(req: Request, res: Response) {
   //   res.status(404).send({ message: 'This client either not deleted or does not exist' }).end();
   //   return;
   // }
+  try {
+    await model.restore({
+      where: {
+        id,
+      },
+    });
 
-  await model.restore({
-    where: {
-      id,
-    },
-  });
-
-  res.status(200).send({ message: 'Restored' }).end();
+    res.status(200).send({ message: 'Restored' }).end();
+  } catch (e) {
+    res.status(500).send({ error: e }).end();
+  }
 }
 
 export default { getById, getAll, create, update, remove, restore };

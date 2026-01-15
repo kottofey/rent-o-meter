@@ -10,14 +10,18 @@ const model = sequelize.models.Counters;
 async function getAll(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
 
-  const found =
-    (await model.scope(scopes).findAll({
-      include: includes,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
-  res.status(200).send(found).end();
+  try {
+    const found =
+      (await model.scope(scopes).findAll({
+        include: includes,
+        attributes: {
+          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+        },
+      })) ?? {};
+    res.status(200).send(found).end();
+  } catch (e) {
+    res.status(500).send({ e }).end();
+  }
 }
 
 async function getById(req: Request, res: Response) {
@@ -31,18 +35,22 @@ async function getById(req: Request, res: Response) {
     return;
   }
 
-  const found =
-    (await model.scope(scopes).findOne({
-      where: {
-        id,
-      },
-      include: includes,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    })) ?? {};
+  try {
+    const found =
+      (await model.scope(scopes).findOne({
+        where: {
+          id,
+        },
+        include: includes,
+        attributes: {
+          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+        },
+      })) ?? {};
 
-  res.status(200).send(found).end();
+    res.status(200).send(found).end();
+  } catch (e) {
+    res.status(500).send({ e }).end();
+  }
 }
 
 async function create(req: Request, res: Response) {
@@ -77,35 +85,47 @@ async function remove(req: Request, res: Response) {
     return;
   }
 
-  await model.destroy({
-    where: {
-      id,
-    },
-  });
+  try {
+    await model.destroy({
+      where: {
+        id,
+      },
+    });
 
-  res.status(200).send({ message: 'Deleted' }).end();
+    res.status(200).send({ message: 'Deleted' }).end();
+  } catch (e) {
+    res.status(500).send({ e }).end();
+  }
 }
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
   const { body }: { body: Partial<unknown> } = req;
 
-  const [rows] = await model.update(body, {
-    where: {
-      id,
-    },
-    paranoid: false,
-  });
+  try {
+    const [rows] = await model.update(body, {
+      where: {
+        id,
+      },
+      paranoid: false,
+    });
 
-  res.status(200).send({ rowsAffected: rows }).end();
+    res.status(200).send({ rowsAffected: rows }).end();
+  } catch (e) {
+    res.status(500).send({ e }).end();
+  }
 }
 
 async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
-  await model.restore({ where: { id } });
+  try {
+    await model.restore({ where: { id } });
 
-  res.status(200).send({ message: 'Restored' }).end();
+    res.status(200).send({ message: 'Restored' }).end();
+  } catch (e) {
+    res.status(500).send({ e }).end();
+  }
 }
 
 export default { getById, getAll, create, update, remove, restore };
