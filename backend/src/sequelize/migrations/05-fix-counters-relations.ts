@@ -108,21 +108,4 @@ export const down: Migration = async ({ context: sequelize }: { context: Sequeli
     await transaction.rollback();
     throw e;
   }
-
-  // await sequelize.getQueryInterface().addColumn('Counters', 'tarifId', 'INTEGER');
-  // await sequelize.getQueryInterface().addColumn('Counters', 'agreementId', 'INTEGER');
-  //
-  // await sequelize
-  //   .getQueryInterface()
-  //   .addIndex('Rentees', { fields: ['id'], type: 'UNIQUE', name: '' });
-  // await sequelize.query(
-  //   'ALTER TABLE `rent-o-meter`.Rentees ADD CONSTRAINT Counters_ibfk_1 FOREIGN KEY (id) REFERENCES `rent-o-meter`.Rentees(id) ON DELETE RESTRICT ON UPDATE CASCADE;',
-  // );
-  // await sequelize.query(
-  //   'ALTER TABLE `rent-o-meter`.Tarifs ADD CONSTRAINT Counters_ibfk_2 FOREIGN KEY (id) REFERENCES `rent-o-meter`.Counters(id) ON DELETE RESTRICT ON UPDATE CASCADE;',
-  // );
-  //
-  // await sequelize.getQueryInterface().removeConstraint('Counters', 'Counters_Tarifs_FK');
-  //
-  // await sequelize.getQueryInterface().removeColumn('Counters', 'renteeId');
 };

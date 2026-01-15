@@ -120,6 +120,14 @@ export default class Counters extends Model {
   @Column({ type: DataTypes.INTEGER, allowNull: false })
   declare renteeId: number;
 
-  @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
+  @BelongsTo(() => Rentee, { onDelete: 'Restrict' })
   rentee: Rentee;
+
+  @NotNull
+  @ForeignKey(() => Tarif)
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare tarifId: number;
+
+  @BelongsTo(() => Tarif, { onDelete: 'Restrict' })
+  tarif: Tarif;
 }

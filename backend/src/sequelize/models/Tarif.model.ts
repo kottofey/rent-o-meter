@@ -1,5 +1,7 @@
-import { Model, Table, Column, NotNull } from 'sequelize-typescript';
+import { Model, Table, Column, NotNull, HasMany } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
+
+import { Counter } from '@/models';
 
 @Table({ paranoid: true })
 export default class Tarif extends Model {
@@ -41,4 +43,6 @@ export default class Tarif extends Model {
   // -----------------------------------------------------------------------------
   // Relations
   // -----------------------------------------------------------------------------
+  @HasMany(() => Counter, { onDelete: 'CASCADE' })
+  counters: Counter[];
 }
