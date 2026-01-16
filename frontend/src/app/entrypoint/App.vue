@@ -10,7 +10,7 @@ import {
 } from 'naive-ui';
 import { useLocalStorage } from '@vueuse/core';
 
-const settings = useLocalStorage('settings', { theme: 'light' });
+const settings = useLocalStorage('rentometer-settings', { theme: 'light' });
 </script>
 
 <template>

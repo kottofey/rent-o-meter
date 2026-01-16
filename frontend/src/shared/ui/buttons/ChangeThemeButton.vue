@@ -14,7 +14,7 @@ export interface ISettings {
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
-const settings = useLocalStorage<ISettings>('settings', {
+const settings = useLocalStorage<ISettings>('rentometer-settings', {
   theme: 'light',
 });
 
