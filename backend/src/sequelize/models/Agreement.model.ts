@@ -1,22 +1,20 @@
 import {
   BelongsTo,
-  Model,
-  Table,
   Column,
-  NotNull,
   Default,
   ForeignKey,
-  HasMany,
+  Model,
+  NotNull,
   Scopes,
-  DefaultScope,
+  Table,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
 import { dayjs } from '@/helpers';
-import { Counter, Rentee } from '@/models';
+import { Rentee } from '@/models';
 
 @Scopes(() => ({
-  isActive() {
+  isStatusActive() {
     return {
       where: {
         status: {
@@ -25,7 +23,7 @@ import { Counter, Rentee } from '@/models';
       },
     };
   },
-  isActual() {
+  isNotExpired() {
     return {
       where: {
         date_end: {
@@ -106,12 +104,4 @@ export default class Agreement extends Model {
   // -----------------------------------------------------------------------------
   // Virtual fields
   // -----------------------------------------------------------------------------
-
-  // @Column(DataTypes.VIRTUAL)
-  // get renteeFullName() {
-  //   return `${this.rentee}`;
-  // }
-  // set renteeFullName(value) {
-  //   throw new Error('Do not try to set the `renteeFullName` value!');
-  // }
 }

@@ -14,34 +14,23 @@ export default function parseQuery(query: QueryString.ParsedQs) {
   // -----------------------------------------------------------------------------
 
   const SCOPE_HANDLERS: Record<string, ScopeHandler> = {
-    isDebt: () => ({ method: ['isDebt'] }),
-    withRentees: () => ({ method: ['withRentees'] }),
-    isActual: () => ({ method: ['isActual'] }),
-    isActive: () => ({ method: ['isActive'] }),
+    isBillsDebt: () => ({ method: ['isBillsDebt'] }),
+    isNotExpired: () => ({ method: ['isNotExpired'] }),
+    isStatusActive: () => ({ method: ['isStatusActive'] }),
     isExpired: () => ({ method: ['isExpired'] }),
     isExpiredAndActive: () => ({ method: ['isExpiredAndActive'] }),
-    withActiveAgreementOnly: () => ({ method: ['withActiveAgreementOnly'] }),
+    withActiveAgreementsOnly: () => ({ method: ['withActiveAgreementsOnly'] }),
 
-    withPeriod: value => {
-      if (value && typeof value === 'object') {
-        const period = value as { start: number; end: number };
-        return { method: ['withPeriod', { start: period.start, end: period.end }] };
+    withPeriod: rawDates => {
+      if (rawDates && typeof rawDates === 'object') {
+        const dates = rawDates as { start: number; end: number };
+        return { method: ['withPeriod', { start: dates.start, end: dates.end }] };
       }
     },
 
-    byAgreement: value => {
-      const agreementId = value as number;
-      return { method: ['byAgreement', { agreementId }] };
-    },
-
-    byRentee: value => {
-      const agreementId = value as number;
+    byRentee: rawAgreementId => {
+      const agreementId = rawAgreementId as number;
       return { method: ['byRentee', { agreementId }] };
-    },
-
-    isDebtByAgreement: value => {
-      const agreementId = value as number;
-      return { method: ['isDebtByAgreement', { agreementId }] };
     },
   } as const;
 
@@ -49,7 +38,11 @@ export default function parseQuery(query: QueryString.ParsedQs) {
   // Mapping Includes
   // -----------------------------------------------------------------------------
   const INCLUDE_HANDLERS = {
-    Rentee: () => ({
+    Agreement: () => ({
+      model: Agreement,
+      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+    }),
+    Bill: () => ({
       model: Rentee,
       attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
     }),
@@ -57,8 +50,8 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       model: Counter,
       attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
     }),
-    Agreement: () => ({
-      model: Agreement,
+    Rentee: () => ({
+      model: Rentee,
       attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
     }),
     Tarif: () => ({

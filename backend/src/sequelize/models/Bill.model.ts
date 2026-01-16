@@ -1,14 +1,25 @@
-import { Model, Table, Column, NotNull, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { DataTypes } from 'sequelize';
+import { Model, Table, Column, NotNull, ForeignKey, BelongsTo, Scopes } from 'sequelize-typescript';
+import { DataTypes, Op } from 'sequelize';
 
 import { Rentee } from '@/models';
 import { dayjs } from '@/helpers';
 
+@Scopes(() => ({
+  isBillsDebt() {
+    return {
+      where: {
+        status: {
+          [Op.eq]: false,
+        },
+      },
+    };
+  },
+}))
 @Table({ paranoid: true })
 export default class Bill extends Model {
   @NotNull
   @Column({ type: DataTypes.BOOLEAN, allowNull: false })
-  declare status: string;
+  declare status: boolean;
 
   @NotNull
   @Column({ type: DataTypes.DATEONLY, allowNull: false })
@@ -32,38 +43,38 @@ export default class Bill extends Model {
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare water: string;
+  declare water: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare electricity: string;
+  declare electricity: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare heat: string;
+  declare heat: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare gas: string;
+  declare gas: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare renovation: string;
+  declare renovation: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare tko: string;
+  declare tko: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare managing_company: string;
+  declare managing_company: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare domofon: string;
+  declare domofon: number;
 
   @Column(DataTypes.TEXT)
-  declare comment: string;
+  declare comment: number;
 
   // -----------------------------------------------------------------------------
   // Relations

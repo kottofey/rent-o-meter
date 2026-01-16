@@ -11,30 +11,9 @@ import {
 import { DataTypes, Op } from 'sequelize';
 
 import { dayjs } from '@/helpers';
-import { Agreement, Rentee, Tarif } from '@/models';
+import { Rentee, Tarif } from '@/models';
 
 @Scopes(() => ({
-  // withRentees() {
-  //   return {
-  //     include: {
-  //       model: Agreement,
-  //       include: [
-  //         {
-  //           model: Rentee,
-  //         },
-  //       ],
-  //     },
-  //   };
-  // },
-  isDebt() {
-    return {
-      where: {
-        status: {
-          [Op.eq]: false,
-        },
-      },
-    };
-  },
   withPeriod({ start, end }: { start: number; end: number }) {
     return {
       where: {
@@ -45,15 +24,11 @@ import { Agreement, Rentee, Tarif } from '@/models';
       },
     };
   },
-  // byAgreement({ agreementId }: { agreementId: number }) {
-  //   return {
-  //     where: {
-  //       agreementId: {
-  //         [Op.eq]: agreementId,
-  //       },
-  //     },
-  //   };
-  // },
+  byRentee({ renteeId }: { renteeId: number }) {
+    return {
+      where: { renteeId },
+    };
+  },
 }))
 @Table({ paranoid: true })
 export default class Counters extends Model {
