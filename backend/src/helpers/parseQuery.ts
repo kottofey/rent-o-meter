@@ -1,125 +1,105 @@
 import QueryString from 'qs';
 import { Includeable, ScopeOptions } from 'sequelize';
-import chalk from 'chalk';
 
 import { Agreement, Counter, Rentee, Tarif } from '@/models';
 
 export default function parseQuery(query: QueryString.ParsedQs) {
   const scopes: ScopeOptions | ScopeOptions[] = [];
-  const includes: Includeable | Includeable[] = [];
+  const includes: Includeable[] = [];
+
+  type ScopeHandler = (value: unknown) => ScopeOptions | ScopeOptions[] | undefined;
 
   // -----------------------------------------------------------------------------
-  // Includes
+  // Mapping Scopes
   // -----------------------------------------------------------------------------
 
-  if (Object(query).includes?.includes('Rentee')) {
-    includes.push({
+  const SCOPE_HANDLERS: Record<string, ScopeHandler> = {
+    isDebt: () => ({ method: ['isDebt'] }),
+    withRentees: () => ({ method: ['withRentees'] }),
+    isActual: () => ({ method: ['isActual'] }),
+    isActive: () => ({ method: ['isActive'] }),
+    isExpired: () => ({ method: ['isExpired'] }),
+    isExpiredAndActive: () => ({ method: ['isExpiredAndActive'] }),
+    withActiveAgreementOnly: () => ({ method: ['withActiveAgreementOnly'] }),
+
+    withPeriod: value => {
+      if (value && typeof value === 'object') {
+        const period = value as { start: number; end: number };
+        return { method: ['withPeriod', { start: period.start, end: period.end }] };
+      }
+    },
+
+    byAgreement: value => {
+      const agreementId = value as number;
+      return { method: ['byAgreement', { agreementId }] };
+    },
+
+    byRentee: value => {
+      const agreementId = value as number;
+      return { method: ['byRentee', { agreementId }] };
+    },
+
+    isDebtByAgreement: value => {
+      const agreementId = value as number;
+      return { method: ['isDebtByAgreement', { agreementId }] };
+    },
+  } as const;
+
+  // -----------------------------------------------------------------------------
+  // Mapping Includes
+  // -----------------------------------------------------------------------------
+  const INCLUDE_HANDLERS = {
+    Rentee: () => ({
       model: Rentee,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    });
-  }
-
-  if (Object(query).includes?.includes('Counter')) {
-    includes.push({
+      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+    }),
+    Counter: () => ({
       model: Counter,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    });
-  }
-
-  if (Object(query).includes?.includes('Agreement')) {
-    includes.push({
+      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+    }),
+    Agreement: () => ({
       model: Agreement,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    });
-  }
-
-  if (Object(query).includes?.includes('Tarif')) {
-    includes.push({
+      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+    }),
+    Tarif: () => ({
       model: Tarif,
-      attributes: {
-        exclude: ['deletedAt', 'createdAt', 'updatedAt'],
-      },
-    });
+      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+    }),
+  } as const;
+
+  // -----------------------------------------------------------------------------
+  // Scopes Handler
+  // -----------------------------------------------------------------------------
+  const scopesRaw = query.scopes;
+  if (scopesRaw && typeof scopesRaw === 'object' && !Array.isArray(scopesRaw)) {
+    for (const [key, handler] of Object.entries(SCOPE_HANDLERS)) {
+      if (key in scopesRaw) {
+        const result = handler(scopesRaw[key]);
+        if (result) scopes.push(result as ScopeOptions);
+      }
+    }
+  }
+  if (scopesRaw && Array.isArray(scopesRaw)) {
+    for (const [key, handler] of Object.entries(SCOPE_HANDLERS)) {
+      if (scopesRaw.includes(key)) {
+        const result = handler(key);
+        if (result) scopes.push(result as ScopeOptions);
+      }
+    }
   }
 
   // -----------------------------------------------------------------------------
-  // Scopes
+  // Includes Handler
   // -----------------------------------------------------------------------------
-  if (Object(query).scopes instanceof Array) {
-    // -----------------------------------------------------------------------------
-    // Скоупы без параметров
-    // -----------------------------------------------------------------------------
 
-    if (Object(query).scopes?.includes('isDebt')) {
-      scopes.push({ method: ['isDebt'] });
-    }
+  function hasInclude(includes: unknown, target: string): boolean {
+    return Array.isArray(includes) && includes.includes(target);
+  }
 
-    if (Object(query).scopes?.includes('isActual')) {
-      scopes.push({ method: ['isActual'] });
-    }
-
-    if (Object(query).scopes?.includes('isActive')) {
-      scopes.push({ method: ['isActive'] });
-    }
-
-    if (Object(query).scopes?.includes('isExpired')) {
-      scopes.push({ method: ['isExpired'] });
-    }
-
-    if (Object(query).scopes?.includes('isExpiredAndActive')) {
-      scopes.push({ method: ['isExpiredAndActive'] });
-    }
-
-    if (Object(query).scopes?.includes('withActiveAgreementsOnly')) {
-      scopes.push({ method: ['withActiveAgreementsOnly'] });
-    }
-
-    // if (Object(query).scopes?.includes('withRentees')) {
-    //   scopes.push({ method: ['withRentees'] });
-    // }
-  } else {
-    // -----------------------------------------------------------------------------
-    // Скоупы с параметрами
-    // -----------------------------------------------------------------------------
-
-    if (Object(query).scopes?.hasOwnProperty('withPeriod')) {
-      scopes.push({
-        method: [
-          'withPeriod',
-          {
-            start: Object(query).scopes.withPeriod.start,
-            end: Object(query).scopes.withPeriod.end,
-          },
-        ],
-      });
-    }
-
-    if (Object(query).scopes?.hasOwnProperty('byAgreement')) {
-      scopes.push({
-        method: [
-          'byAgreement',
-          {
-            agreementId: Object(query).scopes.byAgreement,
-          },
-        ],
-      });
-    }
-
-    if (Object(query).scopes?.hasOwnProperty('isDebt')) {
-      scopes.push({
-        method: [
-          'isDebt',
-          {
-            agreementId: Object(query).scopes.byAgreement,
-          },
-        ],
-      });
+  const includesRaw = query.includes;
+  for (const key of Object.keys(INCLUDE_HANDLERS) as (keyof typeof INCLUDE_HANDLERS)[]) {
+    if (hasInclude(includesRaw, key)) {
+      includes.push(INCLUDE_HANDLERS[key]());
     }
   }
 

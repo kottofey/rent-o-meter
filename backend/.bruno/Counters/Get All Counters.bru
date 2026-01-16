@@ -5,15 +5,15 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/counters
+  url: {{BASE_URL}}/counters?scopes[withPeriod][start]=2025-11-01&scopes[withPeriod][end]=2025-12-01
   body: none
   auth: inherit
 }
 
 params:query {
-  ~scopes[withPeriod][start]: 2025-11-01
-  ~scopes[withPeriod][end]: 2025-12-01
-  ~scopes[byAgreement]: 2
+  scopes[withPeriod][start]: 2025-11-01
+  scopes[withPeriod][end]: 2025-12-01
+  ~scopes[renteeId]: 2
   ~scopes[]: isDebt
 }
 
