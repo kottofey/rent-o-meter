@@ -72,9 +72,6 @@ export default class Rentee extends Model {
   @HasMany(() => Agreement, { onDelete: 'CASCADE' })
   agreements: Agreement[];
 
-  @HasMany(() => Bill, { onDelete: 'CASCADE' })
-  bills: Bill[];
-
   // -----------------------------------------------------------------------------
   // Virtuals
   // -----------------------------------------------------------------------------

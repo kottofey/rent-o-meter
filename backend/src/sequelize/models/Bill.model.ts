@@ -1,7 +1,16 @@
-import { Model, Table, Column, NotNull, ForeignKey, BelongsTo, Scopes } from 'sequelize-typescript';
+import {
+  Model,
+  Table,
+  Column,
+  NotNull,
+  ForeignKey,
+  BelongsTo,
+  Scopes,
+  HasOne,
+} from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import { Rentee } from '@/models';
+import { Agreement, Counter, Rentee, Tarif } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
@@ -43,47 +52,47 @@ export default class Bill extends Model {
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare water: number;
+  declare ammount: number;
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare electricity: number;
+  declare extra_ammount: number;
 
   @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare heat: number;
+  @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
+  declare penalty: number;
 
   @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare gas: number;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare renovation: number;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare tko: number;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare managing_company: number;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare domofon: number;
+  @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
+  declare debt: number;
 
   @Column(DataTypes.TEXT)
-  declare comment: number;
+  declare comment: string;
 
   // -----------------------------------------------------------------------------
   // Relations
   // -----------------------------------------------------------------------------
   @NotNull
-  @ForeignKey(() => Rentee)
+  @ForeignKey(() => Agreement)
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare renteeId: number;
+  declare agreementId: number;
 
-  @BelongsTo(() => Rentee, { onDelete: 'Restrict' })
-  rentee: Rentee;
+  @BelongsTo(() => Agreement, { onDelete: 'Restrict' })
+  agreement: Agreement;
+
+  @NotNull
+  @ForeignKey(() => Counter)
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare counterId: number;
+
+  @BelongsTo(() => Counter, { onDelete: 'Restrict' })
+  counter: Counter;
+
+  @NotNull
+  @ForeignKey(() => Tarif)
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare tarifId: number;
+
+  @BelongsTo(() => Tarif, { onDelete: 'Restrict' })
+  tarif: Tarif;
 }

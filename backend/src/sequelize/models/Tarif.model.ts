@@ -1,10 +1,34 @@
-import { Model, Table, Column, NotNull, HasMany } from 'sequelize-typescript';
-import { DataTypes } from 'sequelize';
+import { Model, Table, Column, NotNull, HasMany, Scopes } from 'sequelize-typescript';
+import { DataTypes, Op } from 'sequelize';
 
-import { Counter } from '@/models';
+import { Bill } from '@/models';
+import { dayjs } from '@/helpers';
 
+@Scopes(() => ({
+  actualFrom(actualFrom: number) {
+    return {
+      where: {
+        actual_from: {
+          [Op.lte]: actualFrom,
+        },
+      },
+      limit: 1,
+      order: [['actual_from', 'DESC']],
+    };
+  },
+}))
 @Table({ paranoid: true })
 export default class Tarif extends Model {
+  @NotNull
+  @Column({ type: DataTypes.DATEONLY, allowNull: false })
+  set actual_from(date: number) {
+    this.setDataValue('actual_from', dayjs(date).toDate());
+  }
+  get actual_from() {
+    const raw: string = this.getDataValue('actual_from') as string;
+    return dayjs(raw).toDate().valueOf();
+  }
+
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
   declare water: string;
@@ -43,6 +67,6 @@ export default class Tarif extends Model {
   // -----------------------------------------------------------------------------
   // Relations
   // -----------------------------------------------------------------------------
-  @HasMany(() => Counter, { onDelete: 'CASCADE' })
-  counters: Counter[];
+  @HasMany(() => Bill, { onDelete: 'CASCADE' })
+  bills: Bill[];
 }

@@ -1,7 +1,8 @@
 import QueryString from 'qs';
 import { Includeable, ScopeOptions } from 'sequelize';
+import chalk from 'chalk';
 
-import { Agreement, Counter, Rentee, Tarif } from '@/models';
+import { Agreement, Counter, Rentee, Tarif, Bill } from '@/models';
 
 export default function parseQuery(query: QueryString.ParsedQs) {
   const scopes: ScopeOptions | ScopeOptions[] = [];
@@ -20,6 +21,7 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     isExpired: () => ({ method: ['isExpired'] }),
     isExpiredAndActive: () => ({ method: ['isExpiredAndActive'] }),
     withActiveAgreementsOnly: () => ({ method: ['withActiveAgreementsOnly'] }),
+    withAgreementAndRentee: () => ({ method: ['withAgreementAndRentee'] }),
 
     withPeriod: rawDates => {
       if (rawDates && typeof rawDates === 'object') {
@@ -28,9 +30,30 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       }
     },
 
+    actualFrom: rawDate => {
+      const actualFrom = rawDate as number;
+      console.log(chalk.yellow('tarif actualFrom', actualFrom));
+
+      return { method: ['actualFrom', actualFrom] };
+    },
+
     byRentee: rawAgreementId => {
       const agreementId = rawAgreementId as number;
       return { method: ['byRentee', { agreementId }] };
+    },
+
+    byMonth: rawMonth => {
+      const month = rawMonth as number;
+      console.log(chalk.yellow('counter byMonth', month));
+
+      return { method: ['byMonth', month] };
+    },
+
+    byAgreementId: rawAgreementId => {
+      const agreementId = rawAgreementId as number;
+      console.log(chalk.yellow('counter byAgreementId', agreementId));
+
+      return { method: ['byAgreementId', agreementId] };
     },
   } as const;
 
@@ -42,8 +65,16 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       model: Agreement,
       attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
     }),
+    'Agreement.Rentee': () => ({
+      model: Agreement,
+      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      include: {
+        model: Rentee,
+        attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      },
+    }),
     Bill: () => ({
-      model: Rentee,
+      model: Bill,
       attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
     }),
     Counter: () => ({

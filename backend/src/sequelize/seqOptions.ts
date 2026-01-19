@@ -19,11 +19,12 @@ const options: SequelizeOptions = {
   password: DB_PASSWORD,
   database: DB_NAME,
   timezone: '+03:00',
-  logging: sql => {
-    if (MODE === 'dev') {
-      console.log(chalk.gray(sql));
-    }
-  },
+  logging: false,
+  // },  logging: sql => {
+  //   if (MODE === 'dev') {
+  //     console.log(chalk.gray(sql));
+  //   }
+  // },
   define: {
     timestamps: true,
     paranoid: true,

@@ -71,7 +71,7 @@ async function create(req: Request, res: Response) {
     if (e instanceof UniqueConstraintError) {
       res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
     } else {
-      res.status(500).send({ error: e }).end();
+      res.status(500).send(e).end();
     }
   }
 }
@@ -104,16 +104,24 @@ async function update(req: Request, res: Response) {
   const { body }: { body: Partial<unknown> } = req;
 
   try {
-    const [rows] = await model.update(body, {
-      where: {
-        id,
-      },
-      paranoid: false,
-    });
+    const agreement = await model.findByPk(id, { paranoid: false });
 
-    res.status(200).send({ rowsAffected: rows }).end();
+    if (agreement) {
+      // agreement.set(body);
+      const updatedModel = await agreement.update(body, {
+        where: {
+          id,
+        },
+      });
+      res
+        .status(200)
+        .send({ ...updatedModel })
+        .end();
+    }
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    if (e instanceof Error) {
+      res.status(500).send({ name: e.name, message: e.message, cause: e.cause }).end();
+    }
   }
 }
 

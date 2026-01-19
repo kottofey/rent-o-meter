@@ -90,7 +90,7 @@ export const up: Migration = async ({ context: sequelize }: { context: Sequelize
   );
 
   await sequelize.getQueryInterface().createTable(
-    'PayMonths',
+    'Counters',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -185,7 +185,7 @@ export const up: Migration = async ({ context: sequelize }: { context: Sequelize
     },
     {
       uniqueKeys: {
-        agreement_uniqueness_constraint: {
+        counter_uniqueness_constraint: {
           fields: ['agreementId', 'month'],
         },
       },
@@ -194,6 +194,6 @@ export const up: Migration = async ({ context: sequelize }: { context: Sequelize
 };
 
 export const down: Migration = async ({ context: sequelize }: { context: Sequelize }) => {
-  await sequelize.getQueryInterface().dropTable('PayMonths');
+  await sequelize.getQueryInterface().dropTable('Counters');
   await sequelize.getQueryInterface().dropTable('Tarifs');
 };

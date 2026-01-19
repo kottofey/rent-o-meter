@@ -4,14 +4,15 @@ import {
   Table,
   Column,
   NotNull,
-  Default,
   ForeignKey,
   Scopes,
+  HasOne,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
+import chalk from 'chalk';
 
 import { dayjs } from '@/helpers';
-import { Rentee, Tarif } from '@/models';
+import { Agreement, Bill } from '@/models';
 
 @Scopes(() => ({
   withPeriod({ start, end }: { start: number; end: number }) {
@@ -24,11 +25,36 @@ import { Rentee, Tarif } from '@/models';
       },
     };
   },
-  byRentee({ renteeId }: { renteeId: number }) {
+  byMonth(month: number) {
     return {
-      where: { renteeId },
+      where: {
+        month: {
+          [Op.eq]: dayjs(month).toDate(),
+        },
+      },
     };
   },
+  byAgreementId(agreementId: number) {
+    return {
+      where: {
+        agreementId,
+      },
+    };
+  },
+  // withAgreementAndRentee() {
+  //   return {
+  //     include: [
+  //       {
+  //         model: Agreement,
+  //         include: [
+  //           {
+  //             model: Rentee,
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   };
+  // },
 }))
 @Table({ paranoid: true })
 export default class Counters extends Model {
@@ -62,12 +88,6 @@ export default class Counters extends Model {
     return dayjs(raw).toDate().valueOf();
   }
 
-  //TODO Выпилить статус из счетчиков и сделать для счетов
-  @NotNull
-  @Default(true)
-  @Column({ type: DataTypes.BOOLEAN, allowNull: false })
-  declare status: boolean;
-
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
   declare counter_water: number;
@@ -76,14 +96,6 @@ export default class Counters extends Model {
   @Column({ type: DataTypes.INTEGER, allowNull: false })
   declare counter_electricity: number;
 
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
-  declare penalty: number;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
-  declare debt: number;
-
   @Column(DataTypes.TEXT)
   declare comment: string;
 
@@ -91,18 +103,13 @@ export default class Counters extends Model {
   // Relations
   // -----------------------------------------------------------------------------
   @NotNull
-  @ForeignKey(() => Rentee)
+  @ForeignKey(() => Agreement)
   @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare renteeId: number;
+  declare agreementId: number;
 
-  @BelongsTo(() => Rentee, { onDelete: 'Restrict' })
-  rentee: Rentee;
+  @BelongsTo(() => Agreement, { onDelete: 'Restrict' })
+  agreement: Agreement;
 
-  @NotNull
-  @ForeignKey(() => Tarif)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare tarifId: number;
-
-  @BelongsTo(() => Tarif, { onDelete: 'Restrict' })
-  tarif: Tarif;
+  @HasOne(() => Bill, { onDelete: 'Restrict' })
+  bill: Bill;
 }

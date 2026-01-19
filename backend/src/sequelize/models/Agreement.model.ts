@@ -1,8 +1,10 @@
 import {
+  BeforeSave,
   BelongsTo,
   Column,
   Default,
   ForeignKey,
+  HasMany,
   Model,
   NotNull,
   Scopes,
@@ -11,7 +13,7 @@ import {
 import { DataTypes, Op } from 'sequelize';
 
 import { dayjs } from '@/helpers';
-import { Rentee } from '@/models';
+import { Bill, Counter, Rentee } from '@/models';
 
 @Scopes(() => ({
   isStatusActive() {
@@ -101,7 +103,38 @@ export default class Agreement extends Model {
   @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
   rentee: Rentee;
 
+  @HasMany(() => Counter, { onDelete: 'CASCADE' })
+  counters: Counter[];
+
+  @HasMany(() => Bill, { onDelete: 'CASCADE' })
+  bills: Bill[];
+
   // -----------------------------------------------------------------------------
   // Virtual fields
   // -----------------------------------------------------------------------------
+
+  // -----------------------------------------------------------------------------
+  // Before Save
+  // -----------------------------------------------------------------------------
+  @BeforeSave
+  static async ensureSingleActiveAgreement(instance: Agreement) {
+    if (!instance.status) return;
+
+    const existing = await Agreement.findOne({
+      where: {
+        renteeId: instance.renteeId,
+        status: true,
+        // исключаем текущую запись при обновлении
+        id: {
+          [Op.ne]: instance.id as number,
+        },
+      },
+    });
+
+    if (existing) {
+      throw new Error(
+        `У арендатора id# ${existing.renteeId.toString()} уже есть активный договор (${existing.name}). Нельзя создать второй активный договор.`,
+      );
+    }
+  }
 }
