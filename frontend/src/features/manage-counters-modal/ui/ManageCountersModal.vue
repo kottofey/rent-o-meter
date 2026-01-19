@@ -18,6 +18,7 @@ import { useCountersModal } from '../lib/useCountersModal';
 
 import { ICounter } from '@/entities/counter';
 import { SelectRentees } from '@/widgets/select-rentees';
+import { SelectAgreements } from '@/widgets/select-agreements';
 
 // -----------------------------------------------------------------------------
 // State
@@ -72,10 +73,6 @@ const rules: FormRules = {
     message: 'Обязательное поле',
   },
   counter_electricity: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  renteeId: {
     required: true,
     message: 'Обязательное поле',
   },
@@ -151,22 +148,13 @@ const rules: FormRules = {
         <NFormItem
           class="fields__item--grid-agreement"
           label="Арендатор"
-          path="renteeId"
+          path="agreementId"
         >
-          <SelectRentees
-            v-model:value="formData.renteeId"
+          <SelectAgreements
+            v-model:value="formData.agreementId"
+            label-by="rentee"
+            placeholder="Выберите арендатора"
             withActiveAgreements
-          />
-        </NFormItem>
-
-        <NFormItem
-          class="fields__item--grid-status"
-          label="Статус оплаты"
-          path="status"
-        >
-          <NCheckbox
-            v-model:checked="formData.status"
-            :label="formData.status ? 'Оплачено' : 'Не оплачено'"
           />
         </NFormItem>
 

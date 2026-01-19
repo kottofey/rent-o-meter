@@ -10,16 +10,23 @@ import { useAgreementsQuery } from '@/entities/agreement';
 
 const value = defineModel<number>('value');
 
+const { labelBy = 'agreement', placeholder } = defineProps<{
+  labelBy?: 'agreement' | 'rentee';
+  placeholder?: string;
+}>();
+
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
 
-const { data: agreements, isFetching } = useAgreementsQuery({});
+const { data: agreements, isFetching } = useAgreementsQuery({
+  includes: ['Rentee'],
+});
 
 const agreementsOptions = computed(() =>
   agreements.value?.map((agreement) => ({
     value: agreement.id,
-    label: agreement.name,
+    label: labelBy === 'agreement' ? agreement.name : agreement.rentee.fullName,
     disabled: !agreement.status,
   })),
 );
@@ -31,7 +38,7 @@ const agreementsOptions = computed(() =>
     :loading="isFetching"
     :options="agreementsOptions"
     clearable
-    placeholder="Выберите договор"
+    :placeholder="placeholder ? placeholder : 'Выберите договор'"
     filterable
   />
 </template>

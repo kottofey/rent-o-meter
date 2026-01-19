@@ -41,6 +41,10 @@ const { formData, submit, isPending, isFormValidateError } = useTarifModal({
 });
 
 const rules: FormRules = {
+  actual_from: {
+    required: true,
+    message: 'Обязательное поле',
+  },
   water: {
     required: true,
     message: 'Обязательное поле',
@@ -81,12 +85,6 @@ const rules: FormRules = {
     :show="isOpened"
     @mask-click="isOpened = false"
     @esc="isOpened = false"
-    @keyup.prevent.enter="
-      async () => {
-        await submit();
-        isOpened = isFormValidateError;
-      }
-    "
   >
     <NCard
       class="manage-tarif-modal"
@@ -98,7 +96,7 @@ const rules: FormRules = {
         ref="formRef"
         :rules="rules"
         @submit.prevent
-        @keyup.prevent.enter="
+        @keydown.prevent.stop.enter="
           async () => {
             await submit();
             isOpened = isFormValidateError;
@@ -107,6 +105,13 @@ const rules: FormRules = {
       >
         <div class="fields">
           <div class="fields__group">
+            <NFormItem
+              label="Актуально с"
+              path="actual_from"
+            >
+              <NDatePicker v-model:value="formData.actual_from" />
+            </NFormItem>
+
             <NFormItem
               label="Вода"
               path="water"

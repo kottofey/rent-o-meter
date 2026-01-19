@@ -1,13 +1,19 @@
-import { type DataTableColumns, NTag } from 'naive-ui';
-import { h } from 'vue';
+import { type DataTableColumns } from 'naive-ui';
 
 import { type ITarif } from '@/entities/tarif';
+import { parseDate } from '@/shared/lib/parseDate';
 
 export const columns: DataTableColumns<ITarif> = [
   {
     title: 'id',
     key: 'id',
     align: 'center',
+  },
+  {
+    title: 'Действует с',
+    key: 'actual_from',
+    align: 'center',
+    render: (row: ITarif) => parseDate({ date: row.actual_from }),
   },
   {
     title: 'Вода',

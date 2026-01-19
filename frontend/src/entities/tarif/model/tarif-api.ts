@@ -1,9 +1,11 @@
 import { useApi, httpMethod, serializeQuery } from '@/shared/api';
+import { IBill } from '@/entities/bill';
 
 // TODO дописать скоупы если будут
 // TODO написать алгоритм сериализации с проверкой через zod
 export interface ITarif {
   id: number;
+  actual_from: number;
   water: number;
   electricity: number;
   heat: number;
@@ -13,10 +15,14 @@ export interface ITarif {
   managing_company: number;
   domofon: number;
   comment?: string;
+
+  bills: IBill[];
 }
 
-export type ITarifScopes = Array<''>;
-export type ITarifIncludes = Array<'Counter'>;
+export type ITarifScopes = {
+  actualFrom: MaybeRef<string>;
+};
+export type ITarifIncludes = Array<'Bill'>;
 
 export async function getAllTarifs({
   scopes,

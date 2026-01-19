@@ -28,7 +28,7 @@ const { data: rentees, isLoading } = useRenteesQuery({
 const renteesOptions = computed(() =>
   rentees.value?.map((rentee) => ({
     value: rentee.id,
-    label: `${rentee.surname} ${rentee.firstname} ${rentee.patronymic}`,
+    label: rentee.fullName,
     disabled: !rentee.status,
   })),
 );

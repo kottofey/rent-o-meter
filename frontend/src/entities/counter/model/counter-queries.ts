@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+} from '@tanstack/vue-query';
 
 import {
   getAllCounters,
@@ -13,19 +18,42 @@ import {
 } from './counter-api';
 import { counterKeys } from './counter-keys';
 
+import type { ITarifIncludes, ITarifScopes } from '@/entities/tarif';
+import { tarifKeys } from '@/entities/tarif/model/tarif-keys';
+import { getAllTarifs } from '@/entities/tarif/model/tarif-api';
+
 // TODO дописать фильтры, они пойдут в queryKeys: renteeKeys.list(filters)
 // TODO дописать оптимистичные апдейты
+
+export const useCounterQueryClient = async ({
+  client,
+  scopes,
+  includes,
+}: {
+  client: QueryClient;
+  scopes?: ICounterScopes;
+  includes?: ICounterIncludes;
+}) => {
+  // Для разовых запросов
+  return await client.fetchQuery({
+    queryKey: counterKeys.list(scopes, includes),
+    queryFn: () => getAllCounters({ scopes, includes }),
+  });
+};
 
 export const useCountersQuery = ({
   scopes,
   includes,
+  isDisabled = false,
 }: {
   scopes?: ICounterScopes;
   includes?: ICounterIncludes;
+  isDisabled?: boolean;
 }) => {
   return useQuery({
     queryKey: counterKeys.list(scopes, includes),
     queryFn: () => getAllCounters({ scopes, includes }),
+    enabled: !isDisabled,
   });
 };
 

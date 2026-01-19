@@ -20,13 +20,14 @@ export function useCountersModal({
     month: undefined,
     date_start: undefined,
     date_end: undefined,
-    renteeId: undefined,
     status: false,
     counter_water: undefined,
     counter_electricity: undefined,
     penalty: undefined,
     debt: undefined,
     comment: '',
+
+    agreementId: undefined,
   };
 
   // Init form data
@@ -35,12 +36,12 @@ export function useCountersModal({
   watch(
     () => unref(initialData),
     (counter) => {
-      if (counter !== undefined) {
+      if (counter !== undefined && counter.agreement !== undefined) {
         formData.value = {
           month: counter.month,
           date_start: counter.date_start,
           date_end: counter.date_end,
-          renteeId: counter.renteeId,
+          agreementId: counter.agreement.id,
           status: counter.status,
           counter_water: counter.counter_water,
           counter_electricity: counter.counter_electricity,

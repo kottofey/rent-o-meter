@@ -14,7 +14,7 @@ import { ManageCountersModal } from '@/features/manage-counters-modal';
 // -----------------------------------------------------------------------------
 
 const { data: counters, isLoading } = useCountersQuery({
-  includes: ['Rentee'],
+  includes: ['Agreement.Rentee'],
 });
 const isModalOpened = ref(false);
 

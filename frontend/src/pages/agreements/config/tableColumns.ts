@@ -60,7 +60,7 @@ export const columns: DataTableColumns<IAgreement> = [
         row1.date_start - row2.date_start,
       multiple: 1,
     },
-    render: (row: IAgreement) => parseDate(row.date_start),
+    render: (row: IAgreement) => parseDate({ date: row.date_start }),
   },
   {
     title: 'Окончание',

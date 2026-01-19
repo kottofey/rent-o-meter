@@ -1,29 +1,29 @@
+import { IAgreement } from '@/entities/agreement/@x/counter';
 import { httpMethod, useApi, serializeQuery } from '@/shared/api';
-import { IRentee } from '@/entities/rentee';
+import { IBill } from '@/entities/bill';
 
 export interface ICounter {
   id: number;
   month: number;
   date_start: number;
   date_end: number;
-  status: boolean;
   counter_water: number;
   counter_electricity: number;
-  penalty: number;
-  debt: number;
   comment?: string;
 
-  renteeId: number;
+  agreementId: number;
+  agreement: IAgreement;
 
-  rentee: IRentee;
+  bill: IBill;
 }
 
-export type ICounterIncludes = Array<'Rentee'>;
+export type ICounterIncludes = Array<'Agreement' | 'Bill' | 'Agreement.Rentee'>;
 
 export type ICounterScopes = {
-  withRentees: '';
-  isDebt: '';
-  byAgreement?: number;
+  byMonth?: string;
+  withAgreementAndRentee?: '';
+  isDebt?: '';
+  byAgreementId?: number;
   withPeriod?: {
     start: string;
     end: string;

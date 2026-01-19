@@ -1,25 +1,27 @@
 import { httpMethod, useApi, serializeQuery } from '@/shared/api';
 import { IRentee } from '@/entities/rentee/@x/agreement';
 import { ICounter } from '@/entities/counter/@x/agreement';
+import { IBill } from '@/entities/bill/@x/agreement';
 
 export interface IAgreement {
   id: number;
-  renteeId: number;
-  rentee: IRentee;
-
-  counters: ICounter[];
-
   name: string;
   status: boolean;
   date_start: number;
   date_end: number;
   comment: string;
+
+  renteeId: number;
+  rentee: IRentee;
+
+  counters: ICounter[];
+  bills: IBill[];
 }
 
 export type IAgreementScopes = Array<
   'isActive' | 'isActual' | 'isExpired' | 'isExpiredAndActive'
 >;
-export type IAgreementIncludes = Array<'Rentee'>;
+export type IAgreementIncludes = Array<'Rentee' | 'Counter' | 'Bill'>;
 
 export async function getAllAgreements({
   scopes,

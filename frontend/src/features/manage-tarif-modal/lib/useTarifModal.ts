@@ -3,6 +3,7 @@ import { type FormInst } from 'naive-ui';
 
 import { type ITarif } from '@/entities/tarif';
 import { useCreateTarifMutation, useEditTarifMutation } from '@/entities/tarif';
+import { dayjs } from '@/shared/lib/dayjs';
 
 export function useTarifModal({
   initialData,
@@ -15,6 +16,7 @@ export function useTarifModal({
 
   // Init form data
   const initState = {
+    actual_from: dayjs().valueOf(),
     water: undefined,
     electricity: undefined,
     heat: undefined,
@@ -33,6 +35,7 @@ export function useTarifModal({
     (tarif) => {
       if (tarif) {
         formData.value = {
+          actual_from: tarif.actual_from,
           water: tarif.water,
           electricity: tarif.electricity,
           heat: tarif.heat,

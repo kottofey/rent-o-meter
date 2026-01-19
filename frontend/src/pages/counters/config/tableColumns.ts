@@ -5,17 +5,6 @@ import { type ICounter } from '@/entities/counter';
 import { parseDate } from '@/shared/lib/parseDate';
 import { RenteeInfoPopover } from '@/shared/ui';
 
-const statusColors = {
-  active: {
-    color: 'green',
-    textColor: 'black',
-  },
-  expired: {
-    color: 'red',
-    textColor: 'black',
-  },
-};
-
 export const columns: DataTableColumns<ICounter> = [
   {
     title: 'id',
@@ -26,21 +15,14 @@ export const columns: DataTableColumns<ICounter> = [
     title: 'Арендатор',
     key: 'renteeId',
     align: 'center',
-
-    // render: (row: ICounter) => {
-    //   if (row.rentee) {
-    //     return `${row.rentee.surname} ${row.rentee.firstname} ${row.rentee.patronymic}`;
-    //   }
-    // },
-
     render: (row: ICounter) => {
       return h(
         RenteeInfoPopover,
         {
-          rentee: row.rentee,
+          rentee: row.agreement?.rentee,
         },
         {
-          default: () => row.rentee?.fullName,
+          default: () => row.agreement.rentee.fullName,
         },
       );
     },
@@ -49,43 +31,24 @@ export const columns: DataTableColumns<ICounter> = [
     title: 'Месяц',
     key: 'month',
     align: 'center',
-    render: (row: ICounter) => parseDate(row.month, 'MMMM YYYY'),
+    render: (row: ICounter) =>
+      parseDate({ date: row.month, format: 'MMMM YYYY' }),
   },
   {
     title: 'С',
     key: 'date_start',
     align: 'center',
-    render: (row: ICounter) => parseDate(row.date_start, 'DD MMM YYYY'),
+    render: (row: ICounter) =>
+      parseDate({ date: row.date_start, format: 'DD MMM YYYY' }),
   },
   {
     title: 'По',
     key: 'date_end',
     align: 'center',
-    render: (row: ICounter) => parseDate(row.date_end, 'DD MMM YYYY'),
+    render: (row: ICounter) =>
+      parseDate({ date: row.date_end, format: 'DD MMM YYYY' }),
   },
-  {
-    title: 'Статус оплаты',
-    key: 'status',
-    align: 'center',
-    render: (row: ICounter) => {
-      return h(
-        NTag,
-        {
-          color: {
-            color: row.status
-              ? statusColors.active.color
-              : statusColors.expired.color,
-            textColor: row.status
-              ? statusColors.active.textColor
-              : statusColors.expired.textColor,
-          },
-        },
-        {
-          default: () => (row.status ? 'Оплачено' : 'Не оплачено'),
-        },
-      );
-    },
-  },
+
   {
     title: 'Вода',
     key: 'counter_water',
