@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+} from '@tanstack/vue-query';
 
 import {
   getAllTarifs,
@@ -16,16 +21,35 @@ import { tarifKeys } from './tarif-keys';
 // TODO дописать фильтры, они пойдут в queryKeys: tarifKeys.list(filters)
 // TODO дописать оптимистичные апдейты
 
-export const useTarifsQuery = ({
+export const useTarifQueryClient = async ({
+  client,
   scopes,
   includes,
 }: {
+  client: QueryClient;
   scopes?: ITarifScopes;
   includes?: ITarifIncludes;
+}) => {
+  // Для разовых запросов
+  return await client.fetchQuery({
+    queryKey: tarifKeys.list(scopes, includes),
+    queryFn: () => getAllTarifs({ scopes, includes }),
+  });
+};
+
+export const useTarifsQuery = ({
+  scopes,
+  includes,
+  isDisabled = false,
+}: {
+  scopes?: ITarifScopes;
+  includes?: ITarifIncludes;
+  isDisabled?: boolean;
 }) => {
   return useQuery({
     queryKey: tarifKeys.list(scopes, includes),
     queryFn: () => getAllTarifs({ scopes, includes }),
+    enabled: !isDisabled,
   });
 };
 

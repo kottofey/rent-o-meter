@@ -5,6 +5,7 @@ export {
   useEditCounterMutation,
   useDeleteCounterMutation,
   useRestoreCounterMutation,
+  useCounterQueryClient,
 } from './model/counter-queries';
 
 export type {
