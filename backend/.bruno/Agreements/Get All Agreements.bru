@@ -5,16 +5,17 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/agreements?scopes[]=isExpiredAndActive
+  url: {{BASE_URL}}/agreements
   body: none
   auth: inherit
 }
 
 params:query {
-  scopes[]: isExpiredAndActive
+  ~scopes[]: isExpiredAndActive
   ~scopes[]: isActual
   ~scopes[]: isActive
   ~scopes[]: isExpired
+  ~includes[]: Rentee
 }
 
 settings {

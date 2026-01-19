@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/bills
+  url: {{BASE_URL}}/bills?includes[]=Counter
   body: none
   auth: inherit
+}
+
+params:query {
+  includes[]: Counter
 }
 
 settings {
