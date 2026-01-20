@@ -20,11 +20,11 @@ export function useCountersModal({
     month: undefined,
     date_start: undefined,
     date_end: undefined,
-    status: false,
+
     counter_water: undefined,
     counter_electricity: undefined,
-    penalty: undefined,
-    debt: undefined,
+    counter_prev_electricity: undefined,
+
     comment: '',
 
     agreementId: undefined,
@@ -42,11 +42,11 @@ export function useCountersModal({
           date_start: counter.date_start,
           date_end: counter.date_end,
           agreementId: counter.agreement.id,
-          status: counter.status,
+
           counter_water: counter.counter_water,
           counter_electricity: counter.counter_electricity,
-          penalty: counter.penalty,
-          debt: counter.debt,
+          counter_prev_electricity: counter.counter_prev_electricity,
+
           comment: counter.comment,
         };
       } else {

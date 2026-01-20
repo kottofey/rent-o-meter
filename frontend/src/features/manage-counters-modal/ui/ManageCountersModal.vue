@@ -4,7 +4,6 @@ import {
   NButton,
   NButtonGroup,
   NCard,
-  NCheckbox,
   NDatePicker,
   NForm,
   NFormItem,
@@ -16,8 +15,7 @@ import { ref, toRef, unref } from 'vue';
 
 import { useCountersModal } from '../lib/useCountersModal';
 
-import { ICounter } from '@/entities/counter';
-import { SelectRentees } from '@/widgets/select-rentees';
+import { type ICounter, useCountersQueryClient } from '@/entities/counter';
 import { SelectAgreements } from '@/widgets/select-agreements';
 
 // -----------------------------------------------------------------------------
@@ -125,9 +123,9 @@ const rules: FormRules = {
           path="date_start"
         >
           <NDatePicker
-            type="date"
             close-on-select
             clearable
+            format="dd MMMM yyyy"
             v-model:value="formData.date_start"
           />
         </NFormItem>
@@ -138,8 +136,8 @@ const rules: FormRules = {
           path="date_end"
         >
           <NDatePicker
-            type="date"
             close-on-select
+            format="dd MMMM yyyy"
             clearable
             v-model:value="formData.date_end"
           />
@@ -160,7 +158,7 @@ const rules: FormRules = {
 
         <NFormItem
           class="fields__item--grid-water"
-          label="Показания для воды"
+          label="Показания вода"
           path="counter_water"
         >
           <NInputNumber
@@ -171,7 +169,7 @@ const rules: FormRules = {
 
         <NFormItem
           class="fields__item--grid-elec"
-          label="Показания для электричества"
+          label="Показания свет"
           path="counter_electricity"
         >
           <NInputNumber
@@ -241,9 +239,10 @@ const rules: FormRules = {
   column-gap: 20px;
 
   grid-template-areas:
+    'agreement agreement agreement'
     'month start end'
-    'agreement tarif comment'
-    'water elec comment';
+    'waterprev water comment'
+    'elecprev elec comment';
 
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -271,10 +270,6 @@ const rules: FormRules = {
 
     &--grid-agreement {
       grid-area: agreement;
-    }
-
-    &--grid-tarif {
-      grid-area: tarif;
     }
 
     &--grid-comment {

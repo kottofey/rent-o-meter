@@ -15,7 +15,7 @@ import { type IBill } from '@/entities/bill';
 import { useCreateBillMutation, useEditBillMutation } from '@/entities/bill';
 import { dayjs } from '@/shared/lib/dayjs';
 import { useTarifQueryClient } from '@/entities/tarif';
-import { useCounterQueryClient, useCountersQuery } from '@/entities/counter';
+import { useCountersQueryClient, useCountersQuery } from '@/entities/counter';
 import { getAllTarifs } from '@/entities/tarif/model/tarif-api';
 
 export function useBillModal({
@@ -105,7 +105,7 @@ export function useBillModal({
             },
           });
 
-          const actualCounters = await useCounterQueryClient({
+          const actualCounters = await useCountersQueryClient({
             client: queryClient,
             scopes: {
               byMonth: dayjs(formData.value.month).format('YYYY-MM-DD'),

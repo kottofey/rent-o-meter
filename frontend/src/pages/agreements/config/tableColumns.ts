@@ -54,7 +54,7 @@ export const columns: DataTableColumns<IAgreement> = [
     title: 'Начало',
     key: 'date_start',
     align: 'center',
-    defaultSortOrder: 'descend',
+    defaultSortOrder: 'ascend',
     sorter: {
       compare: (row1: IAgreement, row2: IAgreement) =>
         row1.date_start - row2.date_start,

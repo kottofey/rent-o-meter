@@ -73,13 +73,19 @@ const rules: FormRules = {
 
 <template>
   <NModal
+    class="manage-agreement-modal"
     :show="isOpened"
     @mask-click="isOpened = false"
     @esc="isOpened = false"
   >
     <NCard
-      class="manage-agreement-modal"
       :title="agreement ? 'Редактирование договора' : 'Создание договора'"
+      :content-style="{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }"
     >
       <NForm
         :disabled="isPending"
@@ -120,7 +126,10 @@ const rules: FormRules = {
           label="Арендатор"
           path="renteeId"
         >
-          <SelectRentees v-model:value="formData.renteeId" />
+          <SelectRentees
+            v-model:value="formData.renteeId"
+            :style="{ width: '100%' }"
+          />
         </NFormItem>
 
         <!--  Начало  -->
@@ -131,6 +140,7 @@ const rules: FormRules = {
           <NDatePicker
             clearable
             v-model:value="formData.date_start"
+            format="dd MMMM yyyy"
           />
         </NFormItem>
 
@@ -142,6 +152,7 @@ const rules: FormRules = {
           <NDatePicker
             clearable
             v-model:value="formData.date_end"
+            format="dd MMMM yyyy"
           />
         </NFormItem>
 
@@ -185,7 +196,7 @@ const rules: FormRules = {
   align-items: center;
   justify-content: center;
   min-height: 500px;
-  width: 400px;
+  width: 500px;
   border-radius: 12px;
 
   &__buttons {

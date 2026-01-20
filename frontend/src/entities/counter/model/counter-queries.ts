@@ -18,14 +18,10 @@ import {
 } from './counter-api';
 import { counterKeys } from './counter-keys';
 
-import type { ITarifIncludes, ITarifScopes } from '@/entities/tarif';
-import { tarifKeys } from '@/entities/tarif/model/tarif-keys';
-import { getAllTarifs } from '@/entities/tarif/model/tarif-api';
-
 // TODO дописать фильтры, они пойдут в queryKeys: renteeKeys.list(filters)
 // TODO дописать оптимистичные апдейты
 
-export const useCounterQueryClient = async ({
+export const useCountersQueryClient = async ({
   client,
   scopes,
   includes,

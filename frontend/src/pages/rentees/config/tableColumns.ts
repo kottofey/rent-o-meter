@@ -23,18 +23,8 @@ export const columns: DataTableColumns<IRentee> = [
     align: 'center',
   },
   {
-    title: 'Фамилия',
-    key: 'surname',
-    align: 'center',
-  },
-  {
-    title: 'Имя',
-    key: 'firstname',
-    align: 'center',
-  },
-  {
-    title: 'Отчество',
-    key: 'patronymic',
+    title: 'ФИО',
+    key: 'fullName',
     align: 'center',
   },
   {
