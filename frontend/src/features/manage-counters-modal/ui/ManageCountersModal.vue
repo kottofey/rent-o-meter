@@ -12,11 +12,13 @@ import {
   NModal,
 } from 'naive-ui';
 import { ref, toRef, unref } from 'vue';
+import { useQueryClient } from '@tanstack/vue-query';
 
 import { useCountersModal } from '../lib/useCountersModal';
 
 import { type ICounter, useCountersQueryClient } from '@/entities/counter';
 import { SelectAgreements } from '@/widgets/select-agreements';
+import { dayjs } from '@/shared/lib/dayjs';
 
 // -----------------------------------------------------------------------------
 // State
@@ -27,6 +29,7 @@ const formRef = ref();
 // Setup
 // -----------------------------------------------------------------------------
 const isOpened = defineModel('isOpened', { default: false });
+const queryClient = useQueryClient();
 
 const { counter = undefined } = defineProps<{
   counter?: ICounter;
@@ -75,6 +78,37 @@ const rules: FormRules = {
     message: 'Обязательное поле',
   },
 };
+
+// -----------------------------------------------------------------------------
+// Actions
+// -----------------------------------------------------------------------------
+const fetchPrevCounters = async ({
+  currentMonth,
+  agreementId,
+}: {
+  currentMonth?: number;
+  agreementId?: number;
+}) => {
+  const prevCounters = await useCountersQueryClient({
+    client: queryClient,
+    scopes: {
+      byAgreementId: agreementId,
+      byMonth: dayjs(currentMonth)
+        .startOf('month')
+        .subtract(1, 'month')
+        .format('YYYY-MM-DD'),
+    },
+  });
+
+  if (prevCounters[0]) {
+    formData.value.counter_prev_electricity =
+      prevCounters[0].counter_electricity;
+    formData.value.counter_prev_water = prevCounters[0].counter_water;
+    formData.value.date_start = dayjs(prevCounters[0].date_end)
+      .add(1, 'day')
+      .valueOf();
+  }
+};
 </script>
 
 <template>
@@ -114,6 +148,19 @@ const rules: FormRules = {
             close-on-select
             clearable
             v-model:value="formData.month"
+            @update-value="
+              async (val) => {
+                formData.date_start = val;
+                formData.date_end = val;
+
+                if (formData?.agreementId) {
+                  await fetchPrevCounters({
+                    currentMonth: val,
+                    agreementId: formData.agreementId,
+                  });
+                }
+              }
+            "
           />
         </NFormItem>
 
@@ -153,6 +200,28 @@ const rules: FormRules = {
             label-by="rentee"
             placeholder="Выберите арендатора"
             withActiveAgreements
+            @update:value="
+              async (val) => {
+                if (formData?.month) {
+                  await fetchPrevCounters({
+                    currentMonth: formData.month,
+                    agreementId: val,
+                  });
+                }
+              }
+            "
+          />
+        </NFormItem>
+
+        <!--  Показания  -->
+        <NFormItem
+          class="fields__item--grid-water-prev"
+          label="Прошлые показания вода"
+          path="counter_water_prev"
+        >
+          <NInputNumber
+            v-model:value="formData.counter_prev_water"
+            :show-button="false"
           />
         </NFormItem>
 
@@ -174,6 +243,17 @@ const rules: FormRules = {
         >
           <NInputNumber
             v-model:value="formData.counter_electricity"
+            :show-button="false"
+          />
+        </NFormItem>
+
+        <NFormItem
+          class="fields__item--grid-elec-prev"
+          label="Прошлые показания свет"
+          path="counter_electricity_prev"
+        >
+          <NInputNumber
+            v-model:value="formData.counter_prev_electricity"
             :show-button="false"
           />
         </NFormItem>
@@ -260,10 +340,16 @@ const rules: FormRules = {
       grid-area: end;
     }
 
+    &--grid-water-prev {
+      grid-area: waterprev;
+    }
     &--grid-water {
       grid-area: water;
     }
 
+    &--grid-elec-prev {
+      grid-area: elecprev;
+    }
     &--grid-elec {
       grid-area: elec;
     }

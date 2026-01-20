@@ -16,7 +16,7 @@ import { dayjs } from '@/helpers';
 import { Bill, Counter, Rentee } from '@/models';
 
 @Scopes(() => ({
-  isStatusActive() {
+  'agreements:activeOnly'() {
     return {
       where: {
         status: {

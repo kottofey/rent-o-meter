@@ -19,7 +19,11 @@ export interface IAgreement {
 }
 
 export type IAgreementScopes = Array<
-  'isActive' | 'isActual' | 'isExpired' | 'isExpiredAndActive'
+  | 'isActive'
+  | 'isActual'
+  | 'isExpired'
+  | 'isExpiredAndActive'
+  | 'agreements:activeOnly'
 >;
 export type IAgreementIncludes = Array<'Rentee' | 'Counter' | 'Bill'>;
 

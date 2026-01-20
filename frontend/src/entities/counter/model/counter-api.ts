@@ -8,7 +8,9 @@ export interface ICounter {
   date_start: number;
   date_end: number;
   counter_water: number;
+  counter_prev_water: number;
   counter_electricity: number;
+  counter_prev_electricity: number;
   comment?: string;
 
   agreementId: number;
@@ -44,10 +46,19 @@ export async function getAllCounters({
   });
 }
 
-export async function getCounter({ id }: { id: number }): Promise<ICounter> {
+export async function getCounter({
+  id,
+  scopes,
+  includes = [],
+}: {
+  id: number;
+  scopes?: ICounterScopes;
+  includes?: ICounterIncludes;
+}): Promise<ICounter> {
   return await useApi<ICounter>({
     route: `counters/${id}`,
     method: httpMethod.GET,
+    query: serializeQuery({ scopes, includes }),
   });
 }
 

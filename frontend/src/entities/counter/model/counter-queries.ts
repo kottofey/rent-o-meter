@@ -37,6 +37,24 @@ export const useCountersQueryClient = async ({
   });
 };
 
+export const useCounterQueryClient = async ({
+  client,
+  scopes,
+  includes,
+  id,
+}: {
+  id: number;
+  client: QueryClient;
+  scopes?: ICounterScopes;
+  includes?: ICounterIncludes;
+}) => {
+  // Для разовых запросов
+  return await client.fetchQuery({
+    queryKey: counterKeys.detail({ id, scopes, includes }),
+    queryFn: () => getCounter({ id, scopes, includes }),
+  });
+};
+
 export const useCountersQuery = ({
   scopes,
   includes,
@@ -53,10 +71,18 @@ export const useCountersQuery = ({
   });
 };
 
-export const useCounterQuery = ({ id }: { id: number }) => {
+export const useCounterQuery = ({
+  id,
+  scopes,
+  includes,
+}: {
+  scopes?: ICounterScopes;
+  includes?: ICounterIncludes;
+  id: number;
+}) => {
   return useQuery({
-    queryKey: counterKeys.detail(id),
-    queryFn: () => getCounter({ id }),
+    queryKey: counterKeys.detail({ id, scopes, includes }),
+    queryFn: () => getCounter({ id, scopes, includes }),
   });
 };
 
@@ -86,7 +112,7 @@ export const useEditCounterMutation = () => {
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: counterKeys.lists() });
       await queryClient.invalidateQueries({
-        queryKey: counterKeys.detail(variables.id),
+        queryKey: counterKeys.detail({ id: variables.id }),
       });
     },
   });
@@ -99,7 +125,7 @@ export const useDeleteCounterMutation = () => {
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: counterKeys.lists() });
       await queryClient.invalidateQueries({
-        queryKey: counterKeys.detail(variables.id),
+        queryKey: counterKeys.detail({ id: variables.id }),
       });
     },
   });
@@ -112,7 +138,7 @@ export const useRestoreCounterMutation = () => {
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: counterKeys.lists() });
       await queryClient.invalidateQueries({
-        queryKey: counterKeys.detail(variables.id),
+        queryKey: counterKeys.detail({ id: variables.id }),
       });
     },
   });

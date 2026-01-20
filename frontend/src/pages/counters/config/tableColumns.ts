@@ -28,9 +28,16 @@ export const columns: DataTableColumns<ICounter> = [
     },
   },
   {
+    title: 'Договор',
+    key: 'agreement.name',
+    align: 'center',
+  },
+  {
     title: 'Месяц',
     key: 'month',
     align: 'center',
+    sorter: 'default',
+    defaultSortOrder: 'descend',
     render: (row: ICounter) =>
       parseDate({ date: row.month, format: 'MMMM YYYY' }),
   },
@@ -53,11 +60,15 @@ export const columns: DataTableColumns<ICounter> = [
     title: 'Вода',
     key: 'counter_water',
     align: 'center',
+    render: (row: ICounter) =>
+      row.counter_water - row.counter_prev_water + ' м\u00B3',
   },
   {
     title: 'Свет',
     key: 'counter_electricity',
     align: 'center',
+    render: (row: ICounter) =>
+      row.counter_electricity - row.counter_prev_electricity + ' кВт',
   },
   {
     title: 'Комментарий',

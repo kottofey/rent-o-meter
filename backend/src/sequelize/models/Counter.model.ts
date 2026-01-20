@@ -96,6 +96,14 @@ export default class Counters extends Model {
   @Column({ type: DataTypes.INTEGER, allowNull: false })
   declare counter_electricity: number;
 
+  @NotNull
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare counter_prev_water: number;
+
+  @NotNull
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare counter_prev_electricity: number;
+
   @Column(DataTypes.TEXT)
   declare comment: string;
 

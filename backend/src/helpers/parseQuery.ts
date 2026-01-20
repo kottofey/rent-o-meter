@@ -22,6 +22,7 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     isExpiredAndActive: () => ({ method: ['isExpiredAndActive'] }),
     withActiveAgreementsOnly: () => ({ method: ['withActiveAgreementsOnly'] }),
     withAgreementAndRentee: () => ({ method: ['withAgreementAndRentee'] }),
+    'agreements:activeOnly': () => ({ method: ['agreements:activeOnly'] }),
 
     withPeriod: rawDates => {
       if (rawDates && typeof rawDates === 'object') {
@@ -55,6 +56,8 @@ export default function parseQuery(query: QueryString.ParsedQs) {
 
       return { method: ['byAgreementId', agreementId] };
     },
+
+    //
   } as const;
 
   // -----------------------------------------------------------------------------

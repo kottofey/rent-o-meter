@@ -17,6 +17,8 @@ import { ref, toRef, unref } from 'vue';
 import { useTarifModal } from '../lib/useTarifModal';
 
 import { ITarif } from '@/entities/tarif';
+import { parseMoney } from '@/shared/lib/parseMoney';
+import { parseNumber } from '@/shared/lib/parseNumber';
 
 // -----------------------------------------------------------------------------
 // State
@@ -78,6 +80,10 @@ const rules: FormRules = {
     message: 'Обязательное поле',
   },
 };
+
+// -----------------------------------------------------------------------------
+// actions
+// -----------------------------------------------------------------------------
 </script>
 
 <template>
@@ -119,6 +125,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.water"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
 
@@ -129,6 +148,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.electricity"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
 
@@ -139,6 +171,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.heat"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
           </div>
@@ -151,6 +196,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.gas"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
             <NFormItem
@@ -160,6 +218,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.renovation"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
 
@@ -170,6 +241,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.tko"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
           </div>
@@ -182,6 +266,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.managing_company"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
 
@@ -192,6 +289,19 @@ const rules: FormRules = {
               <NInputNumber
                 v-model:value="formData.domofon"
                 :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
               />
             </NFormItem>
           </div>

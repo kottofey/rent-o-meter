@@ -17,5 +17,13 @@ export const counterKeys = {
 
   details: () => [...counterKeys.all, 'detail'] as const,
 
-  detail: (id: number) => [...counterKeys.details(), id] as const,
+  detail: ({
+    id,
+    scopes = {},
+    includes = [],
+  }: {
+    id: number;
+    scopes?: ICounterScopes;
+    includes?: ICounterIncludes;
+  }) => [...counterKeys.details(), { id, scopes, includes }] as const,
 };

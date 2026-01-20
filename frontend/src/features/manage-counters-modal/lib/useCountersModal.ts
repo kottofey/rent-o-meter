@@ -5,6 +5,7 @@ import { type ICounter } from '@/entities/counter';
 import {
   useCreateCounterMutation,
   useEditCounterMutation,
+  useCounterQueryClient,
 } from '@/entities/counter';
 
 export function useCountersModal({
@@ -22,6 +23,8 @@ export function useCountersModal({
     date_end: undefined,
 
     counter_water: undefined,
+    counter_prev_water: undefined,
+
     counter_electricity: undefined,
     counter_prev_electricity: undefined,
 
@@ -44,6 +47,8 @@ export function useCountersModal({
           agreementId: counter.agreement.id,
 
           counter_water: counter.counter_water,
+          counter_prev_water: counter.counter_prev_water,
+
           counter_electricity: counter.counter_electricity,
           counter_prev_electricity: counter.counter_prev_electricity,
 
