@@ -1,7 +1,7 @@
 import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
 import { type FormInst } from 'naive-ui';
 
-import { type ITarif } from '@/entities/tarif';
+import { type ITarif, useDeleteTarifMutation } from '@/entities/tarif';
 import { useCreateTarifMutation, useEditTarifMutation } from '@/entities/tarif';
 import { dayjs } from '@/shared/lib/dayjs';
 
@@ -16,15 +16,10 @@ export function useTarifModal({
 
   // Init form data
   const initState = {
-    actual_from: dayjs().valueOf(),
-    water: undefined,
-    electricity: undefined,
-    heat: undefined,
-    gas: undefined,
-    renovation: undefined,
-    tko: undefined,
-    managing_company: undefined,
-    domofon: undefined,
+    tarif_type: undefined,
+    rate: undefined,
+    valid_from: dayjs().valueOf(),
+    valid_to: dayjs().valueOf(),
     comment: '',
   };
 
@@ -35,15 +30,11 @@ export function useTarifModal({
     (tarif) => {
       if (tarif) {
         formData.value = {
-          actual_from: tarif.actual_from,
-          water: tarif.water,
-          electricity: tarif.electricity,
-          heat: tarif.heat,
-          gas: tarif.gas,
-          renovation: tarif.renovation,
-          tko: tarif.tko,
-          managing_company: tarif.managing_company,
-          domofon: tarif.domofon,
+          tarif_type: tarif.tarif_type,
+          rate: tarif.rate,
+          valid_from: tarif.valid_from,
+          valid_to: tarif.valid_to,
+
           comment: tarif.comment,
         };
       } else {
@@ -63,6 +54,12 @@ export function useTarifModal({
     isPending: isEditPending,
     error: editError,
   } = useEditTarifMutation();
+
+  const {
+    mutate: deleteTarif,
+    isPending: isDeletePending,
+    error: deleteError,
+  } = useDeleteTarifMutation();
 
   const submit = async () => {
     // можно добавить валидацию
@@ -94,6 +91,7 @@ export function useTarifModal({
   return {
     formData: toRef(formData),
     submit,
+    deleteTarif,
 
     isPending: initialData ? isCreatePending : isEditPending,
     error: initialData ? createError : editError,

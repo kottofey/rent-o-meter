@@ -7,16 +7,22 @@ import { IBill } from '@/entities/bill';
 // TODO написать алгоритм сериализации с проверкой через zod
 export interface ITarif {
   id: number;
-  actual_from: number;
-  water: number;
-  electricity: number;
-  electricity_over_150kw: number;
-  heat: number;
-  gas: number;
-  renovation: number;
-  tko: number;
-  managing_company: number;
-  domofon: number;
+  tarif_type:
+    | 'electricity'
+    | 'electricity_over_150kw'
+    | 'water_in'
+    | 'water_out'
+    | 'heat'
+    | 'gas'
+    | 'renovation'
+    | 'tko'
+    | 'managing_company'
+    | 'domofon';
+
+  rate: number;
+  valid_from: number;
+  valid_to: number;
+
   comment?: string;
 
   bills: IBill[];

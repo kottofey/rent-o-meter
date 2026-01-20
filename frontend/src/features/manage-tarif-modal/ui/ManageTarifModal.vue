@@ -4,13 +4,13 @@ import {
   NButton,
   NButtonGroup,
   NCard,
-  NCheckbox,
   NDatePicker,
   NForm,
   NFormItem,
   NInput,
   NInputNumber,
   NModal,
+  NSelect,
 } from 'naive-ui';
 import { ref, toRef, unref } from 'vue';
 
@@ -37,53 +37,47 @@ const { tarif = undefined } = defineProps<{
 
 const tarifRef = toRef(() => tarif);
 
-const { formData, submit, isPending, isFormValidateError } = useTarifModal({
-  initialData: tarifRef,
-  formRef: formRef,
-});
+const { formData, submit, deleteTarif, isPending, isFormValidateError } =
+  useTarifModal({
+    initialData: tarifRef,
+    formRef: formRef,
+  });
 
 const rules: FormRules = {
-  actual_from: {
+  tarif_type: {
     required: true,
     message: 'Обязательное поле',
   },
-  water: {
+  rate: {
     required: true,
     message: 'Обязательное поле',
   },
-  electricity: {
+  valid_from: {
     required: true,
     message: 'Обязательное поле',
   },
-  heat: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  gas: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  renovation: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  tko: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  managing_company: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  domofon: {
+  valid_to: {
     required: true,
     message: 'Обязательное поле',
   },
 };
 
 // -----------------------------------------------------------------------------
-// actions
+// Form Setup
 // -----------------------------------------------------------------------------
+
+const tarifTypeOptions = [
+  { value: 'electricity', label: 'Свет (до 150кВт)' },
+  { value: 'electricity_over_150kw', label: 'Свет (сверх 150кВт)' },
+  { value: 'water_in', label: 'Подведение воды' },
+  { value: 'water_out', label: 'Отведение воды' },
+  { value: 'heat', label: 'Тепло' },
+  { value: 'gas', label: 'Газ' },
+  { value: 'renovation', label: 'Капремонт' },
+  { value: 'tko', label: 'ТКО' },
+  { value: 'managing_company', label: 'УК (квартплата)' },
+  { value: 'domofon', label: 'Домофон' },
+];
 </script>
 
 <template>
@@ -110,199 +104,52 @@ const rules: FormRules = {
         "
       >
         <div class="fields">
+          <NFormItem
+            label="Тип тарифа"
+            path="tarif_type"
+          >
+            <NSelect
+              v-model:value="formData.tarif_type"
+              :options="tarifTypeOptions"
+              default-value="electricity"
+            />
+          </NFormItem>
+
           <div class="fields__group">
+            <NFormItem
+              label="Тариф"
+              path="rate"
+            >
+              <NInputNumber
+                v-model:value="formData.rate"
+                :show-button="false"
+                :parse="(input) => parseNumber(input)"
+                :format="
+                  (val) => {
+                    if (val) {
+                      return parseMoney({
+                        ammount: val,
+                        mode: 'kopeyki',
+                      });
+                    }
+
+                    return '';
+                  }
+                "
+              />
+            </NFormItem>
             <NFormItem
               label="Актуально с"
-              path="actual_from"
+              path="valid_from"
             >
-              <NDatePicker v-model:value="formData.actual_from" />
+              <NDatePicker v-model:value="formData.valid_from" />
             </NFormItem>
 
             <NFormItem
-              label="Вода"
-              path="water"
+              label="Актуально по"
+              path="valid_to"
             >
-              <NInputNumber
-                v-model:value="formData.water"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
-            </NFormItem>
-
-            <NFormItem
-              label="Электричество"
-              path="electricity"
-            >
-              <NInputNumber
-                v-model:value="formData.electricity"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
-            </NFormItem>
-
-            <NFormItem
-              label="Тепло"
-              path="heat"
-            >
-              <NInputNumber
-                v-model:value="formData.heat"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
-            </NFormItem>
-          </div>
-
-          <div class="fields__group">
-            <NFormItem
-              label="Газ"
-              path="gas"
-            >
-              <NInputNumber
-                v-model:value="formData.gas"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
-            </NFormItem>
-            <NFormItem
-              label="Капремонт"
-              path="renovation"
-            >
-              <NInputNumber
-                v-model:value="formData.renovation"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
-            </NFormItem>
-
-            <NFormItem
-              label="ТКО"
-              path="tko"
-            >
-              <NInputNumber
-                v-model:value="formData.tko"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
-            </NFormItem>
-          </div>
-
-          <div class="fields__group">
-            <NFormItem
-              label="УК (квартплата)"
-              path="managing_company"
-            >
-              <NInputNumber
-                v-model:value="formData.managing_company"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
-            </NFormItem>
-
-            <NFormItem
-              label="Домофон"
-              path="domofon"
-            >
-              <NInputNumber
-                v-model:value="formData.domofon"
-                :show-button="false"
-                :parse="(input) => parseNumber(input)"
-                :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
-                "
-              />
+              <NDatePicker v-model:value="formData.valid_to" />
             </NFormItem>
           </div>
         </div>
@@ -332,6 +179,19 @@ const rules: FormRules = {
         </NButton>
         <NButton
           type="error"
+          @click="
+            () => {
+              if (tarifRef) {
+                isOpened = false;
+                deleteTarif({ id: tarifRef.id });
+              }
+            }
+          "
+          >Удалить
+        </NButton>
+        <NButton
+          color="black"
+          text-color="white"
           @click="isOpened = false"
           >Отменить
         </NButton>
@@ -346,8 +206,8 @@ const rules: FormRules = {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 500px;
   max-width: 800px;
+  padding: 10px;
   border-radius: 12px;
 
   &__buttons {

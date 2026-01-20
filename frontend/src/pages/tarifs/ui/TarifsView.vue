@@ -8,22 +8,31 @@ import { PageLayout } from '@/app/layouts';
 import { ManageTarifModal } from '@/features/manage-tarif-modal';
 import { type ITarif, useTarifsQuery } from '@/entities/tarif';
 import { AddButton } from '@/shared/ui';
-import { ManageAgreementModal } from '@/features/manage-agreement-modal';
+import { SelectTarif } from '@/widgets/select-tarif';
 
 // -----------------------------------------------------------------------------
 // State
 // -----------------------------------------------------------------------------
 
 const { data: tarifs, isLoading } = useTarifsQuery({});
-const isModalOpened = ref(false);
 
-// -----------------------------------------------------------------------------
-// Setup
-// -----------------------------------------------------------------------------
+const isModalOpened = ref(false);
+const tarifFilter = ref<ITarif['tarif_type'] | null>(null);
 
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------
+const filteredTarifs = computed(() => {
+  if (tarifs.value && tarifFilter.value !== null) {
+    return tarifs.value.filter(
+      (tarif) => tarif.tarif_type === tarifFilter.value,
+    );
+  } else if (tarifs.value && tarifFilter.value === null) {
+    return tarifs.value;
+  }
+  return [];
+});
+
 const tarifToEditId = ref<number | undefined>(undefined);
 
 const tarifToEdit = computed(() =>
@@ -49,10 +58,13 @@ const createRow = () => {
   <PageLayout>
     <template #buttons-extra>
       <AddButton @click="createRow">Новый тариф</AddButton>
+      <SelectTarif
+        label="Фильтр: "
+        v-model:value="tarifFilter"
+      />
     </template>
-
     <NDataTable
-      :data="tarifs"
+      :data="filteredTarifs"
       :columns="columns"
       :row-props="editRow"
       :loading="isLoading"

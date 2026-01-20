@@ -20,53 +20,53 @@ import { dayjs } from '@/helpers';
 @Table({ paranoid: true })
 export default class Tarif extends Model {
   @NotNull
+  @Column({
+    type: DataTypes.ENUM(
+      'electricity',
+      'electricity_over_150kw',
+      'water_in',
+      'water_out',
+      'heat',
+      'gas',
+      'renovation',
+      'tko',
+      'managing_company',
+      'domofon',
+    ),
+    allowNull: false,
+  })
+  declare tarif_type: string;
+
+  @NotNull
+  @Column({ type: DataTypes.NUMBER, allowNull: false })
+  declare rate: number;
+
+  @NotNull
   @Column({ type: DataTypes.DATEONLY, allowNull: false })
-  set actual_from(date: number) {
-    this.setDataValue('actual_from', dayjs(date).toDate());
+  set valid_from(date: number) {
+    this.setDataValue('valid_from', dayjs(date).toDate());
   }
-  get actual_from() {
-    const raw: string = this.getDataValue('actual_from') as string;
+  get valid_from() {
+    const raw: string = this.getDataValue('valid_from') as string;
     return dayjs(raw).toDate().valueOf();
   }
 
   @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare water: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare electricity: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare electricity_over_150kw: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare heat: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare gas: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare renovation: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare tko: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare managing_company: string;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare domofon: string;
+  @Column({ type: DataTypes.DATEONLY, allowNull: false })
+  set valid_to(date: number) {
+    this.setDataValue('valid_to', dayjs(date).toDate());
+  }
+  get valid_to() {
+    const raw: string = this.getDataValue('valid_to') as string;
+    return dayjs(raw).toDate().valueOf();
+  }
 
   @Column(DataTypes.TEXT)
   declare comment: string;
+
+  // -----------------------------------------------------------------------------
+  // Virtual
+  // -----------------------------------------------------------------------------
 
   // -----------------------------------------------------------------------------
   // Relations
