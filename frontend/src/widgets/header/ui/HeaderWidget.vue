@@ -36,7 +36,7 @@ const settings = useLocalStorage<ISettings>('settings', {
       :to="{ name: 'counters.show' }"
       class="link"
     >
-      Показания счетчиков
+      Счетчики
     </RouterLink>
     <RouterLink
       :to="{ name: 'rentees.show' }"

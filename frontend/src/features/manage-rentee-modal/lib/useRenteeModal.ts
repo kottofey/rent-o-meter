@@ -5,7 +5,6 @@ import { type IRentee } from '@/entities/rentee/model/rentee-api';
 import {
   useCreateRenteeMutation,
   useEditRenteeMutation,
-  useDeleteRenteeMutation,
 } from '@/entities/rentee';
 import { dayjs } from '@/shared/lib/dayjs';
 

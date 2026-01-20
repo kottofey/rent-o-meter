@@ -1,13 +1,4 @@
-import {
-  isRef,
-  type MaybeRef,
-  type Ref,
-  ref,
-  toRef,
-  unref,
-  watch,
-  computed,
-} from 'vue';
+import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
 import { type FormInst } from 'naive-ui';
 import { useQueryClient } from '@tanstack/vue-query';
 
@@ -15,8 +6,7 @@ import { type IBill } from '@/entities/bill';
 import { useCreateBillMutation, useEditBillMutation } from '@/entities/bill';
 import { dayjs } from '@/shared/lib/dayjs';
 import { useTarifQueryClient } from '@/entities/tarif';
-import { useCountersQueryClient, useCountersQuery } from '@/entities/counter';
-import { getAllTarifs } from '@/entities/tarif/model/tarif-api';
+import { useCountersQueryClient } from '@/entities/counter';
 
 export function useBillModal({
   initialData,

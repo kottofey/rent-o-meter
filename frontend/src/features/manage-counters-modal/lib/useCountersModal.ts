@@ -5,7 +5,6 @@ import { type ICounter } from '@/entities/counter';
 import {
   useCreateCounterMutation,
   useEditCounterMutation,
-  useCounterQueryClient,
 } from '@/entities/counter';
 
 export function useCountersModal({
