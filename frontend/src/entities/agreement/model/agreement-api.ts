@@ -9,6 +9,8 @@ export interface IAgreement {
   status: boolean;
   date_start: number;
   date_end: number;
+  penalty: number;
+  debt: number;
   comment: string;
 
   renteeId: number;

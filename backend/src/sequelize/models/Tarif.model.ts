@@ -39,6 +39,10 @@ export default class Tarif extends Model {
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false })
+  declare electricity_over_150kw: string;
+
+  @NotNull
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
   declare heat: string;
 
   @NotNull

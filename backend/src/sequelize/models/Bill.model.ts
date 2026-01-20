@@ -60,11 +60,7 @@ export default class Bill extends Model {
 
   @NotNull
   @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
-  declare penalty: number;
-
-  @NotNull
-  @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
-  declare debt: number;
+  declare ammount_paid: number;
 
   @Column(DataTypes.TEXT)
   declare comment: string;

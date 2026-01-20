@@ -1,3 +1,5 @@
+import { MaybeRef } from 'vue';
+
 import { useApi, httpMethod, serializeQuery } from '@/shared/api';
 import { IBill } from '@/entities/bill';
 
@@ -8,6 +10,7 @@ export interface ITarif {
   actual_from: number;
   water: number;
   electricity: number;
+  electricity_over_150kw: number;
   heat: number;
   gas: number;
   renovation: number;

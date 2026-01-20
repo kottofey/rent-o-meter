@@ -58,17 +58,15 @@ export const columns: DataTableColumns<ICounter> = [
 
   {
     title: 'Вода',
-    key: 'counter_water',
+    key: 'water_diff',
     align: 'center',
-    render: (row: ICounter) =>
-      row.counter_water - row.counter_prev_water + ' м\u00B3',
+    render: (row: ICounter) => row.water_diff + ' м\u00B3',
   },
   {
     title: 'Свет',
-    key: 'counter_electricity',
+    key: 'electricity_diff',
     align: 'center',
-    render: (row: ICounter) =>
-      row.counter_electricity - row.counter_prev_electricity + ' кВт',
+    render: (row: ICounter) => row.electricity_diff + ' кВт',
   },
   {
     title: 'Комментарий',

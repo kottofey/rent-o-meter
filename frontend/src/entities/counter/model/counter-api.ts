@@ -11,6 +11,10 @@ export interface ICounter {
   counter_prev_water: number;
   counter_electricity: number;
   counter_prev_electricity: number;
+
+  electricity_diff: number;
+  water_diff: number;
+
   comment?: string;
 
   agreementId: number;

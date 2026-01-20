@@ -81,6 +81,11 @@ export const columns: DataTableColumns<IBill> = [
   },
 
   {
+    title: 'Оплачено',
+    key: 'ammount_paid',
+    align: 'center',
+  },
+  {
     title: 'Комментарий',
     key: 'comment',
     align: 'center',

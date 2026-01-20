@@ -24,11 +24,18 @@ export const columns: DataTableColumns<ITarif> = [
       parseMoney({ ammount: row.water, mode: 'kopeyki' }),
   },
   {
-    title: 'Электричество',
+    title: 'Свет (до 150кВт)',
     key: 'electricity',
     align: 'center',
     render: (row: ITarif) =>
       parseMoney({ ammount: row.electricity, mode: 'kopeyki' }),
+  },
+  {
+    title: 'Свет (более 150кВт)',
+    key: 'electricity_over_150kw',
+    align: 'center',
+    render: (row: ITarif) =>
+      parseMoney({ ammount: row.electricity_over_150kw, mode: 'kopeyki' }),
   },
   {
     title: 'Тепло',

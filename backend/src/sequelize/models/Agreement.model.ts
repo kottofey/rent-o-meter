@@ -89,6 +89,14 @@ export default class Agreement extends Model {
     return dayjs(raw).toDate().valueOf();
   }
 
+  @NotNull
+  @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
+  declare debt: number;
+
+  @NotNull
+  @Column({ type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 })
+  declare penalty: number;
+
   @Column(DataTypes.TEXT)
   declare comment: string;
 

@@ -11,8 +11,7 @@ export interface IBill {
 
   ammount: number;
   extra_ammount: number;
-  penalty: number;
-  debt: number;
+  ammount_paid: number;
 
   comment: string;
 

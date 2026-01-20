@@ -108,6 +108,26 @@ export default class Counters extends Model {
   declare comment: string;
 
   // -----------------------------------------------------------------------------
+  // Virtual fields
+  // -----------------------------------------------------------------------------
+
+  @Column({ type: DataTypes.VIRTUAL })
+  get water_diff() {
+    return this.counter_water - this.counter_prev_water;
+  }
+  set water_diff(value) {
+    throw new Error('Do not try to set the `water_diff` value!');
+  }
+
+  @Column({ type: DataTypes.VIRTUAL })
+  get electricity_diff() {
+    return this.counter_electricity - this.counter_prev_electricity;
+  }
+  set electricity_diff(value) {
+    throw new Error('Do not try to set the `electricity_diff` value!');
+  }
+
+  // -----------------------------------------------------------------------------
   // Relations
   // -----------------------------------------------------------------------------
   @NotNull
