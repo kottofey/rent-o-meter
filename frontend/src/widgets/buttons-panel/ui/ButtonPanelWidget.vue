@@ -14,6 +14,7 @@
   flex-wrap: wrap;
   align-items: center;
   column-gap: 10px;
+  row-gap: 10px;
   padding: 10px;
   border: 1px solid $color-accent;
   margin: 0 30px 10px;
