@@ -72,6 +72,28 @@ export const columns: DataTableColumns<IAgreement> = [
     title: 'Статус',
     key: 'status',
     align: 'center',
+    filter(value, row) {
+      switch (value) {
+        case 'actual':
+          return row.status;
+        case 'expired':
+          return !row.status;
+        default:
+          return true;
+      }
+    },
+    filterMultiple: false,
+    defaultFilterOptionValues: ['actual'],
+    filterOptions: [
+      {
+        label: 'Неактивные',
+        value: 'expired',
+      },
+      {
+        label: 'Актуальные',
+        value: 'actual',
+      },
+    ],
     render: (row: IAgreement) => {
       return h(
         NTag,
