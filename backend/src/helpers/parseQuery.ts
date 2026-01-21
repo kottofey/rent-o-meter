@@ -15,49 +15,53 @@ export default function parseQuery(query: QueryString.ParsedQs) {
   // -----------------------------------------------------------------------------
 
   const SCOPE_HANDLERS: Record<string, ScopeHandler> = {
-    isBillsDebt: () => ({ method: ['isBillsDebt'] }),
-    isNotExpired: () => ({ method: ['isNotExpired'] }),
-    isStatusActive: () => ({ method: ['isStatusActive'] }),
-    isExpired: () => ({ method: ['isExpired'] }),
-    isExpiredAndActive: () => ({ method: ['isExpiredAndActive'] }),
-    withActiveAgreementsOnly: () => ({ method: ['withActiveAgreementsOnly'] }),
-    withAgreementAndRentee: () => ({ method: ['withAgreementAndRentee'] }),
-    'agreements:activeOnly': () => ({ method: ['agreements:activeOnly'] }),
+    // -----------------------------------------------------------------------------
+    // Bills
+    // -----------------------------------------------------------------------------
+    'bills:isDebt': () => ({ method: ['bills:isDebt'] }),
 
-    withPeriod: rawDates => {
+    // -----------------------------------------------------------------------------
+    // Counters
+    // -----------------------------------------------------------------------------
+    'counter:byPeriod': rawDates => {
       if (rawDates && typeof rawDates === 'object') {
         const dates = rawDates as { start: number; end: number };
-        return { method: ['withPeriod', { start: dates.start, end: dates.end }] };
+        return { method: ['counter:byPeriod', { start: dates.start, end: dates.end }] };
       }
     },
-
-    actualFrom: rawDate => {
-      const actualFrom = rawDate as number;
-      console.log(chalk.yellow('tarif actualFrom', actualFrom));
-
-      return { method: ['actualFrom', actualFrom] };
-    },
-
-    byRentee: rawAgreementId => {
-      const agreementId = rawAgreementId as number;
-      return { method: ['byRentee', { agreementId }] };
-    },
-
-    byMonth: rawMonth => {
+    'counter:byMonth': rawMonth => {
       const month = rawMonth as number;
-      console.log(chalk.yellow('counter byMonth', month));
-
-      return { method: ['byMonth', month] };
+      return { method: ['counter:byMonth', month] };
     },
-
-    byAgreementId: rawAgreementId => {
+    'counter:byAgreementId': rawAgreementId => {
       const agreementId = rawAgreementId as number;
-      console.log(chalk.yellow('counter byAgreementId', agreementId));
-
-      return { method: ['byAgreementId', agreementId] };
+      return { method: ['counter:byAgreementId', agreementId] };
     },
 
-    //
+    // -----------------------------------------------------------------------------
+    // Rentees
+    // -----------------------------------------------------------------------------
+    'rentee:withActiveAgreement': () => ({ method: ['rentee:withActiveAgreement'] }),
+
+    // -----------------------------------------------------------------------------
+    // Tarifs
+    // -----------------------------------------------------------------------------
+    'tarif:actualOnDate': rawDate => {
+      const date = rawDate as number;
+      return { method: ['tarif:actualOnDate', date] };
+    },
+
+    // -----------------------------------------------------------------------------
+    // Agreements
+    // -----------------------------------------------------------------------------
+    'agreements:activeOnly': () => ({ method: ['agreements:activeOnly'] }),
+    'agreements:isNotExpired': () => ({ method: ['agreements:isNotExpired'] }),
+    'agreements:isExpired': () => ({ method: ['agreements:isExpired'] }),
+    'agreements:isExpiredAndActive': () => ({ method: ['agreements:isExpiredAndActive'] }),
+    'agreements:byRentee': rawRenteeId => {
+      const renteeId = rawRenteeId as number;
+      return { method: ['agreements:byRentee', renteeId] };
+    },
   } as const;
 
   // -----------------------------------------------------------------------------

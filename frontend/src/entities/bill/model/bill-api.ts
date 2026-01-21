@@ -25,7 +25,9 @@ export interface IBill {
   tarif: ITarif;
 }
 
-export type IBillScopes = Array<''>;
+export type IBillScopes = {
+  'bills:isDebt'?: boolean;
+};
 export type IBillIncludes = Array<'Agreement' | 'Counter' | 'Tarif'>;
 
 export async function getAllBills({

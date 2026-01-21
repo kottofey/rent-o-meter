@@ -1,5 +1,3 @@
-import { MaybeRef } from 'vue';
-
 import { useApi, httpMethod, serializeQuery } from '@/shared/api';
 import { IBill } from '@/entities/bill';
 
@@ -29,7 +27,7 @@ export interface ITarif {
 }
 
 export type ITarifScopes = {
-  actualFrom: MaybeRef<string>;
+  'tarif:actualOnDate'?: string;
 };
 export type ITarifIncludes = Array<'Bill'>;
 

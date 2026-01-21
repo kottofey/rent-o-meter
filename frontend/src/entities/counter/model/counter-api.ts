@@ -26,11 +26,9 @@ export interface ICounter {
 export type ICounterIncludes = Array<'Agreement' | 'Bill' | 'Agreement.Rentee'>;
 
 export type ICounterScopes = {
-  byMonth?: string;
-  withAgreementAndRentee?: '';
-  isDebt?: '';
-  byAgreementId?: number;
-  withPeriod?: {
+  'counter:byAgreementId'?: number;
+  'counter:byMonth'?: string;
+  'counter:byPeriod'?: {
     start: string;
     end: string;
   };

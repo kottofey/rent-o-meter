@@ -5,13 +5,14 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/bills?includes[]=Counter
+  url: {{BASE_URL}}/bills?scopes[bills:isDebt]
   body: none
   auth: inherit
 }
 
 params:query {
-  includes[]: Counter
+  "scopes[bills:isDebt]": 
+  ~includes[]: Counter
 }
 
 settings {

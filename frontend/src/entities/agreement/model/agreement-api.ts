@@ -20,13 +20,13 @@ export interface IAgreement {
   bills: IBill[];
 }
 
-export type IAgreementScopes = Array<
-  | 'isActive'
-  | 'isActual'
-  | 'isExpired'
-  | 'isExpiredAndActive'
-  | 'agreements:activeOnly'
->;
+export type IAgreementScopes = {
+  'agreements:activeOnly'?: boolean;
+  'agreements:isNotExpired'?: boolean;
+  'agreements:isExpired'?: boolean;
+  'agreements:isExpiredAndActive'?: boolean;
+  'agreements:byRentee'?: number;
+};
 export type IAgreementIncludes = Array<'Rentee' | 'Counter' | 'Bill'>;
 
 export async function getAllAgreements({

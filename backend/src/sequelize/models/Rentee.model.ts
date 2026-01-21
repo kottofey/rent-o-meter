@@ -1,11 +1,11 @@
 import { Model, Table, Column, NotNull, Default, HasMany, Scopes } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import { Bill, Agreement } from '@/models';
+import { Agreement } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
-  withActiveAgreementsOnly() {
+  'rentee:withActiveAgreement'() {
     return {
       include: {
         model: Agreement,

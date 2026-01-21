@@ -56,10 +56,6 @@ const rules: FormRules = {
     required: true,
     message: 'Обязательное поле',
   },
-  valid_to: {
-    required: true,
-    message: 'Обязательное поле',
-  },
 };
 
 // -----------------------------------------------------------------------------
@@ -142,14 +138,21 @@ const tarifTypeOptions = [
               label="Актуально с"
               path="valid_from"
             >
-              <NDatePicker v-model:value="formData.valid_from" />
+              <NDatePicker
+                v-model:value="formData.valid_from"
+                format="dd MMMM yyyy"
+              />
             </NFormItem>
 
             <NFormItem
               label="Актуально по"
               path="valid_to"
             >
-              <NDatePicker v-model:value="formData.valid_to" />
+              <NDatePicker
+                v-model:value="formData.valid_to"
+                clearable
+                format="dd MMMM yyyy"
+              />
             </NFormItem>
           </div>
         </div>

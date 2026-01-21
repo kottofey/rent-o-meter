@@ -55,11 +55,7 @@ export function useTarifModal({
     error: editError,
   } = useEditTarifMutation();
 
-  const {
-    mutate: deleteTarif,
-    isPending: isDeletePending,
-    error: deleteError,
-  } = useDeleteTarifMutation();
+  const { mutate: deleteTarif } = useDeleteTarifMutation();
 
   const submit = async () => {
     // можно добавить валидацию

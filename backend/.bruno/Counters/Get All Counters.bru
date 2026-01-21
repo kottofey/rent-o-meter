@@ -5,17 +5,17 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/counters?includes[]=Bill
+  url: {{BASE_URL}}/counters?scopes[counter:byPeriod][start]=2025-11-01&scopes[counter:byPeriod][end]=2026-12-01
   body: none
   auth: inherit
 }
 
 params:query {
-  includes[]: Bill
-  ~scopes[withPeriod][start]: 2025-11-01
-  ~scopes[withPeriod][end]: 2026-12-01
-  ~scopes[renteeId]: 2
-  ~scopes[]: isDebt
+  "scopes[counter:byPeriod][start]": 2025-11-01
+  "scopes[counter:byPeriod][end]": 2026-12-01
+  ~"scopes[counter:byAgreementId]": 2
+  ~"scopes[counter:byMonth]": 2025-12-01
+  ~includes[]: Bill
   ~includes[]: Rentee
 }
 

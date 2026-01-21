@@ -10,11 +10,11 @@ import {
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import { Agreement, Counter, Rentee, Tarif } from '@/models';
+import { Agreement, Counter, Tarif } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
-  isBillsDebt() {
+  'bills:isDebt'() {
     return {
       where: {
         status: {

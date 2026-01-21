@@ -21,7 +21,9 @@ export interface IRentee {
 
 // TODO дописать скоупы если будут
 // TODO написать алгоритм сериализации с проверкой через zod
-export type IRenteeScopes = Array<'withActiveAgreementsOnly'>;
+export type IRenteeScopes = {
+  'rentee:withActiveAgreement'?: boolean;
+};
 export type IRenteeIncludes = Array<'Agreement'>;
 
 export async function getAllRentees({

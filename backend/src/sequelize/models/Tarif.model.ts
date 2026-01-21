@@ -5,15 +5,19 @@ import { Bill } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
-  actualFrom(actualFrom: number) {
+  'tarif:actualOnDate'(actualFrom: number) {
     return {
       where: {
-        actual_from: {
+        valid_from: {
           [Op.lte]: actualFrom,
         },
+        valid_to: {
+          [Op.or]: {
+            [Op.gt]: actualFrom,
+            [Op.eq]: null,
+          },
+        },
       },
-      limit: 1,
-      order: [['actual_from', 'DESC']],
     };
   },
 }))
@@ -51,10 +55,9 @@ export default class Tarif extends Model {
     return dayjs(raw).toDate().valueOf();
   }
 
-  @NotNull
-  @Column({ type: DataTypes.DATEONLY, allowNull: false })
-  set valid_to(date: number) {
-    this.setDataValue('valid_to', dayjs(date).toDate());
+  @Column({ type: DataTypes.DATEONLY, allowNull: true, defaultValue: null })
+  set valid_to(date: number | null) {
+    this.setDataValue('valid_to', date !== null ? dayjs(date).toDate() : null);
   }
   get valid_to() {
     const raw: string = this.getDataValue('valid_to') as string;

@@ -25,7 +25,7 @@ import { Bill, Counter, Rentee } from '@/models';
       },
     };
   },
-  isNotExpired() {
+  'agreements:isNotExpired'() {
     return {
       where: {
         date_end: {
@@ -34,7 +34,7 @@ import { Bill, Counter, Rentee } from '@/models';
       },
     };
   },
-  isExpired() {
+  'agreements:isExpired'() {
     return {
       where: {
         date_end: {
@@ -43,7 +43,7 @@ import { Bill, Counter, Rentee } from '@/models';
       },
     };
   },
-  isExpiredAndActive() {
+  'agreements:isExpiredAndActive'() {
     return {
       where: {
         date_end: {
@@ -51,6 +51,15 @@ import { Bill, Counter, Rentee } from '@/models';
         },
         status: {
           [Op.eq]: true,
+        },
+      },
+    };
+  },
+  'agreements:byRentee'(renteeId: number) {
+    return {
+      where: {
+        renteeId: {
+          [Op.eq]: renteeId,
         },
       },
     };

@@ -45,7 +45,7 @@ export const columns: DataTableColumns<ITarif> = [
     title: 'Действует по',
     key: 'actual_from',
     align: 'center',
-    render: (row: ITarif) => parseDate({ date: row.valid_to }),
+    render: (row: ITarif) => row.valid_to && parseDate({ date: row.valid_to }),
   },
 
   {
