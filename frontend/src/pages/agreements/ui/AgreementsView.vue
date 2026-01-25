@@ -1,32 +1,45 @@
 <script setup lang="ts">
 import { type DataTableInst, NDataTable } from 'naive-ui';
-import { computed, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 
 import { columns } from '../config/tableColumns';
 
 import { PageLayout } from '@/app/layouts';
-import { type IAgreement, useAgreementsQuery } from '@/entities/agreement';
+import {
+  type IAgreement,
+  IAgreementScopes,
+  useAgreementsQuery,
+} from '@/entities/agreement';
 import { ManageAgreementModal } from '@/features/manage-agreement-modal';
 import { AddButton, AppButton } from '@/shared/ui';
 import {
   ScullCrossBonesIcon as ExpiredIcon,
   CheckMarkIcon as ActualIcon,
   WarningIcon as AllIcon,
+  InfinitiIcon,
 } from '@/shared/ui/icons';
 
 // -----------------------------------------------------------------------------
 // State
 // -----------------------------------------------------------------------------
 
-const { data: agreements, isLoading } = useAgreementsQuery({
-  includes: ['Rentee'],
-});
 const isModalOpened = ref(false);
+const withDeleted = ref(false);
 const filter = ref<'expired' | 'actual' | null>('actual');
+
+const agreementScopes = reactive<IAgreementScopes>({
+  'agreements:withDeleted': false,
+});
 
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------
+
+const { data: agreements, isLoading } = useAgreementsQuery({
+  includes: ['Rentee'],
+  scopes: () => agreementScopes,
+});
+
 const table = ref<DataTableInst | null>(null);
 const agreementToEditId = ref<number | undefined>(undefined);
 
@@ -65,6 +78,16 @@ const setAll = () => {
   table.value?.filter({ status: undefined });
   filter.value = null;
 };
+const setWithDeleted = () => {
+  withDeleted.value = !withDeleted.value;
+};
+
+// -----------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------
+watch(withDeleted, () => {
+  agreementScopes['agreements:withDeleted'] = withDeleted.value;
+});
 </script>
 
 <template>
@@ -93,6 +116,14 @@ const setAll = () => {
       >
         <template #default>Все</template>
         <template #icon><AllIcon /></template>
+      </AppButton>
+
+      <AppButton
+        @click="setWithDeleted"
+        :is-outlined="withDeleted"
+      >
+        <template #default>Удаленные</template>
+        <template #icon><InfinitiIcon /></template>
       </AppButton>
     </template>
 

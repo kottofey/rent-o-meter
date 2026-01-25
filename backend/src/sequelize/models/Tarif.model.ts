@@ -4,20 +4,37 @@ import { DataTypes, Op } from 'sequelize';
 import { Bill } from '@/models';
 import { dayjs } from '@/helpers';
 
+export type ITarifTypes =
+  | 'electricity'
+  | 'electricity_over_150kw'
+  | 'water_in'
+  | 'water_out'
+  | 'heat'
+  | 'gas'
+  | 'renovation'
+  | 'tko'
+  | 'managing_company'
+  | 'domofon';
+
 @Scopes(() => ({
-  'tarif:actualOnDate'(actualFrom: number) {
+  'tarif:actualOnDate'(actualOn: number) {
     return {
       where: {
         valid_from: {
-          [Op.lte]: actualFrom,
+          [Op.lte]: actualOn,
         },
         valid_to: {
           [Op.or]: {
-            [Op.gt]: actualFrom,
+            [Op.gt]: actualOn,
             [Op.eq]: null,
           },
         },
       },
+    };
+  },
+  'tarif:byType'(tarif_type: ITarifTypes) {
+    return {
+      where: { tarif_type },
     };
   },
 }))
@@ -39,7 +56,7 @@ export default class Tarif extends Model {
     ),
     allowNull: false,
   })
-  declare tarif_type: string;
+  declare tarif_type: ITarifTypes;
 
   @NotNull
   @Column({ type: DataTypes.NUMBER, allowNull: false })

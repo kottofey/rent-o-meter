@@ -28,6 +28,7 @@ export interface ITarif {
 
 export type ITarifScopes = {
   'tarif:actualOnDate'?: string;
+  'tarif:byType'?: ITarif['tarif_type'];
 };
 export type ITarifIncludes = Array<'Bill'>;
 

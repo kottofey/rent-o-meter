@@ -91,15 +91,15 @@ export function useBillModal({
           const actualTarif = await useTarifQueryClient({
             client: queryClient,
             scopes: {
-              actualFrom: dayjs(formData.value.bill_date).format('YYYY-MM-DD'),
+              // actualFrom: dayjs(formData.value.bill_date).format('YYYY-MM-DD'),
             },
           });
 
           const actualCounters = await useCountersQueryClient({
             client: queryClient,
             scopes: {
-              byMonth: dayjs(formData.value.month).format('YYYY-MM-DD'),
-              byAgreementId: formData.value.agreementId,
+              // byMonth: dayjs(formData.value.month).format('YYYY-MM-DD'),
+              // byAgreementId: formData.value.agreementId,
             },
           });
 

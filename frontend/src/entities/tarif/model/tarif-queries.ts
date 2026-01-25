@@ -37,6 +37,21 @@ export const useTarifQueryClient = async ({
   });
 };
 
+export const useTarifsQueryClient = async ({
+  scopes,
+  includes,
+  client,
+}: {
+  scopes?: ITarifScopes;
+  includes?: ITarifIncludes;
+  client: QueryClient;
+}) => {
+  return await client.fetchQuery({
+    queryKey: tarifKeys.list(scopes, includes),
+    queryFn: () => getAllTarifs({ scopes, includes }),
+  });
+};
+
 export const useTarifsQuery = ({
   scopes,
   includes,

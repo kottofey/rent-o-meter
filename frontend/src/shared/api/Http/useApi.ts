@@ -30,11 +30,17 @@ export default async function useApi<T>({
   );
 
   if (!resp.ok) {
-    const err_response = await resp.json();
+    const err_response = await resp
+      .json()
+      .catch(() => ({ json: 'not a json in a response' }));
 
     throw new CustomError({
       status: resp.status,
-      message: JSON.stringify(err_response),
+      message:
+        typeof err_response === 'object' && err_response.message
+          ? err_response.message
+          : `Ошибка ${resp.status}`,
+      parentError: err_response,
     });
     // return { status: resp.status };
   }

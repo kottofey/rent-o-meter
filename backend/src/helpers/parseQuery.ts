@@ -3,6 +3,7 @@ import { Includeable, ScopeOptions } from 'sequelize';
 import chalk from 'chalk';
 
 import { Agreement, Counter, Rentee, Tarif, Bill } from '@/models';
+import { ITarifTypes } from 'src/sequelize/models/Tarif.model.ts';
 
 export default function parseQuery(query: QueryString.ParsedQs) {
   const scopes: ScopeOptions | ScopeOptions[] = [];
@@ -50,6 +51,10 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       const date = rawDate as number;
       return { method: ['tarif:actualOnDate', date] };
     },
+    'tarif:byType': rawType => {
+      const tarif_type = rawType as ITarifTypes;
+      return { method: ['tarif:byType', tarif_type] };
+    },
 
     // -----------------------------------------------------------------------------
     // Agreements
@@ -58,6 +63,7 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     'agreements:isNotExpired': () => ({ method: ['agreements:isNotExpired'] }),
     'agreements:isExpired': () => ({ method: ['agreements:isExpired'] }),
     'agreements:isExpiredAndActive': () => ({ method: ['agreements:isExpiredAndActive'] }),
+    'agreements:withDeleted': () => ({ method: ['agreements:withDeleted'] }),
     'agreements:byRentee': rawRenteeId => {
       const renteeId = rawRenteeId as number;
       return { method: ['agreements:byRentee', renteeId] };

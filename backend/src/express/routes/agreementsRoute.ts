@@ -10,6 +10,8 @@ const model = sequelize.models.Agreement;
 
 async function getAll(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
+
+  console.log(chalk.yellow(JSON.stringify(scopes)));
   try {
     const found =
       (await model.scope(scopes).findAll({
@@ -66,12 +68,12 @@ async function create(req: Request, res: Response) {
 
   try {
     await model.create(req.body);
-    res.status(201).send({ message: 'Created', statusCode: 201 }).end();
+    res.status(201).send({ message: 'Created' }).end();
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
-      res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
-    } else {
-      res.status(500).send(e).end();
+      res.status(409).send({ error: e.parent.message }).end();
+    } else if (e instanceof Error) {
+      res.status(500).send({ message: e.message }).end();
     }
   }
 }

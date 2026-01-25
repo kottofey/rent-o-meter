@@ -64,6 +64,11 @@ import { Bill, Counter, Rentee } from '@/models';
       },
     };
   },
+  'agreements:withDeleted'() {
+    return {
+      paranoid: false,
+    };
+  },
 }))
 @Table({ paranoid: true })
 export default class Agreement extends Model {
@@ -142,15 +147,18 @@ export default class Agreement extends Model {
         renteeId: instance.renteeId,
         status: true,
         // исключаем текущую запись при обновлении
-        id: {
-          [Op.ne]: instance.id as number,
-        },
+        ...(instance.id ? { id: { [Op.ne]: instance.id as number } } : {}),
+        // id: {
+        //   [Op.ne]: instance.id as number,
+        // },
       },
+      include: [Rentee],
     });
 
     if (existing) {
+      const jsonAgreement: Agreement = existing.toJSON();
       throw new Error(
-        `У арендатора id# ${existing.renteeId.toString()} уже есть активный договор (${existing.name}). Нельзя создать второй активный договор.`,
+        `У арендатора ${jsonAgreement.rentee.fullName} (id: ${jsonAgreement.renteeId.toString()}) уже есть активный договор (${jsonAgreement.name}). Нельзя создать второй активный договор.`,
       );
     }
   }
