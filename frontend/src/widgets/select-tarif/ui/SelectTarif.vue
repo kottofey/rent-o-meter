@@ -75,6 +75,7 @@ const tarifOptions = [
       >{{ label }}</span
     >
     <NSelect
+      style="flex: 1"
       v-model:value="value"
       :options="tarifOptions"
       clearable
@@ -90,11 +91,12 @@ const tarifOptions = [
 .tarif-select {
   display: flex;
   flex-direction: row;
-  width: fit-content;
+  flex-wrap: nowrap;
+  //width: fit-content;
   padding: 15px;
-  height: 50px;
+  min-height: 50px;
   align-items: center;
-  justify-content: center;
+  //justify-content: center;
 
   border: var(--border);
   border-radius: 20px;
@@ -102,6 +104,7 @@ const tarifOptions = [
   &__label {
     display: flex;
     margin-right: 10px;
+    flex-wrap: nowrap;
   }
 }
 </style>

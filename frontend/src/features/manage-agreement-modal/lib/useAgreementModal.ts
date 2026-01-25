@@ -53,6 +53,7 @@ export function useAgreementModal({
     isPending: isCreatePending,
     error: createError,
   } = useCreateAgreementMutation();
+
   const {
     mutate: editAgreement,
     isPending: isEditPending,

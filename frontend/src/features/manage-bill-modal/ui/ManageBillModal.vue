@@ -172,7 +172,8 @@ const rules: FormRules = {
   align-items: center;
   justify-content: center;
   min-height: 500px;
-  width: 400px;
+  min-width: 400px;
+  width: fit-content;
   border-radius: 12px;
 
   &__buttons {

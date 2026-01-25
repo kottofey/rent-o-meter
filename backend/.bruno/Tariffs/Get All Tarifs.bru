@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/tarifs/3
+  url: {{BASE_URL}}/tarifs?scopes[tarif:byType]=water_in
   body: none
   auth: inherit
+}
+
+params:query {
+  "scopes[tarif:byType]": water_in
 }
 
 settings {
