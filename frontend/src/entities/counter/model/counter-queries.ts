@@ -1,20 +1,20 @@
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
   QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
 } from '@tanstack/vue-query';
 
 import {
-  getAllCounters,
-  editCounter,
-  restoreCounter,
   createCounter,
   deleteCounter,
+  editCounter,
+  getAllCounters,
   getCounter,
   type ICounter,
-  type ICounterScopes,
   type ICounterIncludes,
+  type ICounterScopes,
+  restoreCounter,
 } from './counter-api';
 import { counterKeys } from './counter-keys';
 
@@ -68,6 +68,11 @@ export const useCountersQuery = ({
     queryKey: counterKeys.list(scopes, includes),
     queryFn: () => getAllCounters({ scopes, includes }),
     enabled: !isDisabled,
+    select: (data) => {
+      return data.filter(
+        (counter: ICounter) => counter.agreement && counter.agreement.status,
+      );
+    },
   });
 };
 

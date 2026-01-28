@@ -17,6 +17,16 @@ import { dayjs } from '@/helpers';
       },
     };
   },
+  'rentee:withDeleted'() {
+    return {
+      paranoid: false,
+      where: {
+        deletedAt: {
+          [Op.ne]: null,
+        },
+      },
+    };
+  },
 }))
 @Table({ paranoid: true })
 export default class Rentee extends Model {

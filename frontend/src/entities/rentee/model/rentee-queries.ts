@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import { MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   getAllRentees,
@@ -20,12 +21,12 @@ export const useRenteesQuery = ({
   scopes,
   includes,
 }: {
-  scopes?: IRenteeScopes;
+  scopes?: MaybeRefOrGetter<IRenteeScopes>;
   includes?: IRenteeIncludes;
 }) => {
   return useQuery({
-    queryKey: renteeKeys.list({ scopes, includes }),
-    queryFn: () => getAllRentees({ scopes, includes }),
+    queryKey: renteeKeys.list({ scopes: toValue(scopes), includes }),
+    queryFn: () => getAllRentees({ scopes: toValue(scopes), includes }),
   });
 };
 

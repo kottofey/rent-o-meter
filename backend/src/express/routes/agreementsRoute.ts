@@ -11,13 +11,12 @@ const model = sequelize.models.Agreement;
 async function getAll(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
 
-  console.log(chalk.yellow(JSON.stringify(scopes)));
   try {
     const found =
       (await model.scope(scopes).findAll({
         include: includes,
         attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          exclude: ['createdAt', 'updatedAt'],
         },
       })) ?? {};
     res.status(200).send(found).end();
@@ -45,7 +44,7 @@ async function getById(req: Request, res: Response) {
         },
         include: includes,
         attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          exclude: ['createdAt', 'updatedAt'],
         },
       })) ?? {};
 
@@ -84,11 +83,19 @@ async function remove(req: Request, res: Response) {
   const count = await model.count({
     where: { id },
   });
+
   if (count === 0) {
     res.status(404).send({ message: 'Record not found' }).end();
     return;
   }
+
   try {
+    await model.update(
+      { status: false },
+      {
+        where: { id },
+      },
+    );
     await model.destroy({
       where: {
         id,

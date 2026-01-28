@@ -19,7 +19,9 @@ const { withActiveAgreements = false } = defineProps<{
 // -----------------------------------------------------------------------------
 
 const { data: rentees, isLoading } = useRenteesQuery({
-  scopes: withActiveAgreements ? ['withActiveAgreementsOnly'] : undefined,
+  scopes: {
+    'rentee:withActiveAgreement': withActiveAgreements ? true : undefined,
+  },
 });
 
 // -----------------------------------------------------------------------------

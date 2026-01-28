@@ -21,7 +21,9 @@ const { labelBy = 'agreement', placeholder } = defineProps<{
 
 const { data: agreements, isFetching } = useAgreementsQuery({
   includes: ['Rentee'],
-  scopes: ['agreements:activeOnly'],
+  scopes: {
+    'agreements:activeOnly': true,
+  },
 });
 
 const agreementsOptions = computed(() =>

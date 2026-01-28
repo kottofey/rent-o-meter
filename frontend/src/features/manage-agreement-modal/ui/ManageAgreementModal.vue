@@ -15,7 +15,11 @@ import { ref, toRef, unref } from 'vue';
 
 import { useAgreementModal } from '../lib/useAgreementModal';
 
-import { IAgreement, useDeleteAgreementMutation } from '@/entities/agreement';
+import {
+  IAgreement,
+  useDeleteAgreementMutation,
+  useRestoreAgreementMutation,
+} from '@/entities/agreement';
 import { SelectRentees } from '@/widgets/select-rentees';
 
 // -----------------------------------------------------------------------------
@@ -41,6 +45,7 @@ const { formData, submit, isPending, isFormValidateError } = useAgreementModal({
 });
 
 const { mutate: deleteAgreement } = useDeleteAgreementMutation();
+const { mutate: restoreAgreement } = useRestoreAgreementMutation();
 
 const rules: FormRules = {
   name: {
@@ -179,19 +184,25 @@ const rules: FormRules = {
               isOpened = isFormValidateError;
             }
           "
-          >{{ agreement ? 'Сохранить' : 'Создать' }}
+        >
+          {{ agreement ? 'Сохранить' : 'Создать' }}
         </NButton>
         <NButton
           v-if="agreement"
           type="error"
           @click="
             () => {
-              deleteAgreement({ id: agreement.id });
+              if (agreement.deletedAt === null) {
+                deleteAgreement({ id: agreement.id });
+              } else {
+                restoreAgreement({ id: agreement.id });
+              }
               isOpened = false;
             }
           "
-          >Удалить
+          >{{ agreement.deletedAt === null ? 'Удалить' : 'Восстановить' }}
         </NButton>
+
         <NButton
           type="error"
           color="black"

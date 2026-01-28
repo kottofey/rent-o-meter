@@ -15,6 +15,8 @@ export interface IBill {
 
   comment: string;
 
+  deletedAt: Date;
+
   agreementId: number;
   agreement: IAgreement;
 
@@ -28,7 +30,9 @@ export interface IBill {
 export type IBillScopes = {
   'bills:isDebt'?: boolean;
 };
-export type IBillIncludes = Array<'Agreement' | 'Counter' | 'Tarif'>;
+export type IBillIncludes = Array<
+  'Agreement' | 'Counter' | 'Tarif' | 'Agreement.Rentee'
+>;
 
 export async function getAllBills({
   scopes,

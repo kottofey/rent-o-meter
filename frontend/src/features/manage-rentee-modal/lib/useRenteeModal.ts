@@ -66,7 +66,6 @@ export function useRenteeModal({
   } = useEditRenteeMutation();
 
   const submit = async () => {
-    // можно добавить валидацию
     try {
       await formRef.value?.validate((errors) => {
         isFormValidateError.value = false;

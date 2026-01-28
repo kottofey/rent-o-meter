@@ -61,7 +61,6 @@ export function useAgreementModal({
   } = useEditAgreementMutation();
 
   const submit = async () => {
-    // можно добавить валидацию
     try {
       await formRef.value?.validate((errors) => {
         isFormValidateError.value = false;

@@ -20,7 +20,7 @@ const options: SequelizeOptions = {
   database: DB_NAME,
   timezone: '+03:00',
   logging: false,
-  // },  logging: sql => {
+  // logging: sql => {
   //   if (MODE === 'dev') {
   //     console.log(chalk.gray(sql));
   //   }

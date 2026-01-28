@@ -86,7 +86,6 @@ const createRow = () => {
 <template>
   <PageLayout>
     <template #buttons-extra>
-      <pre>{{ JSON.stringify(tarifFilter) }}</pre>
       <AddButton @click="createRow">Новый тариф</AddButton>
       <SelectTarif
         label="Фильтр по типу: "

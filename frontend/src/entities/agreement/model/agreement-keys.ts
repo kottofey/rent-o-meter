@@ -1,5 +1,3 @@
-import { MaybeRefOrGetter, toValue } from 'vue';
-
 const AGREEMENT_QUERY_KEY = 'agreement' as const;
 import type { IAgreementIncludes, IAgreementScopes } from './agreement-api';
 
@@ -9,14 +7,13 @@ export const agreementKeys = {
   lists: () => [...agreementKeys.all, 'list'] as const,
 
   list: (
-    scopes?: MaybeRefOrGetter<IAgreementScopes>,
+    scopes?: IAgreementScopes,
     includes?: IAgreementIncludes,
   ): [
     'agreement',
     'list',
     { scopes: typeof scopes; includes: typeof includes },
-  ] =>
-    [...agreementKeys.lists(), { scopes: toValue(scopes), includes }] as const,
+  ] => [...agreementKeys.lists(), { scopes, includes }] as const,
 
   details: () => [...agreementKeys.all, 'detail'] as const,
 

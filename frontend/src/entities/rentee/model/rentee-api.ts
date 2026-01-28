@@ -6,12 +6,14 @@ export interface IRentee {
   surname: string;
   firstname: string;
   patronymic?: string;
-  phone: string;
-  email: string;
+  comment?: string;
   status: boolean;
   date_start: number;
   date_end: number;
-  comment?: string;
+  phone: string;
+  email: string;
+
+  deletedAt: Date;
 
   agreements: IAgreement[];
 
@@ -23,6 +25,7 @@ export interface IRentee {
 // TODO написать алгоритм сериализации с проверкой через zod
 export type IRenteeScopes = {
   'rentee:withActiveAgreement'?: boolean;
+  'rentee:withDeleted'?: boolean;
 };
 export type IRenteeIncludes = Array<'Agreement'>;
 

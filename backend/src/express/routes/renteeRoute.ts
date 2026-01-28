@@ -16,7 +16,7 @@ async function getAll(req: Request, res: Response) {
       (await model.scope(scopes).findAll({
         include: includes,
         attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          exclude: ['createdAt', 'updatedAt'],
         },
       })) ?? {};
     res.status(200).send(found).end();
@@ -43,7 +43,7 @@ async function getById(req: Request, res: Response) {
         },
         include: includes,
         attributes: {
-          exclude: ['deletedAt', 'createdAt', 'updatedAt'],
+          exclude: ['createdAt', 'updatedAt'],
         },
       })) ?? {};
 

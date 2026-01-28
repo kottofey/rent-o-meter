@@ -27,6 +27,7 @@ export const columns: DataTableColumns<IAgreement> = [
     title: 'Название',
     key: 'name',
     align: 'center',
+    render: (row: IAgreement) => row.name,
   },
   {
     title: 'Арендатор ФИО',
@@ -108,11 +109,13 @@ export const columns: DataTableColumns<IAgreement> = [
           },
         },
         {
-          default: () => (row.status ? 'Активный' : 'Расторгнут'),
+          default: () =>
+            `${row.status ? 'Активный' : 'Расторгнут'} ${row.deletedAt !== null ? '(удалён)' : ''}`,
         },
       );
     },
   },
+
   {
     title: 'Комментарий',
     key: 'comment',

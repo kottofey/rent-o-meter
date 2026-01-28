@@ -34,7 +34,13 @@ const { rentee = undefined } = defineProps<{
 
 const renteeRef = toRef(() => rentee);
 
-const { formData, checkActiveAgreements, isPending } = useRenteeModal({
+const {
+  formData,
+  checkActiveAgreements,
+  isPending,
+  submit,
+  isFormValidateError,
+} = useRenteeModal({
   initialData: renteeRef,
   formRef: formRef,
 });

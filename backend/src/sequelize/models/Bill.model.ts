@@ -1,13 +1,4 @@
-import {
-  Model,
-  Table,
-  Column,
-  NotNull,
-  ForeignKey,
-  BelongsTo,
-  Scopes,
-  HasOne,
-} from 'sequelize-typescript';
+import { Model, Table, Column, NotNull, ForeignKey, BelongsTo, Scopes } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
 import { Agreement, Counter, Tarif } from '@/models';

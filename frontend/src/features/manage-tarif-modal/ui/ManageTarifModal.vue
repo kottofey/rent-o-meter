@@ -107,7 +107,6 @@ const tarifTypeOptions = [
             <NSelect
               v-model:value="formData.tarif_type"
               :options="tarifTypeOptions"
-              default-value="electricity"
             />
           </NFormItem>
 

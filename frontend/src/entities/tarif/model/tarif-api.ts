@@ -21,6 +21,8 @@ export interface ITarif {
   valid_from: number;
   valid_to: number;
 
+  deletedAt: Date;
+
   comment?: string;
 
   bills: IBill[];

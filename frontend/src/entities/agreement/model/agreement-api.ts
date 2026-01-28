@@ -1,5 +1,3 @@
-import { MaybeRefOrGetter } from 'vue';
-
 import { httpMethod, useApi, serializeQuery } from '@/shared/api';
 import { IRentee } from '@/entities/rentee/@x/agreement';
 import { ICounter } from '@/entities/counter/@x/agreement';
@@ -14,6 +12,8 @@ export interface IAgreement {
   penalty: number;
   debt: number;
   comment: string;
+
+  deletedAt: Date;
 
   renteeId: number;
   rentee: IRentee;
@@ -37,7 +37,7 @@ export async function getAllAgreements({
   scopes,
   includes = [],
 }: {
-  scopes?: MaybeRefOrGetter<IAgreementScopes>;
+  scopes?: IAgreementScopes;
   includes?: IAgreementIncludes;
 }): Promise<IAgreement[]> {
   return await useApi<IAgreement[]>({

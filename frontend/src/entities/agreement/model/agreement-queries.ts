@@ -28,7 +28,7 @@ export const useAgreementsQuery = ({
   includes?: IAgreementIncludes;
 }) => {
   return useQuery({
-    queryKey: agreementKeys.list(scopes, includes),
+    queryKey: agreementKeys.list(toValue(scopes), includes),
     queryFn: () => getAllAgreements({ scopes: toValue(scopes), includes }),
   });
 };

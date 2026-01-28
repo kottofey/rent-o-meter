@@ -59,7 +59,8 @@ export const columns: DataTableColumns<IRentee> = [
           },
         },
         {
-          default: () => (row.status ? 'Активный' : 'Не активный'),
+          default: () =>
+            `${row.status ? 'Активный' : 'Не активный'} ${row.deletedAt !== null ? '(удалён)' : ''}`,
         },
       );
     },

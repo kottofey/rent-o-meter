@@ -43,6 +43,7 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     // Rentees
     // -----------------------------------------------------------------------------
     'rentee:withActiveAgreement': () => ({ method: ['rentee:withActiveAgreement'] }),
+    'rentee:withDeleted': () => ({ method: ['rentee:withDeleted'] }),
 
     // -----------------------------------------------------------------------------
     // Tarifs
@@ -76,31 +77,31 @@ export default function parseQuery(query: QueryString.ParsedQs) {
   const INCLUDE_HANDLERS = {
     Agreement: () => ({
       model: Agreement,
-      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
     'Agreement.Rentee': () => ({
       model: Agreement,
-      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: {
         model: Rentee,
-        attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
       },
     }),
     Bill: () => ({
       model: Bill,
-      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
     Counter: () => ({
       model: Counter,
-      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
     Rentee: () => ({
       model: Rentee,
-      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
     Tarif: () => ({
       model: Tarif,
-      attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
   } as const;
 

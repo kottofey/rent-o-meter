@@ -67,6 +67,11 @@ import { Bill, Counter, Rentee } from '@/models';
   'agreements:withDeleted'() {
     return {
       paranoid: false,
+      where: {
+        deletedAt: {
+          [Op.ne]: null,
+        },
+      },
     };
   },
 }))

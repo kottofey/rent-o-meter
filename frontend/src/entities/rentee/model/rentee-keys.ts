@@ -1,3 +1,5 @@
+import { MaybeRefOrGetter, toValue } from 'vue';
+
 const RENTEE_QUERY_KEY = 'rentee' as const;
 import type { IRenteeScopes, IRenteeIncludes } from './rentee-api';
 
@@ -10,13 +12,13 @@ export const renteeKeys = {
     scopes,
     includes,
   }: {
-    scopes?: IRenteeScopes;
+    scopes?: MaybeRefOrGetter<IRenteeScopes>;
     includes?: IRenteeIncludes;
   }): [
     'rentee',
     'list',
     { scopes: typeof scopes; includes: typeof includes },
-  ] => [...renteeKeys.lists(), { scopes, includes }] as const,
+  ] => [...renteeKeys.lists(), { scopes: toValue(scopes), includes }] as const,
 
   details: () => [...renteeKeys.all, 'detail'] as const,
 

@@ -1,21 +1,24 @@
 import { IAgreement } from '@/entities/agreement/@x/counter';
+import { IBill } from '@/entities/bill/@x/counter';
 import { httpMethod, useApi, serializeQuery } from '@/shared/api';
-import { IBill } from '@/entities/bill';
 
 export interface ICounter {
   id: number;
   month: number;
   date_start: number;
   date_end: number;
+
   counter_water: number;
   counter_prev_water: number;
   counter_electricity: number;
   counter_prev_electricity: number;
 
-  electricity_diff: number;
-  water_diff: number;
+  electricity_diff: number; // virtual
+  water_diff: number; // virtual
 
   comment?: string;
+
+  deletedAt: Date;
 
   agreementId: number;
   agreement: IAgreement;

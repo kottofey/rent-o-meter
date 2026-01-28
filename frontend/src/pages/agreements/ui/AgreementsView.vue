@@ -80,6 +80,11 @@ const setAll = () => {
 };
 const setWithDeleted = () => {
   withDeleted.value = !withDeleted.value;
+  if (withDeleted.value) {
+    setAll();
+  } else {
+    setActual();
+  }
 };
 
 // -----------------------------------------------------------------------------
@@ -94,7 +99,17 @@ watch(withDeleted, () => {
   <PageLayout>
     <template #buttons-extra>
       <AddButton @click="createRow">Новый договор</AddButton>
+
       <AppButton
+        @click="setWithDeleted"
+        :is-outlined="withDeleted"
+      >
+        <template #default>Удаленные</template>
+        <template #icon><InfinitiIcon /></template>
+      </AppButton>
+
+      <AppButton
+        v-if="!withDeleted"
         @click="setExpired"
         :is-outlined="filter === 'expired'"
       >
@@ -103,6 +118,7 @@ watch(withDeleted, () => {
       </AppButton>
 
       <AppButton
+        v-if="!withDeleted"
         @click="setActual"
         :is-outlined="filter === 'actual'"
       >
@@ -111,19 +127,12 @@ watch(withDeleted, () => {
       </AppButton>
 
       <AppButton
+        v-if="!withDeleted"
         @click="setAll"
         :is-outlined="filter === null"
       >
         <template #default>Все</template>
         <template #icon><AllIcon /></template>
-      </AppButton>
-
-      <AppButton
-        @click="setWithDeleted"
-        :is-outlined="withDeleted"
-      >
-        <template #default>Удаленные</template>
-        <template #icon><InfinitiIcon /></template>
       </AppButton>
     </template>
 
