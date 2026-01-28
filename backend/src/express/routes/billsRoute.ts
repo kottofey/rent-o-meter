@@ -4,6 +4,7 @@ import { UniqueConstraintError } from 'sequelize';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 import { parseQuery } from '@/helpers';
+import { Bill } from '@/models';
 
 const model = sequelize.models.Bill;
 
@@ -54,7 +55,9 @@ async function getById(req: Request, res: Response) {
 }
 
 async function create(req: Request, res: Response) {
-  if (req.body.id) {
+  const { tarifs, ...billData } = req.body;
+
+  if (billData.id) {
     res.status(400).send({
       message: 'ID should not be provided, since it is determined automatically by the database.',
     });
@@ -62,7 +65,9 @@ async function create(req: Request, res: Response) {
   }
   // TODO написать валидацию прилетевших данных
   try {
-    await model.create(req.body);
+    const bill = (await model.create(billData)) as Bill;
+    await bill.$set('tarifs', tarifs);
+
     res.status(201).send({ message: 'Created', statusCode: 201 }).end();
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
@@ -97,17 +102,22 @@ async function remove(req: Request, res: Response) {
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { body }: { body: Partial<unknown> } = req;
+  const { tarifs, ...billData } = req.body;
+
+  // const { body }: { body: Partial<unknown> } = req;
 
   try {
-    const [rows] = await model.update(body, {
-      where: {
-        id,
-      },
+    const bill = (await model.findByPk(id)) as Bill;
+    const updatedBill = await bill.update(billData, {
+      where: { id },
       paranoid: false,
     });
+    await bill.$set('tarifs', tarifs);
 
-    res.status(200).send({ rowsAffected: rows }).end();
+    res
+      .status(200)
+      .send({ ...updatedBill })
+      .end();
   } catch (e) {
     res.status(500).send({ e }).end();
   }

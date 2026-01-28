@@ -1,7 +1,7 @@
-import { Model, Table, Column, NotNull, HasMany, Scopes } from 'sequelize-typescript';
+import { Model, Table, Column, NotNull, Scopes, BelongsToMany } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import { Bill } from '@/models';
+import { Bill, RelBillTarifs } from '@/models';
 import { dayjs } from '@/helpers';
 
 export type ITarifTypes =
@@ -58,6 +58,7 @@ export default class Tarif extends Model {
   })
   declare tarif_type: ITarifTypes;
 
+  // TODO переделать на DECIMAL 8 2
   @NotNull
   @Column({ type: DataTypes.NUMBER, allowNull: false })
   declare rate: number;
@@ -91,6 +92,7 @@ export default class Tarif extends Model {
   // -----------------------------------------------------------------------------
   // Relations
   // -----------------------------------------------------------------------------
-  @HasMany(() => Bill, { onDelete: 'CASCADE' })
-  bills: Bill[];
+
+  @BelongsToMany(() => Bill, () => RelBillTarifs)
+  bills: (Bill & { RelBillTarifs: RelBillTarifs })[];
 }

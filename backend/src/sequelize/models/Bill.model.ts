@@ -1,7 +1,16 @@
-import { Model, Table, Column, NotNull, ForeignKey, BelongsTo, Scopes } from 'sequelize-typescript';
+import {
+  Model,
+  Table,
+  Column,
+  NotNull,
+  ForeignKey,
+  BelongsTo,
+  Scopes,
+  BelongsToMany,
+} from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import { Agreement, Counter, Tarif } from '@/models';
+import { Agreement, Counter, Tarif, RelBillTarifs } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
@@ -75,11 +84,6 @@ export default class Bill extends Model {
   @BelongsTo(() => Counter, { onDelete: 'Restrict' })
   counter: Counter;
 
-  @NotNull
-  @ForeignKey(() => Tarif)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
-  declare tarifId: number;
-
-  @BelongsTo(() => Tarif, { onDelete: 'Restrict' })
-  tarif: Tarif;
+  @BelongsToMany(() => Tarif, () => RelBillTarifs)
+  tarifs: (Tarif & { RelBillCounters: RelBillTarifs })[];
 }

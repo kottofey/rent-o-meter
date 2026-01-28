@@ -23,8 +23,7 @@ export interface IBill {
   counterId: number;
   counter: ICounter;
 
-  tarifId: number;
-  tarif: ITarif;
+  tarifs: ITarif[];
 }
 
 export type IBillScopes = {
