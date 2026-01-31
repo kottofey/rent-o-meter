@@ -5,13 +5,16 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/tarifs?scopes[tarif:byType]=water_in
+  url: {{BASE_URL}}/tarifs?scopes[tarif:actualBetween][dateStart]=2025-05-25&scopes[tarif:actualBetween][dateEnd]=2025-07-05
   body: none
   auth: inherit
 }
 
 params:query {
-  "scopes[tarif:byType]": water_in
+  "scopes[tarif:actualBetween][dateStart]": 2025-05-25
+  "scopes[tarif:actualBetween][dateEnd]": 2025-07-05
+  ~"scopes[tarif:byType]": electricity
+  ~"scopes[tarif:actualOnDate]": 2025-05-25
 }
 
 settings {
