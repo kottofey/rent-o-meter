@@ -58,11 +58,15 @@ export default class Tarif extends Model {
   })
   declare tarif_type: ITarifTypes;
 
-  // TODO переделать на DECIMAL 8 2
   @NotNull
   @Column({ type: DataTypes.NUMBER, allowNull: false })
-  declare rate: number;
-
+  set rate(value: number) {
+    this.setDataValue('rate', value);
+  }
+  get rate() {
+    const raw: string = this.getDataValue('rate') as string;
+    return parseFloat(raw);
+  }
   @NotNull
   @Column({ type: DataTypes.DATEONLY, allowNull: false })
   set valid_from(date: number) {

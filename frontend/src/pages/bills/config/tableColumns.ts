@@ -3,6 +3,7 @@ import { h } from 'vue';
 
 import { type IBill } from '@/entities/bill';
 import { parseDate } from '@/shared/lib/parseDate';
+import { parseMoney } from '@/shared/lib';
 
 const statusColors = {
   paid: {
@@ -73,17 +74,23 @@ export const columns: DataTableColumns<IBill> = [
     title: 'Сумма',
     key: 'ammount',
     align: 'center',
+    render: (row: IBill) =>
+      parseMoney({ ammount: row.ammount, mode: 'rubbles' }),
   },
   {
     title: 'Дополнительно',
     key: 'extra_ammount',
     align: 'center',
+    render: (row: IBill) =>
+      parseMoney({ ammount: row.extra_ammount, mode: 'rubbles' }),
   },
 
   {
     title: 'Оплачено',
     key: 'ammount_paid',
     align: 'center',
+    render: (row: IBill) =>
+      parseMoney({ ammount: row.ammount_paid, mode: 'rubbles' }),
   },
   {
     title: 'Комментарий',

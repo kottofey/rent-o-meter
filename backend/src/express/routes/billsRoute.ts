@@ -4,7 +4,7 @@ import { UniqueConstraintError } from 'sequelize';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 import { parseQuery } from '@/helpers';
-import { Bill } from '@/models';
+import { Bill, Tarif } from '@/models';
 
 const model = sequelize.models.Bill;
 
@@ -66,12 +66,17 @@ async function create(req: Request, res: Response) {
   // TODO написать валидацию прилетевших данных
   try {
     const bill = (await model.create(billData)) as Bill;
-    await bill.$set('tarifs', tarifs);
+    await bill.$set(
+      'tarifs',
+      tarifs.map((t: Tarif) => t.id),
+    );
 
     res.status(201).send({ message: 'Created', statusCode: 201 }).end();
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
       res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
+    } else {
+      res.status(500).send(e).end();
     }
   }
 }
@@ -112,7 +117,10 @@ async function update(req: Request, res: Response) {
       where: { id },
       paranoid: false,
     });
-    await bill.$set('tarifs', tarifs);
+    await bill.$set(
+      'tarifs',
+      tarifs.map((t: Tarif) => t.id),
+    );
 
     res
       .status(200)

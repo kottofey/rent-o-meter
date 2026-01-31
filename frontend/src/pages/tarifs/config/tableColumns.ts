@@ -33,12 +33,14 @@ export const columns: DataTableColumns<ITarif> = [
     title: 'Тариф',
     key: 'rate',
     align: 'center',
-    render: (row: ITarif) => parseMoney({ ammount: row.rate, mode: 'kopeyki' }),
+    render: (row: ITarif) => parseMoney({ ammount: row.rate, mode: 'rubbles' }),
   },
   {
     title: 'Действует с',
     key: 'actual_from',
     align: 'center',
+    sorter: (a: ITarif, b: ITarif) => a.valid_from - b.valid_from,
+    defaultSortOrder: 'ascend',
     render: (row: ITarif) => parseDate({ date: row.valid_from }),
   },
   {

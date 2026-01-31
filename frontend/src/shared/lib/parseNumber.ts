@@ -1,7 +1,9 @@
 export function parseNumber(value: string) {
+  const reg = /^([ \d]*[,.]?\d+).?$/;
   const nums = value.replace(/,/g, '.').trim();
-  if (/^\d+(\.(\d+)?)?$/.test(nums)) {
-    return Number(nums) * 100;
+
+  if (reg.test(nums)) {
+    return Number(reg.exec(nums)?.[1]);
   }
 
   return null;

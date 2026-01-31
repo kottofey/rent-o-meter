@@ -17,8 +17,7 @@ import { ref, toRef, unref } from 'vue';
 import { useTarifModal } from '../lib/useTarifModal';
 
 import { ITarif } from '@/entities/tarif';
-import { parseMoney } from '@/shared/lib/parseMoney';
-import { parseNumber } from '@/shared/lib/parseNumber';
+import { parseMoney, parseNumber } from '@/shared/lib';
 
 // -----------------------------------------------------------------------------
 // State
@@ -118,18 +117,10 @@ const tarifTypeOptions = [
               <NInputNumber
                 v-model:value="formData.rate"
                 :show-button="false"
-                :parse="(input) => parseNumber(input)"
+                :parse="(value) => parseNumber(value)"
                 :format="
-                  (val) => {
-                    if (val) {
-                      return parseMoney({
-                        ammount: val,
-                        mode: 'kopeyki',
-                      });
-                    }
-
-                    return '';
-                  }
+                  (val) =>
+                    val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''
                 "
               />
             </NFormItem>
