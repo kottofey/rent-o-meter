@@ -62,8 +62,8 @@ export default class Bill extends Model {
 
   @NotNull
   @Column({ type: DataTypes.DECIMAL(8, 2), allowNull: false })
-  set extra_ammount(value: number) {
-    this.setDataValue('extra_ammount', value);
+  set extra_ammount(value: number | null) {
+    this.setDataValue('extra_ammount', value ?? 0);
   }
   get extra_ammount() {
     const raw: string = this.getDataValue('extra_ammount') as string;

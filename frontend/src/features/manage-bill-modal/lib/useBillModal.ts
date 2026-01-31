@@ -2,6 +2,8 @@ import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
 import { type FormInst } from 'naive-ui';
 import { useQueryClient } from '@tanstack/vue-query';
 
+import { calculateAmmount } from './calculateAmmount';
+
 import { type IBill } from '@/entities/bill';
 import { useCreateBillMutation, useEditBillMutation } from '@/entities/bill';
 import { dayjs } from '@/shared/lib/dayjs';
@@ -17,13 +19,19 @@ export function useBillModal({
 }) {
   const isFormValidateError = ref(false);
 
-  const initState = {
-    agreementId: undefined,
+  const initState: Partial<IBill> = {
+    status: false,
     bill_date: dayjs().valueOf(),
     month: dayjs().startOf('month').valueOf(),
 
-    status: false,
+    ammount: undefined,
+    extra_ammount: undefined,
+    ammount_paid: undefined,
 
+    agreementId: undefined,
+    counterId: undefined,
+
+    tarifs: [],
     comment: '',
   };
 
@@ -35,19 +43,66 @@ export function useBillModal({
     (bill) => {
       if (bill) {
         formData.value = {
-          agreementId: bill.agreementId,
+          status: bill.status,
           bill_date: bill.bill_date,
           month: bill.month,
 
-          status: bill.status,
+          ammount: bill.ammount,
+          extra_ammount: bill.extra_ammount,
+          ammount_paid: bill.ammount_paid,
 
           comment: bill.comment,
+
+          agreementId: bill.agreementId,
           // tarifId: bill.tarifId,
           // counterId: bill.counterId,
         };
       } else {
         // Сброс при создании нового
         formData.value = { ...initState };
+      }
+    },
+  );
+
+  watch(
+    [() => formData.value.month, () => formData.value.agreementId],
+    async () => {
+      const actualCounters = await useCountersQueryClient({
+        client: queryClient,
+        scopes: {
+          'counter:byMonth': dayjs(formData.value.month).format('YYYY-MM-DD'),
+          'counter:byAgreementId': formData.value.agreementId,
+        },
+      });
+
+      if (actualCounters.length > 1) {
+        throw new Error('More than one counter exist, check counters!');
+      }
+
+      if (actualCounters[0]) {
+        const actualTarifs = await useTarifQueryClient({
+          client: queryClient,
+          scopes: {
+            'tarif:actualBetween': {
+              dateStart: dayjs(actualCounters[0].date_start).format(
+                'YYYY-MM-DD',
+              ),
+              dateEnd: dayjs(actualCounters[0].date_end).format('YYYY-MM-DD'),
+            },
+          },
+        });
+
+        formData.value = {
+          ...formData.value,
+
+          counterId: actualCounters[0].id,
+          tarifs: actualTarifs,
+        };
+
+        formData.value.ammount = calculateAmmount({
+          tarifs: actualTarifs,
+          counter: actualCounters[0],
+        }).total;
       }
     },
   );
@@ -63,20 +118,6 @@ export function useBillModal({
     error: editError,
   } = useEditBillMutation();
 
-  // const { data: actualTarif, refetch: fetchActualTarif } = useTarifsQuery({
-  //   scopes: {
-  //     actualFrom: dayjs(formData.value.bill_date).format('YYYY-MM-DD'),
-  //   },
-  //   isDisabled: true,
-  // });
-  //
-  // const { data: counter, refetch: fetchCounter } = useCountersQuery({
-  //   scopes: {
-  //     byMonth: dayjs(formData.value.month).format('YYYY-MM-DD'),
-  //     byAgreementId: formData.value.agreementId,
-  //   },
-  //   isDisabled: true,
-  // });
   const queryClient = useQueryClient();
 
   const submit = async () => {
@@ -87,29 +128,6 @@ export function useBillModal({
 
         if (!errors) {
           // Вычисляем актуальный тариф и показания за указанный месяц
-
-          const actualTarif = await useTarifQueryClient({
-            client: queryClient,
-            scopes: {
-              // actualFrom: dayjs(formData.value.bill_date).format('YYYY-MM-DD'),
-            },
-          });
-
-          const actualCounters = await useCountersQueryClient({
-            client: queryClient,
-            scopes: {
-              // byMonth: dayjs(formData.value.month).format('YYYY-MM-DD'),
-              // byAgreementId: formData.value.agreementId,
-            },
-          });
-
-          formData.value = {
-            ...formData.value,
-            ammount: 2000,
-            extra_ammount: 100,
-            counterId: actualCounters[0]?.id,
-            tarifId: actualTarif[0]?.id,
-          };
 
           if (isRef(initialData) && initialData.value) {
             editBill({

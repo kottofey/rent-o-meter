@@ -9,6 +9,7 @@ import {
   NForm,
   NFormItem,
   NInput,
+  NInputNumber,
   NModal,
 } from 'naive-ui';
 import { ref, toRef, unref } from 'vue';
@@ -17,6 +18,7 @@ import { useBillModal } from '../lib/useBillModal';
 
 import { IBill } from '@/entities/bill';
 import { SelectAgreements } from '@/widgets/select-agreements';
+import { parseMoney, parseNumber } from '@/shared/lib';
 
 // -----------------------------------------------------------------------------
 // State
@@ -116,6 +118,56 @@ const rules: FormRules = {
             type="month"
             month-format="LLLL"
             :actions="['now', 'confirm']"
+          />
+        </NFormItem>
+
+        <!--  суммы  -->
+
+        <NFormItem
+          label="Сумма"
+          path="ammount"
+        >
+          <NInputNumber
+            v-model:value="formData.ammount"
+            :show-button="false"
+            clearable
+            :parse="(value) => parseNumber(value)"
+            :format="
+              (val) =>
+                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''
+            "
+          />
+        </NFormItem>
+
+        <NFormItem
+          label="Доп. сумма"
+          path="extra_ammount"
+        >
+          <NInputNumber
+            v-model:value="formData.extra_ammount"
+            :show-button="false"
+            clearable
+            :parse="(value) => parseNumber(value)"
+            :format="
+              (val) =>
+                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''
+            "
+          />
+        </NFormItem>
+
+        <NFormItem
+          label="Оплачено"
+          path="ammount_paid"
+        >
+          <NInputNumber
+            v-model:value="formData.ammount_paid"
+            :show-button="false"
+            clearable
+            :parse="(value) => parseNumber(value)"
+            :format="
+              (val) =>
+                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''
+            "
           />
         </NFormItem>
 

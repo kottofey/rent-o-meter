@@ -52,6 +52,10 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       const date = rawDate as number;
       return { method: ['tarif:actualOnDate', date] };
     },
+    'tarif:actualBetween': rawDates => {
+      const { dateStart, dateEnd } = rawDates as { dateStart: number; dateEnd: number };
+      return { method: ['tarif:actualBetween', { dateStart, dateEnd }] };
+    },
     'tarif:byType': rawType => {
       const tarif_type = rawType as ITarifTypes;
       return { method: ['tarif:byType', tarif_type] };

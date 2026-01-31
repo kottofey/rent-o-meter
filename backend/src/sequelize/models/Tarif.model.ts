@@ -25,10 +25,20 @@ export type ITarifTypes =
         },
         valid_to: {
           [Op.or]: {
-            [Op.gt]: actualOn,
+            [Op.gte]: actualOn,
             [Op.eq]: null,
           },
         },
+      },
+    };
+  },
+  'tarif:actualBetween'({ dateStart, dateEnd }: { dateStart: string; dateEnd: string }) {
+    return {
+      where: {
+        valid_from: {
+          [Op.lte]: dateEnd,
+        },
+        [Op.or]: [{ valid_to: { [Op.gte]: dateStart } }, { valid_to: null }],
       },
     };
   },
