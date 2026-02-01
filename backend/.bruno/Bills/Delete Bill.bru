@@ -1,0 +1,50 @@
+meta {
+  name: Delete Bill
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{BASE_URL}}/bills/48
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "status": false,
+    "bill_date": 1759659306000,
+    "month": 1759659306000,
+    "ammount": 100.23,
+    "extra_ammount": 200.45,
+    "ammount_paid": 300.78,
+    "comment": "feiiweuygiewuygf",
+    "agreementId": 1,
+    "counterId": 6,
+    "tarifs": [
+     {
+      "valid_from": 1704056400000,
+      "valid_to": 1735592400000,
+      "id": 28,
+      "tarif_type": "electricity_over_150kw",
+      "rate": 498,
+      "comment": "",
+      "deletedAt": null
+    },
+    {
+      "valid_from": 1704056400000,
+      "valid_to": 1735592400000,
+      "id": 30,
+      "tarif_type": "heat",
+      "rate": 84843,
+      "comment": "",
+      "deletedAt": null
+    }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

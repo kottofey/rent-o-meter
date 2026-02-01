@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/tarifs?scopes[tarif:actualBetween][dateStart]=2025-05-25&scopes[tarif:actualBetween][dateEnd]=2025-07-05
+  url: {{BASE_URL}}/tarifs?scopes[tarif:actualBetween][dateStart]=2025-06-26&scopes[tarif:actualBetween][dateEnd]=2025-07-26
   body: none
   auth: inherit
 }
 
 params:query {
-  "scopes[tarif:actualBetween][dateStart]": 2025-05-25
-  "scopes[tarif:actualBetween][dateEnd]": 2025-07-05
+  "scopes[tarif:actualBetween][dateStart]": 2025-06-26
+  "scopes[tarif:actualBetween][dateEnd]": 2025-07-26
   ~"scopes[tarif:byType]": electricity
   ~"scopes[tarif:actualOnDate]": 2025-05-25
 }

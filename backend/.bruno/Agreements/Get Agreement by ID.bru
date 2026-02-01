@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/agreements/1
+  url: {{BASE_URL}}/agreements/1?includes[]=Bill
   body: none
   auth: inherit
+}
+
+params:query {
+  includes[]: Bill
 }
 
 settings {

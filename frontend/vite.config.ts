@@ -24,7 +24,7 @@ export default defineConfig(async ({ command }) => {
       emptyOutDir: true,
       outDir: './dist',
       target: 'esnext',
-      sourcemap: false,
+      sourcemap: command === 'serve',
       rollupOptions: {},
     },
     plugins,
