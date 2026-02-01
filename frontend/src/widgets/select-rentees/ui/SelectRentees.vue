@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NSelect } from 'naive-ui';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 
 import { useRenteesQuery } from '@/entities/rentee';
 
@@ -9,16 +9,20 @@ import { useRenteesQuery } from '@/entities/rentee';
 // -----------------------------------------------------------------------------
 
 const value = defineModel<number>('value');
+const agreementIds = defineModel<number[]>('agreementIds');
 
-const { withActiveAgreements = false } = defineProps<{
-  withActiveAgreements?: boolean;
-}>();
+const { withActiveAgreements = false, placeholder = 'Выберите арендатора' } =
+  defineProps<{
+    withActiveAgreements?: boolean;
+    placeholder?: string;
+  }>();
 
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
 
 const { data: rentees, isLoading } = useRenteesQuery({
+  includes: ['Agreement'],
   scopes: {
     'rentee:withActiveAgreement': withActiveAgreements ? true : undefined,
   },
@@ -34,6 +38,17 @@ const renteesOptions = computed(() =>
     disabled: !rentee.status,
   })),
 );
+
+// -----------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------
+
+watch(value, () => {
+  agreementIds.value =
+    rentees.value
+      ?.find((rentee) => rentee.id === value.value)
+      ?.agreements.map((agr) => agr.id) ?? undefined;
+});
 </script>
 
 <template>
@@ -42,8 +57,9 @@ const renteesOptions = computed(() =>
     :loading="isLoading"
     :options="renteesOptions"
     clearable
-    placeholder="Выберите арендатора"
+    :placeholder="placeholder"
     filterable
+    :consistent-menu-width="false"
   />
 </template>
 
