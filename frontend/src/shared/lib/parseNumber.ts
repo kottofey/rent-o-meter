@@ -1,10 +1,20 @@
-export function parseNumber(value: string) {
-  const reg = /^([ \d]*[,.]?\d+).?$/;
-  const nums = value.replace(/,/g, '.').trim();
+export function parseNumber(value: string): number {
+  // const reg = /^(-?\d+\D+[\d,.]*).*$/;
+  // const reg = /^(-?[ \d]*[,.]?\d+).*$/;
+  // const nums = value
+  //   .replace(/,/g, '.')
+  //   .replace(/[^\d,.-]/g, '')
+  //   .trim();
+  //
+  // console.log('parseNum', nums);
+  // if (reg.test(nums)) {
+  //   return Number(reg.exec(nums)?.[1]);
+  // }
 
-  if (reg.test(nums)) {
-    return Number(reg.exec(nums)?.[1]);
-  }
-
-  return null;
+  return Number(
+    value
+      .replace(/,/g, '.')
+      .replace(/[^\d,.-]/g, '')
+      .trim(),
+  );
 }
