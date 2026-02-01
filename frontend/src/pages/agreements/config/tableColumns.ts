@@ -5,6 +5,7 @@ import { checkExpiry } from '@/shared/lib/checkExpiry';
 import { type IAgreement } from '@/entities/agreement';
 import { parseDate } from '@/shared/lib/parseDate';
 import { RenteeInfoPopover } from '@/shared/ui';
+import { parseMoney } from '@/shared/lib';
 
 const statusColors = {
   active: {
@@ -50,6 +51,12 @@ export const columns: DataTableColumns<IAgreement> = [
         },
       );
     },
+  },
+  {
+    title: 'Долг',
+    key: 'debt',
+    align: 'center',
+    render: (row: IAgreement) => parseMoney({ ammount: row.debt }),
   },
   {
     title: 'Начало',

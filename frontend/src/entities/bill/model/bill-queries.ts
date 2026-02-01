@@ -26,8 +26,6 @@ export const useBillsQuery = ({
   return useQuery({
     queryKey: billKeys.list(scopes, includes),
     queryFn: () => getAllBills({ scopes, includes }),
-    select: (bills) =>
-      bills.filter((bill) => bill.agreement && bill.agreement.status),
   });
 };
 

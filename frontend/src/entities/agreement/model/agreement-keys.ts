@@ -17,5 +17,6 @@ export const agreementKeys = {
 
   details: () => [...agreementKeys.all, 'detail'] as const,
 
-  detail: (id: number) => [...agreementKeys.details(), id] as const,
+  detail: (id: number, includes?: IAgreementIncludes) =>
+    [...agreementKeys.details(), { id, includes }] as const,
 };

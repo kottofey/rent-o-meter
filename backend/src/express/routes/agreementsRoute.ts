@@ -38,20 +38,14 @@ async function getById(req: Request, res: Response) {
 
   try {
     const found =
-      (await model.scope(scopes).findOne({
-        where: {
-          id,
-        },
+      (await model.scope(scopes).findByPk(id, {
         include: includes,
         attributes: {
           exclude: ['createdAt', 'updatedAt'],
         },
       })) ?? {};
 
-    res
-      .status(200)
-      .send({ ...found })
-      .end();
+    res.status(200).send(found).end();
   } catch (e) {
     res.status(500).send({ error: e }).end();
   }

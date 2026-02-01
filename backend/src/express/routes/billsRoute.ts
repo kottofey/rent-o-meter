@@ -4,7 +4,8 @@ import { UniqueConstraintError } from 'sequelize';
 import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 import { parseQuery } from '@/helpers';
-import { Bill, Tarif } from '@/models';
+import { Agreement, Bill, Tarif } from '@/models';
+import { calculateDebt } from '@/helpers';
 
 const model = sequelize.models.Bill;
 
@@ -71,6 +72,20 @@ async function create(req: Request, res: Response) {
       tarifs.map((t: Tarif) => t.id),
     );
 
+    // -----------------------------------------------------------------------------
+    // Обновляем значение долга по договру
+    // -----------------------------------------------------------------------------
+
+    const thisAgreement = (await sequelize.models.Agreement.findByPk(bill.agreementId, {
+      include: {
+        model: Bill,
+      },
+    })) as Agreement;
+
+    await thisAgreement.update({
+      debt: calculateDebt(thisAgreement.toJSON()),
+    });
+
     res.status(201).send({ message: 'Created', statusCode: 201 }).end();
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
@@ -109,8 +124,6 @@ async function update(req: Request, res: Response) {
   const id = getIdParam(req);
   const { tarifs, ...billData } = req.body;
 
-  // const { body }: { body: Partial<unknown> } = req;
-
   try {
     const bill = (await model.findByPk(id)) as Bill;
     const updatedBill = await bill.update(billData, {
@@ -122,12 +135,27 @@ async function update(req: Request, res: Response) {
       tarifs.map((t: Tarif) => t.id),
     );
 
-    res
-      .status(200)
-      .send({ ...updatedBill })
-      .end();
+    // -----------------------------------------------------------------------------
+    // Обновляем значение долга по договру
+    // -----------------------------------------------------------------------------
+
+    const thisAgreement = (await sequelize.models.Agreement.findByPk(bill.agreementId, {
+      include: {
+        model: Bill,
+      },
+    })) as Agreement;
+
+    await thisAgreement.update({
+      debt: calculateDebt(thisAgreement.toJSON()),
+    });
+
+    res.status(200).send(updatedBill.toJSON()).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    if (e instanceof Error) {
+      res.status(500).send({ error: e.message }).end();
+    } else {
+      res.status(500).send(e).end();
+    }
   }
 }
 

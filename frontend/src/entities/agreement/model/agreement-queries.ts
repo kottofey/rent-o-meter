@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+} from '@tanstack/vue-query';
 import { useNotification } from 'naive-ui';
 import { MaybeRefOrGetter, toValue } from 'vue';
 
@@ -33,10 +38,32 @@ export const useAgreementsQuery = ({
   });
 };
 
-export const useAgreementQuery = ({ id }: { id: number }) => {
+export const useAgreementQuery = ({
+  id,
+  includes,
+}: {
+  id: number;
+  includes?: IAgreementIncludes;
+}) => {
   return useQuery({
-    queryKey: agreementKeys.detail(id),
-    queryFn: () => getAgreement({ id }),
+    queryKey: agreementKeys.detail(id, includes),
+    queryFn: () => getAgreement({ id, includes }),
+  });
+};
+
+export const useAgreementQueryClient = async ({
+  client,
+  id,
+  includes,
+}: {
+  id: number;
+  client: QueryClient;
+  includes?: IAgreementIncludes;
+}) => {
+  // Для разовых запросов
+  return await client.fetchQuery({
+    queryKey: agreementKeys.detail(id, includes),
+    queryFn: () => getAgreement({ id, includes }),
   });
 };
 

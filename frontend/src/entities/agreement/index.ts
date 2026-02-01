@@ -5,6 +5,7 @@ export {
   useEditAgreementMutation,
   useDeleteAgreementMutation,
   useRestoreAgreementMutation,
+  useAgreementQueryClient,
 } from './model/agreement-queries';
 
 export {

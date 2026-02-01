@@ -49,12 +49,15 @@ export async function getAllAgreements({
 
 export async function getAgreement({
   id,
+  includes = [],
 }: {
   id: number;
+  includes?: IAgreementIncludes;
 }): Promise<IAgreement> {
   return await useApi<IAgreement>({
     route: `agreements/${id}`,
     method: httpMethod.GET,
+    query: serializeQuery({ includes }),
   });
 }
 

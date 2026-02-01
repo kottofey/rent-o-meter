@@ -29,18 +29,20 @@ const formRef = ref();
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
-const isOpened = defineModel('isOpened', { default: false });
-
-const { bill = undefined } = defineProps<{
-  bill?: IBill;
-}>();
-
 const billRef = toRef(() => bill);
-
 const { formData, submit, isPending, isFormValidateError } = useBillModal({
   initialData: billRef,
   formRef: formRef,
 });
+
+const isOpened = defineModel('isOpened', { default: false });
+const emit = defineEmits<{
+  billUpdated: [{ agreementId?: number }];
+}>();
+
+const { bill } = defineProps<{
+  bill?: IBill;
+}>();
 
 const rules: FormRules = {
   month: {
@@ -56,6 +58,23 @@ const rules: FormRules = {
     required: true,
     message: 'Выберите арендатора',
   },
+
+  ammount_paid: {
+    message: 'Не может быть null',
+    validator(_rule, val) {
+      return val !== null;
+    },
+  },
+};
+
+// -----------------------------------------------------------------------------
+// Actions
+// -----------------------------------------------------------------------------
+
+const onSubmit = async () => {
+  await submit();
+  emit('billUpdated', { agreementId: formData.value.agreementId });
+  isOpened.value = isFormValidateError.value;
 };
 </script>
 
@@ -77,8 +96,7 @@ const rules: FormRules = {
         @submit.prevent
         @keyup.prevent.enter="
           async () => {
-            await submit();
-            isOpened = isFormValidateError;
+            await onSubmit();
           }
         "
       >
@@ -123,21 +141,21 @@ const rules: FormRules = {
 
         <!--  суммы  -->
 
-        <NFormItem
-          label="Сумма"
-          path="ammount"
-        >
-          <NInputNumber
-            v-model:value="formData.ammount"
-            :show-button="false"
-            clearable
-            :parse="(value) => parseNumber(value)"
-            :format="
-              (val) =>
-                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''
-            "
-          />
-        </NFormItem>
+        <!--        <NFormItem-->
+        <!--          label="Сумма"-->
+        <!--          path="ammount"-->
+        <!--        >-->
+        <!--          <NInputNumber-->
+        <!--            v-model:value="formData.ammount"-->
+        <!--            :show-button="false"-->
+        <!--            clearable-->
+        <!--            :parse="(value) => parseNumber(value)"-->
+        <!--            :format="-->
+        <!--              (val) =>-->
+        <!--                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''-->
+        <!--            "-->
+        <!--          />-->
+        <!--        </NFormItem>-->
 
         <NFormItem
           label="Доп. сумма"
@@ -201,8 +219,7 @@ const rules: FormRules = {
           type="success"
           @click="
             async () => {
-              await submit();
-              isOpened = isFormValidateError;
+              await onSubmit();
             }
           "
           >{{ bill ? 'Сохранить' : 'Создать' }}
@@ -225,6 +242,7 @@ const rules: FormRules = {
   justify-content: center;
   min-height: 500px;
   min-width: 400px;
+
   width: fit-content;
   border-radius: 12px;
 

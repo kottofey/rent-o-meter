@@ -1,4 +1,12 @@
-import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
+import {
+  isRef,
+  type MaybeRef,
+  type Ref,
+  ref,
+  toRef,
+  toValue,
+  watch,
+} from 'vue';
 import { type FormInst } from 'naive-ui';
 import { useQueryClient } from '@tanstack/vue-query';
 
@@ -17,6 +25,8 @@ export function useBillModal({
   initialData: MaybeRef<Partial<IBill> | undefined>;
   formRef: Ref<FormInst | null>;
 }) {
+  const queryClient = useQueryClient();
+
   const isFormValidateError = ref(false);
 
   const initState: Partial<IBill> = {
@@ -39,7 +49,7 @@ export function useBillModal({
   const formData = ref<Partial<IBill>>({ ...initState });
 
   watch(
-    () => unref(initialData),
+    () => toValue(initialData),
     (bill) => {
       if (bill) {
         formData.value = {
@@ -64,49 +74,6 @@ export function useBillModal({
     },
   );
 
-  watch(
-    [() => formData.value.month, () => formData.value.agreementId],
-    async () => {
-      const actualCounters = await useCountersQueryClient({
-        client: queryClient,
-        scopes: {
-          'counter:byMonth': dayjs(formData.value.month).format('YYYY-MM-DD'),
-          'counter:byAgreementId': formData.value.agreementId,
-        },
-      });
-
-      if (actualCounters.length > 1) {
-        throw new Error('More than one counter exist, check counters!');
-      }
-
-      if (actualCounters[0]) {
-        const actualTarifs = await useTarifQueryClient({
-          client: queryClient,
-          scopes: {
-            'tarif:actualBetween': {
-              dateStart: dayjs(actualCounters[0].date_start).format(
-                'YYYY-MM-DD',
-              ),
-              dateEnd: dayjs(actualCounters[0].date_end).format('YYYY-MM-DD'),
-            },
-          },
-        });
-
-        formData.value = {
-          ...formData.value,
-
-          counterId: actualCounters[0].id,
-          tarifs: actualTarifs,
-        };
-
-        formData.value.ammount = calculateAmmount({
-          tarifs: actualTarifs,
-          counter: actualCounters[0],
-        }).total;
-      }
-    },
-  );
-
   const {
     mutate: createBill,
     isPending: isCreatePending,
@@ -118,16 +85,62 @@ export function useBillModal({
     error: editError,
   } = useEditBillMutation();
 
-  const queryClient = useQueryClient();
-
   const submit = async () => {
-    // можно добавить валидацию
+    // TODO добавить валидацию
     try {
       await formRef.value?.validate(async (errors) => {
         isFormValidateError.value = false;
 
         if (!errors) {
-          // Вычисляем актуальный тариф и показания за указанный месяц
+          // -----------------------------------------------------------------------------
+          // Вычисляем актуальные счетчики и тарифы
+          // -----------------------------------------------------------------------------
+
+          const actualCounters = await useCountersQueryClient({
+            client: queryClient,
+            scopes: {
+              'counter:byMonth': dayjs(formData.value.month).format(
+                'YYYY-MM-DD',
+              ),
+              'counter:byAgreementId': formData.value.agreementId,
+            },
+          });
+
+          if (actualCounters.length > 1) {
+            throw new Error('More than one counter exist, check counters!');
+          }
+
+          if (actualCounters[0]) {
+            const actualTarifs = await useTarifQueryClient({
+              client: queryClient,
+              scopes: {
+                'tarif:actualBetween': {
+                  dateStart: dayjs(actualCounters[0].date_start).format(
+                    'YYYY-MM-DD',
+                  ),
+                  dateEnd: dayjs(actualCounters[0].date_end).format(
+                    'YYYY-MM-DD',
+                  ),
+                },
+              },
+            });
+
+            formData.value = {
+              ...formData.value,
+
+              counterId: actualCounters[0].id,
+              tarifs: actualTarifs,
+            };
+
+            formData.value.ammount = calculateAmmount({
+              tarifs: actualTarifs,
+              counter: actualCounters[0],
+            }).total;
+          }
+
+          // -----------------------------------------------------------------------------
+          // Выполняем сабмит
+          // -----------------------------------------------------------------------------
 
           if (isRef(initialData) && initialData.value) {
             editBill({
@@ -140,7 +153,7 @@ export function useBillModal({
             });
           }
 
-          formData.value = { ...initState };
+          // formData.value = { ...initState };
         }
       });
     } catch (errors) {
