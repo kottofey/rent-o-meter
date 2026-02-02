@@ -25,6 +25,8 @@ import { dayjs } from '@/shared/lib/dayjs';
 // -----------------------------------------------------------------------------
 
 const formRef = ref();
+const counterRef = toRef(() => counter);
+
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
@@ -35,12 +37,14 @@ const { counter = undefined } = defineProps<{
   counter?: ICounter;
 }>();
 
-const counterRef = toRef(() => counter);
-
 const { formData, submit, isPending, isFormValidateError } = useCountersModal({
   initialData: counterRef,
   formRef: formRef,
 });
+
+// -----------------------------------------------------------------------------
+// Form setup
+// -----------------------------------------------------------------------------
 
 const rules: FormRules = {
   month: {
@@ -82,6 +86,7 @@ const rules: FormRules = {
 // -----------------------------------------------------------------------------
 // Actions
 // -----------------------------------------------------------------------------
+
 const fetchPrevCounters = async ({
   currentMonth,
   agreementId,
@@ -109,6 +114,11 @@ const fetchPrevCounters = async ({
       .valueOf();
   }
 };
+
+const onSubmit = async () => {
+  await submit();
+  isOpened.value = isFormValidateError.value;
+};
 </script>
 
 <template>
@@ -118,8 +128,7 @@ const fetchPrevCounters = async ({
     @esc="isOpened = false"
     @keyup.prevent.enter="
       async () => {
-        await submit();
-        isOpened = isFormValidateError;
+        await onSubmit();
       }
     "
   >
@@ -277,8 +286,7 @@ const fetchPrevCounters = async ({
           type="success"
           @click="
             async () => {
-              await submit();
-              isOpened = isFormValidateError;
+              await onSubmit();
             }
           "
           >{{ counter ? 'Сохранить' : 'Создать' }}

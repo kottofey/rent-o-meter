@@ -27,6 +27,7 @@ import { SelectRentees } from '@/widgets/select-rentees';
 // -----------------------------------------------------------------------------
 
 const formRef = ref();
+const agreementRef = toRef(() => agreement);
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -37,8 +38,6 @@ const { agreement = undefined } = defineProps<{
   agreement?: IAgreement;
 }>();
 
-const agreementRef = toRef(() => agreement);
-
 const { formData, submit, isPending, isFormValidateError } = useAgreementModal({
   initialData: agreementRef,
   formRef: formRef,
@@ -46,6 +45,10 @@ const { formData, submit, isPending, isFormValidateError } = useAgreementModal({
 
 const { mutate: deleteAgreement } = useDeleteAgreementMutation();
 const { mutate: restoreAgreement } = useRestoreAgreementMutation();
+
+// -----------------------------------------------------------------------------
+// Form setup
+// -----------------------------------------------------------------------------
 
 const rules: FormRules = {
   name: {
@@ -76,6 +79,15 @@ const rules: FormRules = {
     message: 'Выберите арендатора',
   },
 };
+
+// -----------------------------------------------------------------------------
+// Actions
+// -----------------------------------------------------------------------------
+
+const onSubmit = async () => {
+  await submit();
+  isOpened.value = isFormValidateError.value;
+};
 </script>
 
 <template>
@@ -102,8 +114,7 @@ const rules: FormRules = {
         @submit.prevent
         @keyup.prevent.enter="
           async () => {
-            await submit();
-            isOpened = isFormValidateError;
+            await onSubmit();
           }
         "
       >
@@ -122,10 +133,10 @@ const rules: FormRules = {
           path="status"
           required
         >
-          <NCheckbox v-model:checked="formData.status" />
-          <span class="manage-agreement-modal__label-span">{{
-            formData.status ? 'Договор актуален' : 'Договор расторгнут'
-          }}</span>
+          <NCheckbox
+            v-model:checked="formData.status"
+            :label="formData.status ? 'Договор актуален' : 'Договор расторгнут'"
+          />
         </NFormItem>
 
         <!--  Арендатор  -->
@@ -180,8 +191,7 @@ const rules: FormRules = {
           type="success"
           @click="
             async () => {
-              await submit();
-              isOpened = isFormValidateError;
+              await onSubmit();
             }
           "
         >
@@ -200,7 +210,8 @@ const rules: FormRules = {
               isOpened = false;
             }
           "
-          >{{ agreement.deletedAt === null ? 'Удалить' : 'Восстановить' }}
+        >
+          {{ agreement.deletedAt === null ? 'Удалить' : 'Восстановить' }}
         </NButton>
 
         <NButton

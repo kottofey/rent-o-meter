@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NDataTable, NDatePicker } from 'naive-ui';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
 
 import { columns } from '../config/tableColumns';
@@ -24,6 +24,8 @@ const isModalOpened = ref(false);
 const tarifFilter = ref<ITarif['tarif_type'] | null>(null);
 const actualOnDateFilter = ref(null);
 const filteredTarifs = ref<ITarif[]>();
+const tarifToEditId = ref<number | undefined>(undefined);
+const tarifToEdit = ref();
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -38,12 +40,6 @@ const { data: tarifs, isLoading } = useTarifsQuery({
     'tarif:byType': tarifFilter.value ?? undefined,
   },
 });
-
-const tarifToEditId = ref<number | undefined>(undefined);
-
-const tarifToEdit = computed(() =>
-  tarifs.value?.find((tarif) => tarif.id === tarifToEditId.value),
-);
 
 // -----------------------------------------------------------------------------
 // Watch
@@ -64,6 +60,13 @@ watch([tarifs], () => {
   filteredTarifs.value = tarifs.value;
 });
 
+watch([tarifToEditId, isModalOpened], () => {
+  if (isModalOpened.value && tarifToEditId.value) {
+    tarifToEdit.value = tarifs.value?.find(
+      (tarif) => tarif.id === tarifToEditId.value,
+    );
+  }
+});
 // -----------------------------------------------------------------------------
 // Actions
 // -----------------------------------------------------------------------------

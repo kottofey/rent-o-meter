@@ -7,6 +7,7 @@ import {
   BelongsTo,
   Scopes,
   BelongsToMany,
+  Default,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
@@ -61,6 +62,7 @@ export default class Bill extends Model {
   }
 
   @NotNull
+  @Default(0)
   @Column({ type: DataTypes.DECIMAL(8, 2), allowNull: false })
   set extra_ammount(value: number | null) {
     this.setDataValue('extra_ammount', value ?? 0);

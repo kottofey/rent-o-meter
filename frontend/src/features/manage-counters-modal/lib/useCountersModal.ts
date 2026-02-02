@@ -1,4 +1,12 @@
-import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
+import {
+  isRef,
+  type MaybeRef,
+  type Ref,
+  ref,
+  toRef,
+  toValue,
+  watch,
+} from 'vue';
 import { type FormInst } from 'naive-ui';
 
 import { type ICounter } from '@/entities/counter';
@@ -36,7 +44,7 @@ export function useCountersModal({
   const formData = ref<Partial<ICounter>>({ ...initState });
 
   watch(
-    () => unref(initialData),
+    () => toValue(initialData),
     (counter) => {
       if (counter !== undefined && counter.agreement !== undefined) {
         formData.value = {
@@ -88,8 +96,6 @@ export function useCountersModal({
               counter: formData.value,
             });
           }
-
-          formData.value = { ...initState };
         }
       });
     } catch (errors) {

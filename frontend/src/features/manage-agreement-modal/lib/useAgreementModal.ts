@@ -1,4 +1,12 @@
-import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
+import {
+  isRef,
+  type MaybeRef,
+  type Ref,
+  ref,
+  toRef,
+  toValue,
+  watch,
+} from 'vue';
 import { type FormInst } from 'naive-ui';
 
 import { type IAgreement } from '@/entities/agreement';
@@ -30,7 +38,7 @@ export function useAgreementModal({
   const formData = ref<Partial<IAgreement>>({ ...initState });
 
   watch(
-    () => unref(initialData),
+    () => toValue(initialData),
     (agreement) => {
       if (agreement) {
         formData.value = {
@@ -76,8 +84,6 @@ export function useAgreementModal({
               agreement: formData.value,
             });
           }
-
-          formData.value = { ...initState };
         }
       });
     } catch (errors) {

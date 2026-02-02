@@ -15,6 +15,7 @@ import {
 import { ref, toRef, unref } from 'vue';
 
 import { useTarifModal } from '../lib/useTarifModal';
+import { tarifTypeOptions } from '../lib/tarifOptions';
 
 import { ITarif } from '@/entities/tarif';
 import { parseMoney, parseNumber } from '@/shared/lib';
@@ -24,6 +25,7 @@ import { parseMoney, parseNumber } from '@/shared/lib';
 // -----------------------------------------------------------------------------
 
 const formRef = ref();
+const tarifRef = toRef(() => tarif);
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -34,13 +36,15 @@ const { tarif = undefined } = defineProps<{
   tarif?: ITarif;
 }>();
 
-const tarifRef = toRef(() => tarif);
-
 const { formData, submit, deleteTarif, isPending, isFormValidateError } =
   useTarifModal({
     initialData: tarifRef,
     formRef: formRef,
   });
+
+// -----------------------------------------------------------------------------
+// Form Setup
+// -----------------------------------------------------------------------------
 
 const rules: FormRules = {
   tarif_type: {
@@ -58,21 +62,13 @@ const rules: FormRules = {
 };
 
 // -----------------------------------------------------------------------------
-// Form Setup
+// Actions
 // -----------------------------------------------------------------------------
 
-const tarifTypeOptions = [
-  { value: 'electricity', label: 'Свет (до 150кВт)' },
-  { value: 'electricity_over_150kw', label: 'Свет (сверх 150кВт)' },
-  { value: 'water_in', label: 'Подведение воды' },
-  { value: 'water_out', label: 'Отведение воды' },
-  { value: 'heat', label: 'Тепло' },
-  { value: 'gas', label: 'Газ' },
-  { value: 'renovation', label: 'Капремонт' },
-  { value: 'tko', label: 'ТКО' },
-  { value: 'managing_company', label: 'УК (квартплата)' },
-  { value: 'domofon', label: 'Домофон' },
-];
+const onSubmit = async () => {
+  await submit();
+  isOpened.value = isFormValidateError.value;
+};
 </script>
 
 <template>
@@ -93,8 +89,7 @@ const tarifTypeOptions = [
         @submit.prevent
         @keydown.prevent.stop.enter="
           async () => {
-            await submit();
-            isOpened = isFormValidateError;
+            await onSubmit();
           }
         "
       >
@@ -164,8 +159,7 @@ const tarifTypeOptions = [
           type="success"
           @click="
             async () => {
-              await submit();
-              isOpened = isFormValidateError;
+              await onSubmit();
             }
           "
           >{{ tarif ? 'Сохранить' : 'Создать' }}

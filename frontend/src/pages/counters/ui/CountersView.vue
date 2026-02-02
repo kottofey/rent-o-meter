@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NDataTable } from 'naive-ui';
-import { computed, ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import { columns } from '../config/tableColumns';
 
@@ -13,25 +13,21 @@ import { ManageCountersModal } from '@/features/manage-counters-modal';
 // State
 // -----------------------------------------------------------------------------
 
-const { data: counters, isLoading } = useCountersQuery({
-  includes: ['Agreement.Rentee'],
-});
 const isModalOpened = ref(false);
+const counterToEditId = ref<number | undefined>(undefined);
+const counterToEdit = ref();
 
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
 
+const { data: counters, isLoading } = useCountersQuery({
+  includes: ['Agreement.Rentee'],
+});
+
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------
-const counterToEditId = ref<number | undefined>(undefined);
-
-const counterToEdit = computed(() =>
-  counterToEditId.value
-    ? counters.value?.find((counter) => counter.id === counterToEditId.value)
-    : undefined,
-);
 
 const editRow = (row: ICounter) => {
   return {
@@ -46,6 +42,18 @@ const createRow = () => {
   counterToEditId.value = undefined;
   isModalOpened.value = true;
 };
+
+// -----------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------
+
+watch([counterToEditId, isModalOpened], () => {
+  if (isModalOpened.value && counterToEditId.value) {
+    counterToEdit.value = counters.value?.find(
+      (counter) => counter.id === counterToEditId.value,
+    );
+  }
+});
 </script>
 
 <template>

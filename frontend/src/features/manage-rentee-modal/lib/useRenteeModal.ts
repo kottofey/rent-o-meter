@@ -1,4 +1,12 @@
-import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
+import {
+  isRef,
+  type MaybeRef,
+  type Ref,
+  ref,
+  toRef,
+  toValue,
+  watch,
+} from 'vue';
 import { type FormInst } from 'naive-ui';
 
 import { type IRentee } from '@/entities/rentee/model/rentee-api';
@@ -33,7 +41,7 @@ export function useRenteeModal({
   const formData = ref<Partial<IRentee>>({ ...initState });
 
   watch(
-    () => unref(initialData),
+    () => toValue(initialData),
     (rentee) => {
       if (rentee) {
         formData.value = {
@@ -81,8 +89,6 @@ export function useRenteeModal({
               rentee: formData.value,
             });
           }
-
-          formData.value = { ...initState };
         }
       });
     } catch (errors) {

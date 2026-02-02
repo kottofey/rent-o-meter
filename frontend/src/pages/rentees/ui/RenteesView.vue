@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { NDataTable } from 'naive-ui';
 
 import { columns } from '../config/tableColumns';
@@ -20,6 +20,8 @@ import { InfinitiIcon } from '@/shared/ui/icons';
 
 const isModalOpened = ref(false);
 const withDeleted = ref(false);
+const renteeToEditId = ref<number | undefined>(undefined);
+const renteeToEdit = ref();
 
 const renteeScopes = reactive<IRenteeScopes>({
   'rentee:withDeleted': false,
@@ -34,13 +36,11 @@ const { data: rentees, isLoading } = useRenteesQuery({
   scopes: () => renteeScopes,
 });
 
-const renteeToEditId = ref<number | undefined>(undefined);
+// const renteeToEdit = computed(() =>
+//   rentees.value?.find((rentee) => rentee.id === renteeToEditId.value),
+// );
 
-const renteeToEdit = computed(() =>
-  rentees.value?.find((rentee) => rentee.id === renteeToEditId.value),
-);
-
-const rowProps = (row: IRentee) => {
+const editRow = (row: IRentee) => {
   return {
     onClick: () => {
       renteeToEditId.value = row.id;
@@ -64,6 +64,14 @@ const setWithDeleted = () => {
 watch(withDeleted, () => {
   renteeScopes['rentee:withDeleted'] = withDeleted.value;
 });
+
+watch([renteeToEditId, isModalOpened], () => {
+  if (isModalOpened.value && renteeToEditId.value) {
+    renteeToEdit.value = rentees.value?.find(
+      (rentee) => rentee.id === renteeToEditId.value,
+    );
+  }
+});
 </script>
 
 <template>
@@ -83,7 +91,7 @@ watch(withDeleted, () => {
     <NDataTable
       :data="rentees"
       :columns="columns"
-      :row-props="rowProps"
+      :row-props="editRow"
       :loading="isLoading"
     />
   </PageLayout>

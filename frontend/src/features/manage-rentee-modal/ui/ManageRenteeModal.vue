@@ -15,7 +15,11 @@ import { ref, toRef, unref } from 'vue';
 
 import { useRenteeModal } from '../lib/useRenteeModal';
 
-import { type IRentee, useDeleteRenteeMutation } from '@/entities/rentee';
+import {
+  type IRentee,
+  useDeleteRenteeMutation,
+  useRestoreRenteeMutation,
+} from '@/entities/rentee';
 
 // -----------------------------------------------------------------------------
 // State
@@ -45,8 +49,12 @@ const {
   formRef: formRef,
 });
 
-const { mutateAsync: deleteRentee, isSuccess: isRenteeDeleted } =
-  useDeleteRenteeMutation();
+const { mutate: deleteRentee } = useDeleteRenteeMutation();
+const { mutate: restoreRentee } = useRestoreRenteeMutation();
+
+// -----------------------------------------------------------------------------
+// Form setup
+// -----------------------------------------------------------------------------
 
 const rules: FormRules = {
   surname: {
@@ -75,6 +83,15 @@ const rules: FormRules = {
     },
   },
 };
+
+// -----------------------------------------------------------------------------
+// Actions
+// -----------------------------------------------------------------------------
+
+const onSubmit = async () => {
+  await submit();
+  isOpened.value = isFormValidateError.value;
+};
 </script>
 
 <template>
@@ -95,8 +112,7 @@ const rules: FormRules = {
         @submit.prevent
         @keyup.prevent.enter="
           async () => {
-            await submit();
-            isOpened = isFormValidateError;
+            await onSubmit();
           }
         "
       >
@@ -145,10 +161,10 @@ const rules: FormRules = {
           path="status"
           required
         >
-          <NCheckbox v-model:checked="formData.status" />
-          <span class="manage-rentee-modal__label-span">{{
-            formData.status ? 'Активный' : 'Неактивный'
-          }}</span>
+          <NCheckbox
+            v-model:checked="formData.status"
+            :label="formData.status ? 'Активный' : 'Неактивный'"
+          />
         </NFormItem>
 
         <!--  Начало  -->
@@ -190,27 +206,29 @@ const rules: FormRules = {
           type="success"
           @click="
             async () => {
-              await submit();
-              isOpened = isFormValidateError;
+              await onSubmit();
             }
           "
           >{{ rentee ? 'Сохранить' : 'Создать' }}
         </NButton>
 
         <NButton
-          type="error"
+          v-if="rentee"
           :disabled="checkActiveAgreements()"
+          type="error"
           @click="
-            async () => {
-              if (renteeRef) {
-                await deleteRentee({ id: renteeRef.id });
-                isOpened = isRenteeDeleted && false;
+            () => {
+              if (rentee.deletedAt === null) {
+                deleteRentee({ id: rentee.id });
+              } else {
+                restoreRentee({ id: rentee.id });
               }
+              isOpened = false;
             }
           "
-          >Удалить
+        >
+          {{ rentee.deletedAt === null ? 'Удалить' : 'Восстановить' }}
         </NButton>
-
         <NButton
           color="black"
           text-color="white"
@@ -235,10 +253,6 @@ const rules: FormRules = {
   &__buttons {
     display: flex;
     justify-content: center;
-  }
-
-  &__label-span {
-    margin-left: 10px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type DataTableInst, NDataTable } from 'naive-ui';
-import { computed, reactive, ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 import { columns } from '../config/tableColumns';
 
@@ -26,10 +26,17 @@ import {
 const isModalOpened = ref(false);
 const withDeleted = ref(false);
 const filter = ref<'expired' | 'actual' | null>('actual');
+const agreementToEdit = ref();
 
 const agreementScopes = reactive<IAgreementScopes>({
   'agreements:withDeleted': false,
 });
+
+// -----------------------------------------------------------------------------
+// Computed
+// -----------------------------------------------------------------------------
+
+// Empty
 
 // -----------------------------------------------------------------------------
 // Table setup
@@ -43,11 +50,9 @@ const { data: agreements, isLoading } = useAgreementsQuery({
 const table = ref<DataTableInst | null>(null);
 const agreementToEditId = ref<number | undefined>(undefined);
 
-const agreementToEdit = computed(() =>
-  agreements.value?.find(
-    (agreement) => agreement.id === agreementToEditId.value,
-  ),
-);
+// -----------------------------------------------------------------------------
+// Actions
+// -----------------------------------------------------------------------------
 
 const editRow = (row: IAgreement) => {
   return {
@@ -63,21 +68,21 @@ const createRow = () => {
   isModalOpened.value = true;
 };
 
-// -----------------------------------------------------------------------------
-// Actions
-// -----------------------------------------------------------------------------
 const setExpired = () => {
   table.value?.filter({ status: 'expired' });
   filter.value = 'expired';
 };
+
 const setActual = () => {
   table.value?.filter({ status: 'actual' });
   filter.value = 'actual';
 };
+
 const setAll = () => {
   table.value?.filter({ status: undefined });
   filter.value = null;
 };
+
 const setWithDeleted = () => {
   withDeleted.value = !withDeleted.value;
   if (withDeleted.value) {
@@ -92,6 +97,14 @@ const setWithDeleted = () => {
 // -----------------------------------------------------------------------------
 watch(withDeleted, () => {
   agreementScopes['agreements:withDeleted'] = withDeleted.value;
+});
+
+watch([agreementToEditId, isModalOpened], () => {
+  if (isModalOpened.value && agreementToEditId.value) {
+    agreementToEdit.value = agreements.value?.find(
+      (agreement) => agreement.id === agreementToEditId.value,
+    );
+  }
 });
 </script>
 

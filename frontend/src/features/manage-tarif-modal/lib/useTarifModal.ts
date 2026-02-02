@@ -1,4 +1,12 @@
-import { isRef, type MaybeRef, type Ref, ref, toRef, unref, watch } from 'vue';
+import {
+  isRef,
+  type MaybeRef,
+  type Ref,
+  ref,
+  toRef,
+  toValue,
+  watch,
+} from 'vue';
 import { type FormInst } from 'naive-ui';
 
 import { type ITarif, useDeleteTarifMutation } from '@/entities/tarif';
@@ -26,7 +34,7 @@ export function useTarifModal({
   const formData = ref<Partial<ITarif>>({ ...initState });
 
   watch(
-    () => unref(initialData),
+    () => toValue(initialData),
     (tarif) => {
       if (tarif) {
         formData.value = {
@@ -58,7 +66,6 @@ export function useTarifModal({
   const { mutate: deleteTarif } = useDeleteTarifMutation();
 
   const submit = async () => {
-    // можно добавить валидацию
     try {
       await formRef.value?.validate((errors) => {
         isFormValidateError.value = false;
@@ -74,8 +81,6 @@ export function useTarifModal({
               tarif: formData.value,
             });
           }
-
-          formData.value = { ...initState };
         }
       });
     } catch (errors) {

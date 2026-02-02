@@ -25,17 +25,14 @@ import { parseMoney, parseNumber } from '@/shared/lib';
 // -----------------------------------------------------------------------------
 
 const formRef = ref();
+const billRef = toRef(() => bill);
 
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
-const billRef = toRef(() => bill);
-const { formData, submit, isPending, isFormValidateError } = useBillModal({
-  initialData: billRef,
-  formRef: formRef,
-});
 
 const isOpened = defineModel('isOpened', { default: false });
+
 const emit = defineEmits<{
   billUpdated: [{ agreementId?: number }];
 }>();
@@ -43,6 +40,15 @@ const emit = defineEmits<{
 const { bill } = defineProps<{
   bill?: IBill;
 }>();
+
+const { formData, submit, isPending, isFormValidateError } = useBillModal({
+  initialData: billRef,
+  formRef: formRef,
+});
+
+// -----------------------------------------------------------------------------
+// Form setup
+// -----------------------------------------------------------------------------
 
 const rules: FormRules = {
   month: {
@@ -87,6 +93,12 @@ const onSubmit = async () => {
     <NCard
       class="manage-bill-modal"
       :title="bill ? 'Редактирование счёта' : 'Создание счёта'"
+      :content-style="{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }"
     >
       <NForm
         :disabled="isPending"
@@ -141,22 +153,6 @@ const onSubmit = async () => {
 
         <!--  суммы  -->
 
-        <!--        <NFormItem-->
-        <!--          label="Сумма"-->
-        <!--          path="ammount"-->
-        <!--        >-->
-        <!--          <NInputNumber-->
-        <!--            v-model:value="formData.ammount"-->
-        <!--            :show-button="false"-->
-        <!--            clearable-->
-        <!--            :parse="(value) => parseNumber(value)"-->
-        <!--            :format="-->
-        <!--              (val) =>-->
-        <!--                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''-->
-        <!--            "-->
-        <!--          />-->
-        <!--        </NFormItem>-->
-
         <NFormItem
           label="Доп. сумма"
           path="extra_ammount"
@@ -196,10 +192,10 @@ const onSubmit = async () => {
           path="status"
           required
         >
-          <NCheckbox v-model:checked="formData.status" />
-          <span class="manage-bill-modal__label-span">{{
-            formData.status ? 'Оплачено' : 'Не оплачено'
-          }}</span>
+          <NCheckbox
+            v-model:checked="formData.status"
+            :label="formData.status ? 'Оплачено' : 'Не оплачено'"
+          />
         </NFormItem>
 
         <!--  Комментарий  -->

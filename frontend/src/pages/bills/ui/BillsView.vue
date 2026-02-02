@@ -19,6 +19,7 @@ const isModalOpened = ref(false);
 const withInactiveAgreements = ref(false);
 const selectedRenteeAgreements = ref();
 const billToEdit = ref();
+const billToEditId = ref<number | undefined>(undefined);
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -51,7 +52,6 @@ const filteredBills = computed(() =>
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------
-const billToEditId = ref<number | undefined>(undefined);
 
 const editRow = (row: IBill) => {
   return {
@@ -70,8 +70,9 @@ const createRow = () => {
 // -----------------------------------------------------------------------------
 // Watch
 // -----------------------------------------------------------------------------
-watch(billToEditId, () => {
-  if (billToEditId.value) {
+
+watch([billToEditId, isModalOpened], () => {
+  if (isModalOpened.value && billToEditId.value) {
     billToEdit.value = bills.value?.find(
       (bill) => bill.id === billToEditId.value,
     );
@@ -88,7 +89,7 @@ watch(billToEditId, () => {
         @click="withInactiveAgreements = !withInactiveAgreements"
         :is-outlined="withInactiveAgreements"
       >
-        <template #default>Истекшие</template>
+        <template #default>C истёкшими договорами</template>
         <template #icon><ExpiredIcon /></template>
       </AppButton>
       <div class="menu-block">

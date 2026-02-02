@@ -34,9 +34,8 @@ export function useBillModal({
     bill_date: dayjs().valueOf(),
     month: dayjs().startOf('month').valueOf(),
 
-    ammount: undefined,
-    extra_ammount: undefined,
-    ammount_paid: undefined,
+    extra_ammount: 0,
+    ammount_paid: 0,
 
     agreementId: undefined,
     counterId: undefined,
@@ -86,7 +85,6 @@ export function useBillModal({
   } = useEditBillMutation();
 
   const submit = async () => {
-    // TODO добавить валидацию
     try {
       await formRef.value?.validate(async (errors) => {
         isFormValidateError.value = false;
@@ -152,8 +150,6 @@ export function useBillModal({
               bill: formData.value,
             });
           }
-
-          // formData.value = { ...initState };
         }
       });
     } catch (errors) {
