@@ -20,30 +20,35 @@ const settings = useLocalStorage<ISettings>('settings', {
     >
       Главная
     </RouterLink>
-    <RouterLink
-      :to="{ name: 'agreements.show' }"
-      class="link"
-    >
-      Договоры
-    </RouterLink>
-    <RouterLink
-      :to="{ name: 'bills.show' }"
-      class="link"
-    >
-      Счета
-    </RouterLink>
-    <RouterLink
-      :to="{ name: 'counters.show' }"
-      class="link"
-    >
-      Счетчики
-    </RouterLink>
+
     <RouterLink
       :to="{ name: 'rentees.show' }"
       class="link"
     >
       Арендаторы
     </RouterLink>
+
+    <RouterLink
+      :to="{ name: 'agreements.show' }"
+      class="link"
+    >
+      Договоры
+    </RouterLink>
+
+    <RouterLink
+      :to="{ name: 'counters.show' }"
+      class="link"
+    >
+      Счетчики
+    </RouterLink>
+
+    <RouterLink
+      :to="{ name: 'bills.show' }"
+      class="link"
+    >
+      Счета
+    </RouterLink>
+
     <RouterLink
       :to="{ name: 'tarifs.show' }"
       class="link"

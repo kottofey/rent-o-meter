@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { type DataTableInst, NDataTable } from 'naive-ui';
-import { reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 
 import { columns } from '../config/tableColumns';
 
+import { useSettings } from '@/app/lib';
 import { PageLayout } from '@/app/layouts';
 import {
   type IAgreement,
@@ -24,25 +25,23 @@ import {
 // -----------------------------------------------------------------------------
 
 const isModalOpened = ref(false);
-const withDeleted = ref(false);
-const filter = ref<'expired' | 'actual' | null>('actual');
 const agreementToEdit = ref();
+const prevFilter = ref();
 
 const agreementScopes = reactive<IAgreementScopes>({
   'agreements:withDeleted': false,
 });
 
 // -----------------------------------------------------------------------------
-// Computed
+// Setup
 // -----------------------------------------------------------------------------
 
-// Empty
-
+const { settings } = useSettings();
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------
 
-const { data: agreements, isLoading } = useAgreementsQuery({
+const { data: agreements, isFetching } = useAgreementsQuery({
   includes: ['Rentee'],
   scopes: () => agreementScopes,
 });
@@ -69,35 +68,31 @@ const createRow = () => {
 };
 
 const setExpired = () => {
-  table.value?.filter({ status: 'expired' });
-  filter.value = 'expired';
+  settings.value.agreements.filter = 'expired';
 };
 
 const setActual = () => {
-  table.value?.filter({ status: 'actual' });
-  filter.value = 'actual';
+  settings.value.agreements.filter = 'actual';
 };
 
 const setAll = () => {
-  table.value?.filter({ status: undefined });
-  filter.value = null;
+  settings.value.agreements.filter = null;
 };
 
 const setWithDeleted = () => {
-  withDeleted.value = !withDeleted.value;
-  if (withDeleted.value) {
+  settings.value.agreements.withDeleted =
+    !settings.value.agreements.withDeleted;
+  if (settings.value.agreements.withDeleted) {
+    prevFilter.value = settings.value.agreements.filter;
     setAll();
   } else {
-    setActual();
+    settings.value.agreements.filter = prevFilter.value;
   }
 };
 
 // -----------------------------------------------------------------------------
 // Watch
 // -----------------------------------------------------------------------------
-watch(withDeleted, () => {
-  agreementScopes['agreements:withDeleted'] = withDeleted.value;
-});
 
 watch([agreementToEditId, isModalOpened], () => {
   if (isModalOpened.value && agreementToEditId.value) {
@@ -105,6 +100,25 @@ watch([agreementToEditId, isModalOpened], () => {
       (agreement) => agreement.id === agreementToEditId.value,
     );
   }
+});
+
+watch(
+  settings.value.agreements,
+  () => {
+    table.value?.filter({ status: settings.value.agreements.filter });
+    agreementScopes['agreements:withDeleted'] =
+      settings.value.agreements.withDeleted;
+  },
+  {
+    deep: true,
+  },
+);
+
+onMounted(() => {
+  // Загружаем сохраненные установки
+  table.value?.filter({ status: settings.value.agreements.filter });
+  agreementScopes['agreements:withDeleted'] =
+    settings.value.agreements.withDeleted;
 });
 </script>
 
@@ -115,34 +129,34 @@ watch([agreementToEditId, isModalOpened], () => {
 
       <AppButton
         @click="setWithDeleted"
-        :is-outlined="withDeleted"
+        :is-outlined="settings.agreements.withDeleted"
       >
         <template #default>Удаленные</template>
         <template #icon><InfinitiIcon /></template>
       </AppButton>
 
       <AppButton
-        v-if="!withDeleted"
+        v-if="!settings.agreements.withDeleted"
         @click="setExpired"
-        :is-outlined="filter === 'expired'"
+        :is-outlined="settings.agreements.filter === 'expired'"
       >
         <template #default>Истекшие</template>
         <template #icon><ExpiredIcon /></template>
       </AppButton>
 
       <AppButton
-        v-if="!withDeleted"
+        v-if="!settings.agreements.withDeleted"
         @click="setActual"
-        :is-outlined="filter === 'actual'"
+        :is-outlined="settings.agreements.filter === 'actual'"
       >
         <template #default>Актуальные</template>
         <template #icon><ActualIcon /></template>
       </AppButton>
 
       <AppButton
-        v-if="!withDeleted"
+        v-if="!settings.agreements.withDeleted"
         @click="setAll"
-        :is-outlined="filter === null"
+        :is-outlined="settings.agreements.filter === null"
       >
         <template #default>Все</template>
         <template #icon><AllIcon /></template>
@@ -154,10 +168,9 @@ watch([agreementToEditId, isModalOpened], () => {
       :data="agreements"
       :columns="columns"
       :row-props="editRow"
-      :loading="isLoading"
+      :loading="isFetching"
     />
   </PageLayout>
-
   <ManageAgreementModal
     v-model:is-opened="isModalOpened"
     :agreement="agreementToEdit"

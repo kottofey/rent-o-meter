@@ -36,10 +36,6 @@ const { data: rentees, isLoading } = useRenteesQuery({
   scopes: () => renteeScopes,
 });
 
-// const renteeToEdit = computed(() =>
-//   rentees.value?.find((rentee) => rentee.id === renteeToEditId.value),
-// );
-
 const editRow = (row: IRentee) => {
   return {
     onClick: () => {

@@ -1,22 +1,10 @@
 <script setup lang="ts">
 import { NButton, NIcon } from 'naive-ui';
-import { useLocalStorage } from '@vueuse/core';
 
 import { SunIcon, MoonIcon } from '@/shared/ui/icons';
+import { useSettings } from '@/app/lib';
 
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
-export interface ISettings {
-  theme?: 'dark' | 'light';
-}
-
-// -----------------------------------------------------------------------------
-// Setup
-// -----------------------------------------------------------------------------
-const settings = useLocalStorage<ISettings>('rentometer-settings', {
-  theme: 'light',
-});
+const { settings } = useSettings();
 
 const { iconSize = 24 } = defineProps<{
   iconSize?: number;

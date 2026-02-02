@@ -8,9 +8,10 @@ import {
   NNotificationProvider,
   NDialogProvider,
 } from 'naive-ui';
-import { useLocalStorage } from '@vueuse/core';
 
-const settings = useLocalStorage('rentometer-settings', { theme: 'light' });
+import { useSettings } from '@/app/lib';
+
+const { settings } = useSettings();
 </script>
 
 <template>
