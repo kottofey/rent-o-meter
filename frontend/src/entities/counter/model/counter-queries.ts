@@ -4,6 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/vue-query';
+import { useNotification } from 'naive-ui';
 
 import {
   createCounter,
@@ -18,8 +19,7 @@ import {
 } from './counter-api';
 import { counterKeys } from './counter-keys';
 
-// TODO дописать фильтры, они пойдут в queryKeys: renteeKeys.list(filters)
-// TODO дописать оптимистичные апдейты
+import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
 export const useCountersQueryClient = async ({
   client,
@@ -93,6 +93,7 @@ export const useCounterQuery = ({
 
 export const useCreateCounterMutation = () => {
   const queryClient = useQueryClient();
+  const notif = useNotification();
 
   return useMutation({
     mutationKey: counterKeys.lists(),
@@ -100,12 +101,26 @@ export const useCreateCounterMutation = () => {
       createCounter({ counter }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: counterKeys.lists() });
+      notif.success({
+        content: 'Создано',
+        closable: true,
+        duration: 5000,
+      });
+    },
+    onError: (error: Error) => {
+      notif.error({
+        content: getErrorMessage({ error }),
+        closable: true,
+        duration: 5000,
+      });
     },
   });
 };
 
 export const useEditCounterMutation = () => {
   const queryClient = useQueryClient();
+  const notif = useNotification();
+
   return useMutation({
     mutationFn: ({
       id,
@@ -119,12 +134,26 @@ export const useEditCounterMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: counterKeys.detail({ id: variables.id }),
       });
+      notif.success({
+        content: 'Отредактировано',
+        closable: true,
+        duration: 5000,
+      });
+    },
+    onError: (error: Error) => {
+      notif.error({
+        content: getErrorMessage({ error }),
+        closable: true,
+        duration: 5000,
+      });
     },
   });
 };
 
 export const useDeleteCounterMutation = () => {
   const queryClient = useQueryClient();
+  const notif = useNotification();
+
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteCounter({ id }),
     onSuccess: async (_data, variables) => {
@@ -132,18 +161,44 @@ export const useDeleteCounterMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: counterKeys.detail({ id: variables.id }),
       });
+      notif.success({
+        content: 'Удалено',
+        closable: true,
+        duration: 5000,
+      });
+    },
+    onError: (error: Error) => {
+      notif.error({
+        content: getErrorMessage({ error }),
+        closable: true,
+        duration: 5000,
+      });
     },
   });
 };
 
 export const useRestoreCounterMutation = () => {
   const queryClient = useQueryClient();
+  const notif = useNotification();
+
   return useMutation({
     mutationFn: ({ id }: { id: number }) => restoreCounter({ id }),
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: counterKeys.lists() });
       await queryClient.invalidateQueries({
         queryKey: counterKeys.detail({ id: variables.id }),
+      });
+      notif.success({
+        content: 'Восстановлено',
+        closable: true,
+        duration: 5000,
+      });
+    },
+    onError: (error: Error) => {
+      notif.error({
+        content: getErrorMessage({ error }),
+        closable: true,
+        duration: 5000,
       });
     },
   });

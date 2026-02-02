@@ -22,9 +22,6 @@ import { agreementKeys } from './agreement-keys';
 
 import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
-// TODO дописать фильтры, они пойдут в queryKeys: renteeKeys.list(filters)
-// TODO дописать оптимистичные апдейты
-
 export const useAgreementsQuery = ({
   scopes,
   includes,
@@ -80,14 +77,14 @@ export const useCreateAgreementMutation = () => {
       notif.success({
         content: 'Создано',
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
     onError: (error: Error) => {
       notif.error({
         content: getErrorMessage({ error }),
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
   });
@@ -113,14 +110,14 @@ export const useEditAgreementMutation = () => {
       notif.success({
         content: 'Отредактировано',
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
     onError: (error: Error) => {
       notif.error({
         content: getErrorMessage({ error }),
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
   });
@@ -140,14 +137,14 @@ export const useDeleteAgreementMutation = () => {
       notif.success({
         content: 'Удалено',
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
     onError: (error: Error) => {
       notif.error({
         content: getErrorMessage({ error }),
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
   });
@@ -167,14 +164,14 @@ export const useRestoreAgreementMutation = () => {
       notif.success({
         content: 'Восстановлено',
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
     onError: (error: Error) => {
       notif.error({
         content: getErrorMessage({ error }),
         closable: true,
-        duration: 3000,
+        duration: 5000,
       });
     },
   });
