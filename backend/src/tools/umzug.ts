@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { Umzug, SequelizeStorage } from 'umzug';
 
 import { sequelize } from '../sequelize';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const migrator = new Umzug({

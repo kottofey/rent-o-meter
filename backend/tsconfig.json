@@ -27,6 +27,9 @@
       "@/models": ["src/sequelize/models"],
       "@/helpers": ["src/helpers"],
       "@/sequelize": ["src/sequelize"],
+      "@/sequelize/config": ["src/sequelize/config"],
+      "@/config": ["src/config"],
+      "@/middlewares": ["src/express/middlewares"],
     },
   },
 
