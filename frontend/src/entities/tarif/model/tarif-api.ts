@@ -1,5 +1,5 @@
 import { useApi, httpMethod, serializeQuery } from '@/shared/api';
-import { IBill } from '@/entities/bill';
+import { IBill } from '@/entities/bill/@x/tarif';
 
 // TODO дописать скоупы если будут
 // TODO написать алгоритм сериализации с проверкой через zod

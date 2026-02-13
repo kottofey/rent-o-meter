@@ -11,7 +11,7 @@ export default async function useApi<T>({
   method?: string;
   body?: string;
 }) {
-  const { VITE_API_BASE_URL, VITE_API_PORT } = import.meta.env;
+  const { VITE_API_BASE_URL, VITE_API_PORT, MODE } = import.meta.env;
 
   const parsedQuery = query ? '?' + query : '';
 
@@ -20,7 +20,9 @@ export default async function useApi<T>({
   });
 
   const resp = await fetch(
-    `${VITE_API_BASE_URL}:${VITE_API_PORT}/api/v1/${route}${parsedQuery}`,
+    MODE === 'development'
+      ? `/api/v1/${route}${parsedQuery}`
+      : `${VITE_API_BASE_URL}:${VITE_API_PORT}/api/v1/${route}${parsedQuery}`,
     {
       mode: 'cors',
       method,
