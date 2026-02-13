@@ -7,7 +7,6 @@ import { fileURLToPath } from 'node:url';
 import * as process from 'node:process';
 
 import { QueryInterface } from 'sequelize';
-import chalk from 'chalk';
 import { program } from 'commander';
 
 import { Seeder } from '@/models';
@@ -104,13 +103,14 @@ async function runAllNewSeeders() {
       return;
     }
 
-    console.log(`📊 Найдено ${newSeeders.length.toString()} новых сидеров`);
+    console.log(`📊 Найдено новых сидеров: ${newSeeders.length.toString()}`);
 
     for (const filepath of newSeeders) {
       await executeSeeder(path.basename(filepath), 'up');
     }
 
-    console.log(`✅ Выполнено ${newSeeders.length.toString()} сидеров`);
+    console.log(`✅ Выполнено сидеров: ${newSeeders.length.toString()}`);
+    await sequelize.close();
   } catch (error) {
     console.error('❌ Ошибка при выполнении:', (error as Error).message);
     return false;
@@ -156,7 +156,7 @@ async function rollbackAllSeeders() {
     }
   }
 
-  console.log(`✅ Откат выполнено ${executedSeeders.length.toString()} сидеров`);
+  console.log(`✅ Откат сидеров, выполнено: ${executedSeeders.length.toString()}`);
 }
 
 // Настройка командной строки

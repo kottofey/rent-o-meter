@@ -1,7 +1,16 @@
-import { Model, Table, Column, NotNull, Default, HasMany, Scopes } from 'sequelize-typescript';
+import {
+  Model,
+  Table,
+  Column,
+  NotNull,
+  Default,
+  HasMany,
+  Scopes,
+  HasOne,
+} from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import { Agreement } from '@/models';
+import { Agreement, User } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
@@ -81,6 +90,9 @@ export default class Rentee extends Model {
   // -----------------------------------------------------------------------------
   @HasMany(() => Agreement, { onDelete: 'CASCADE' })
   agreements: Agreement[];
+
+  @HasOne(() => User)
+  declare user: User;
 
   // -----------------------------------------------------------------------------
   // Virtuals

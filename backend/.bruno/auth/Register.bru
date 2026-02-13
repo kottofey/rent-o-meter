@@ -1,0 +1,28 @@
+meta {
+  name: Register
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "surname": "surname",
+    "firstname": "firstname",
+    "patronymic": "patronymic",
+    "email": "email17@mail.ru",
+    "password": "password",
+    "role": "admin",
+    "comment": "comment"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -8,6 +8,12 @@ import {
   Tarif,
   Bill,
   RelBillTarifs,
+  Role,
+  User,
+  RelUserRole,
+  RelRolePermission,
+  Permission,
+  RefreshToken,
   Seeder,
 } from '@/models';
 
@@ -20,6 +26,12 @@ export const sequelize = new Sequelize({
     Tarif,
     Bill,
     RelBillTarifs,
+    Role,
+    User,
+    RelUserRole,
+    RelRolePermission,
+    Permission,
+    RefreshToken,
     Seeder,
   ],
 });

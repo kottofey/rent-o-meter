@@ -9,21 +9,20 @@ import logger from 'morgan';
 import cors from 'cors';
 import qs from 'qs';
 
-import { agreementsRoute, countersRoute, renteeRoute, tariffsRoute, billsRoute } from '@/routes';
+import {
+  agreementsRoute,
+  countersRoute,
+  renteeRoute,
+  tariffsRoute,
+  billsRoute,
+  authRoute,
+} from '@/routes';
 
-// import jwt from 'jsonwebtoken';
-// import dotenv from 'dotenv';
-// import { dirname, join } from 'node:path';
-// import { fileURLToPath } from 'node:url';
-// import fs from 'fs/promises';
-
-// const __dirname = dirname(fileURLToPath(import.meta.url));
-// const env = await fs.readFile(join(__dirname, '../../.env'), 'utf8');
-// const { JWT_SECRET } = dotenv.parse(env);
+import { authMiddleware, requireRoleMiddleware } from '@/middlewares';
 
 const app = express();
 
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: 'https://rent-o-meter.kottofey.ru', credentials: true }));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -40,6 +39,14 @@ interface IRouteController {
   remove?(req: Request, res: Response, next: NextFunction): Promise<void>;
   restore?(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
+
+// interface IAuthController {
+//   register?(req: Request, res: Response, next: NextFunction): Promise<void>;
+//   login?(req: Request, res: Response, next: NextFunction): Promise<void>;
+//   logout?(req: Request, res: Response, next: NextFunction): Promise<void>;
+//   refreshToken?(req: Request, res: Response, next: NextFunction): Promise<void>;
+//   profile?(req: Request, res: Response, next: NextFunction): Promise<void>;
+// }
 
 const routes: { [routeName: string]: IRouteController } = {
   rentees: renteeRoute,
@@ -62,7 +69,7 @@ function makeHandlerAwareOfAsyncErrors(handler: RequestHandler) {
 
 app.get('/api/v1/', (_req: Request, res: Response) => {
   try {
-    res.send('Hello Express!');
+    res.send('Hello API! This is V1');
   } catch (e: unknown) {
     console.error('root route errer:', e);
     res.send(e);
@@ -72,31 +79,67 @@ app.get('/api/v1/', (_req: Request, res: Response) => {
 // Define the standard REST APIs for each route (if they exist).
 for (const [routeName, routeController] of Object.entries(routes)) {
   if (routeController.getAll) {
-    app.get(`/api/v1/${routeName}`, makeHandlerAwareOfAsyncErrors(routeController.getAll));
+    app.get(
+      `/api/v1/${routeName}`,
+      authMiddleware,
+      requireRoleMiddleware,
+      makeHandlerAwareOfAsyncErrors(routeController.getAll),
+    );
   }
 
   if (routeController.getById) {
-    app.get(`/api/v1/${routeName}/:id`, makeHandlerAwareOfAsyncErrors(routeController.getById));
+    app.get(
+      `/api/v1/${routeName}/:id`,
+      authMiddleware,
+      requireRoleMiddleware,
+      makeHandlerAwareOfAsyncErrors(routeController.getById),
+    );
   }
 
   if (routeController.create) {
-    app.post(`/api/v1/${routeName}`, makeHandlerAwareOfAsyncErrors(routeController.create));
+    app.post(
+      `/api/v1/${routeName}`,
+      authMiddleware,
+      requireRoleMiddleware,
+      makeHandlerAwareOfAsyncErrors(routeController.create),
+    );
   }
 
   if (routeController.update) {
-    app.put(`/api/v1/${routeName}/:id`, makeHandlerAwareOfAsyncErrors(routeController.update));
+    app.put(
+      `/api/v1/${routeName}/:id`,
+      authMiddleware,
+      requireRoleMiddleware,
+      makeHandlerAwareOfAsyncErrors(routeController.update),
+    );
   }
 
   if (routeController.remove) {
-    app.delete(`/api/v1/${routeName}/:id`, makeHandlerAwareOfAsyncErrors(routeController.remove));
+    app.delete(
+      `/api/v1/${routeName}/:id`,
+      authMiddleware,
+      requireRoleMiddleware,
+      makeHandlerAwareOfAsyncErrors(routeController.remove),
+    );
   }
 
   if (routeController.restore) {
     app.put(
       `/api/v1/${routeName}/:id/restore`,
+      authMiddleware,
+      requireRoleMiddleware,
       makeHandlerAwareOfAsyncErrors(routeController.restore),
     );
   }
 }
+
+// -----------------------------------------------------------------------------
+// Auth routes
+// -----------------------------------------------------------------------------
+app.post('/api/v1/auth/register', makeHandlerAwareOfAsyncErrors(authRoute.register));
+app.post('/api/v1/auth/login', makeHandlerAwareOfAsyncErrors(authRoute.login));
+app.delete('/api/v1/auth/logout', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.logout));
+app.post('/api/v1/auth/refresh-token', makeHandlerAwareOfAsyncErrors(authRoute.refreshToken));
+app.get('/api/v1/me', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.me));
 
 export default app;

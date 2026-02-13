@@ -1,2 +1,2 @@
 #!/bin/sh
-node --import=tsx --env-file=.env src/express/bin/www.ts
+node --import=tsx src/express/bin/www.ts

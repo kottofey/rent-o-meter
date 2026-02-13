@@ -1,0 +1,23 @@
+meta {
+  name: Logout
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{BASE_URL}}/auth/logout
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "email": "email16@mail.ru",
+    "password": "password"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

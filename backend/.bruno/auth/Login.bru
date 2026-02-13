@@ -1,0 +1,23 @@
+meta {
+  name: /Login
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "email17@mail.ru",
+    "password": "password"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

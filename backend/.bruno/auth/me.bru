@@ -1,0 +1,23 @@
+meta {
+  name: me
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{BASE_URL}}/me
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "email": "email17@mail.ru",
+    "password": "password"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
