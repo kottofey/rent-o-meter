@@ -56,7 +56,11 @@ export default class RefreshToken extends Model {
   // -----------------------------------------------------------------------------
   // Methods
   // -----------------------------------------------------------------------------
-  isValid() {
-    return !this.is_revoked && this.expires_at > dayjs().valueOf();
+  isRevoked() {
+    return this.is_revoked;
+  }
+
+  isExpired() {
+    return dayjs().isAfter(dayjs(this.expires_at));
   }
 }

@@ -16,6 +16,7 @@ import {
   tariffsRoute,
   billsRoute,
   authRoute,
+  usersRoute,
 } from '@/routes';
 
 import { authMiddleware, requireRoleMiddleware } from '@/middlewares';
@@ -40,20 +41,13 @@ interface IRouteController {
   restore?(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
-// interface IAuthController {
-//   register?(req: Request, res: Response, next: NextFunction): Promise<void>;
-//   login?(req: Request, res: Response, next: NextFunction): Promise<void>;
-//   logout?(req: Request, res: Response, next: NextFunction): Promise<void>;
-//   refreshToken?(req: Request, res: Response, next: NextFunction): Promise<void>;
-//   profile?(req: Request, res: Response, next: NextFunction): Promise<void>;
-// }
-
 const routes: { [routeName: string]: IRouteController } = {
   rentees: renteeRoute,
   agreements: agreementsRoute,
   counters: countersRoute,
   tarifs: tariffsRoute,
   bills: billsRoute,
+  users: usersRoute,
 };
 
 // We create a wrapper to workaround async errors not being transmitted correctly.
@@ -139,7 +133,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
 app.post('/api/v1/auth/register', makeHandlerAwareOfAsyncErrors(authRoute.register));
 app.post('/api/v1/auth/login', makeHandlerAwareOfAsyncErrors(authRoute.login));
 app.delete('/api/v1/auth/logout', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.logout));
-app.post('/api/v1/auth/refresh-token', makeHandlerAwareOfAsyncErrors(authRoute.refreshToken));
+// app.post('/api/v1/auth/refresh-token', makeHandlerAwareOfAsyncErrors(authRoute.refreshToken));
 app.get('/api/v1/me', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.me));
 
 export default app;

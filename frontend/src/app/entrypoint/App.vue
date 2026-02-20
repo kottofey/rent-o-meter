@@ -8,10 +8,16 @@ import {
   NNotificationProvider,
   NDialogProvider,
 } from 'naive-ui';
+import { onBeforeMount } from 'vue';
 
 import { useSettings } from '@/app/lib';
+import { useAuth } from '@/features/auth';
 
 const { settings } = useSettings();
+
+onBeforeMount(() => {
+  useAuth().initializeAuthState();
+});
 </script>
 
 <template>

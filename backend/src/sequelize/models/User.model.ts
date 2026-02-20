@@ -16,6 +16,9 @@ import { dayjs } from '@/helpers';
 
 @Table({ paranoid: true })
 export default class User extends Model {
+  @Column({ type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true })
+  declare id: number;
+
   @ForeignKey(() => Rentee)
   @Column({ type: DataTypes.INTEGER })
   declare rentee_id: number;

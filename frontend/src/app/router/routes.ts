@@ -37,6 +37,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/tarifs'),
     meta: {},
   },
+  {
+    path: '/login',
+    name: 'login.show',
+    component: () => import('@/pages/auth'),
+  },
 ];
 
 export default routes;
