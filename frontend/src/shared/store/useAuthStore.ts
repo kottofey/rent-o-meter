@@ -23,6 +23,11 @@ export const useAuthStore = defineStore('auth', () => {
     return null;
   });
 
+  const full_name = computed(
+    () =>
+      `${userData.value?.surname} ${userData.value?.firstname} ${userData.value?.patronymic}`,
+  );
+
   const isAuthorized = computed(() => !!user.value);
 
   // -----------------------------------------------------------------------------
@@ -39,11 +44,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     //State
-    userData,
+    // userData,
 
     // Getters
     user,
     isAuthorized,
+    full_name,
 
     // Actions
     setUser,

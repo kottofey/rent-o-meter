@@ -5,3 +5,7 @@ export { default as ScullCrossBonesIcon } from './ScullCrossBonesIcon.vue';
 export { default as CheckMarkIcon } from './CheckMarkIcon.vue';
 export { default as WarningIcon } from './WarningIcon.vue';
 export { default as InfinitiIcon } from './InfinitiIcon.vue';
+export { default as LogoutIcon } from './LogoutIcon.vue';
+export { default as ShieldIcon } from './ShieldIcon.vue';
+export { default as EyeIcon } from './EyeIcon.vue';
+export { default as PersonIcon } from './PersonIcon.vue';
