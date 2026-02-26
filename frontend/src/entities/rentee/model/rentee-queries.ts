@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import { MaybeRefOrGetter, toValue } from 'vue';
+import { type MaybeRefOrGetter, toValue } from 'vue';
 import { useNotification } from 'naive-ui';
 
 import {

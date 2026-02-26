@@ -1,5 +1,5 @@
 import { useApi, httpMethod, serializeQuery } from '@/shared/api';
-import { IAgreement } from '@/entities/agreement/@x/rentee';
+import { type IAgreement } from '@/entities/agreement/@x/rentee';
 
 export interface IRentee {
   id: number;

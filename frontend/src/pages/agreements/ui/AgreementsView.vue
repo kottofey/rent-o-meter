@@ -8,7 +8,7 @@ import { useSettings } from '@/app/lib';
 import { PageLayout } from '@/app/layouts';
 import {
   type IAgreement,
-  IAgreementScopes,
+  type IAgreementScopes,
   useAgreementsQuery,
 } from '@/entities/agreement';
 import { ManageAgreementModal } from '@/features/manage-agreement-modal';
@@ -19,6 +19,13 @@ import {
   WarningIcon as AllIcon,
   InfinitiIcon,
 } from '@/shared/ui/icons';
+import { useAuthStore } from '@/shared/store';
+
+// -----------------------------------------------------------------------------
+// Setup
+// -----------------------------------------------------------------------------
+
+const { settings } = useSettings();
 
 // -----------------------------------------------------------------------------
 // State
@@ -32,11 +39,6 @@ const agreementScopes = reactive<IAgreementScopes>({
   'agreements:withDeleted': false,
 });
 
-// -----------------------------------------------------------------------------
-// Setup
-// -----------------------------------------------------------------------------
-
-const { settings } = useSettings();
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------

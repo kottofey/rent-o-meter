@@ -1,4 +1,4 @@
-import { MaybeRefOrGetter, toValue } from 'vue';
+import { type MaybeRefOrGetter, toValue } from 'vue';
 
 export default function serializeQuery({
   includes,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NSelect } from 'naive-ui';
 
-import { ITarif } from '@/entities/tarif';
+import { type ITarif } from '@/entities/tarif';
 
 // -----------------------------------------------------------------------------
 // State

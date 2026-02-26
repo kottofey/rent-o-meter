@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NButtonGroup,
   NCard,
@@ -16,7 +16,7 @@ import { ref, toRef, unref } from 'vue';
 import { useAgreementModal } from '../lib/useAgreementModal';
 
 import {
-  IAgreement,
+  type IAgreement,
   useDeleteAgreementMutation,
   useRestoreAgreementMutation,
 } from '@/entities/agreement';

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-import { IUser } from '@/entities/user';
+import { type IUser } from '@/entities/user';
 
 export const useAuthStore = defineStore('auth', () => {
   // -----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NButtonGroup,
   NCard,
@@ -16,7 +16,7 @@ import { ref, toRef, unref } from 'vue';
 
 import { useBillModal } from '../lib/useBillModal';
 
-import { IBill } from '@/entities/bill';
+import { type IBill } from '@/entities/bill';
 import { SelectAgreements } from '@/widgets/select-agreements';
 import { parseMoney, parseNumber } from '@/shared/lib';
 

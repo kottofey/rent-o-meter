@@ -1,5 +1,5 @@
 import { useApi, httpMethod, serializeQuery } from '@/shared/api';
-import { IRentee } from '@/entities/rentee';
+import { type IRentee } from '@/entities/rentee';
 
 // TODO дописать скоупы если будут
 // TODO написать алгоритм сериализации с проверкой через zod

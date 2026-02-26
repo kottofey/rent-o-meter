@@ -7,15 +7,13 @@ import {
 import vuePlugin from 'eslint-plugin-vue';
 import { defineConfig } from 'eslint/config';
 import importPlugin from 'eslint-plugin-import';
-import steigerPlugin from '@feature-sliced/steiger-plugin';
-import tanstackPluginQuery from '@tanstack/eslint-plugin-query'
+import tanstackPluginQuery from '@tanstack/eslint-plugin-query';
 
 export default defineConfig([
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'],
     plugins: {
       js,
-      steigerPlugin,
     },
     extends: ['js/recommended'],
     settings: {
@@ -23,7 +21,7 @@ export default defineConfig([
         typescript: {
           alwaysTryTypes: true,
           projectService: true,
-          // project: './tsconfig.json',
+          project: './tsconfig.app.json',
         },
       },
     },

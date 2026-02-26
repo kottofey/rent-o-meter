@@ -1,0 +1,1 @@
+export { defaultTanstackQueryOptions } from './defaultTanstackQueryOptions';

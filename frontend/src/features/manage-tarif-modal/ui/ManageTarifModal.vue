@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  FormRules,
+  type FormRules,
   NButton,
   NButtonGroup,
   NCard,
@@ -17,7 +17,7 @@ import { ref, toRef, unref } from 'vue';
 import { useTarifModal } from '../lib/useTarifModal';
 import { tarifTypeOptions } from '../lib/tarifOptions';
 
-import { ITarif } from '@/entities/tarif';
+import { type ITarif } from '@/entities/tarif';
 import { parseMoney, parseNumber } from '@/shared/lib';
 
 // -----------------------------------------------------------------------------

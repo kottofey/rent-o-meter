@@ -1,7 +1,7 @@
 import { requiredTarifs } from './requiredTarifs';
 
-import { ITarif } from '@/entities/tarif';
-import { ICounter } from '@/entities/counter';
+import { type ITarif } from '@/entities/tarif';
+import { type ICounter } from '@/entities/counter';
 import { dayjs } from '@/shared/lib/dayjs';
 
 const checkTarifs = (tarifs: ITarif[]): string[] => {

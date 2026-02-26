@@ -1,4 +1,4 @@
-import { MaybeRefOrGetter, toValue } from 'vue';
+import { type MaybeRefOrGetter, toValue } from 'vue';
 
 const RENTEE_QUERY_KEY = 'rentee' as const;
 import type { IRenteeScopes, IRenteeIncludes } from './rentee-api';

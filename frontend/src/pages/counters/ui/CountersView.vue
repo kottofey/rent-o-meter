@@ -6,7 +6,11 @@ import { columns } from '../config/tableColumns';
 
 import { AddButton } from '@/shared/ui';
 import { PageLayout } from '@/app/layouts';
-import { type ICounter, useCountersQuery } from '@/entities/counter';
+import {
+  type ICounter,
+  type ICounterScopes,
+  useCountersQuery,
+} from '@/entities/counter';
 import { ManageCountersModal } from '@/features/manage-counters-modal';
 
 // -----------------------------------------------------------------------------

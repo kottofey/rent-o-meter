@@ -5,7 +5,7 @@ import { NDataTable } from 'naive-ui';
 import { columns } from '../config/tableColumns';
 
 import { PageLayout } from '@/app/layouts';
-import { type IBill, useBillsQuery } from '@/entities/bill';
+import { type IBill, type IBillScopes, useBillsQuery } from '@/entities/bill';
 import { AddButton, AppButton } from '@/shared/ui';
 import { ManageBillModal } from '@/features/manage-bill-modal';
 import { ScullCrossBonesIcon as ExpiredIcon } from '@/shared/ui/icons';

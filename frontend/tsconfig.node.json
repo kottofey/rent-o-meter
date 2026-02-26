@@ -1,0 +1,33 @@
+{
+  "include": [
+    "vite.config.*",
+    "steiger.config.ts"
+  ],
+  "extends": [
+    "@tsconfig/node24"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "importHelpers": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": [
+      "node",
+      "vite/client",
+      "steiger",
+      "@feature-sliced/steiger-plugin"
+    ],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 import { useLocalStorage } from '@vueuse/core';
 
 import { useApi, httpMethod } from '@/shared/api';
-import { IUser } from '@/entities/user';
+import { type IUser } from '@/entities/user';
 import { router } from '@/app/router';
 import { useAuthStore } from '@/shared/store';
 

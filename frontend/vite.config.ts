@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 import { defineConfig, type PluginOption } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -6,7 +7,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 
 // https://vite.dev/config/
 export default defineConfig(async ({ command }) => {
-  const plugins: PluginOption[] = [vue(), vueJsx()];
+  const plugins: PluginOption[] = [vue({}), vueJsx()];
 
   if (command === 'serve') {
     const vueDevTools = await import('vite-plugin-vue-devtools').then(
@@ -44,7 +45,7 @@ export default defineConfig(async ({ command }) => {
     },
     plugins,
     resolve: {
-      alias: [{ find: '@', replacement: '/src' }],
+      alias: { '@': path.resolve(__dirname, './src') },
     },
   };
 });

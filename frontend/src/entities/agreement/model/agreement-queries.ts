@@ -5,7 +5,7 @@ import {
   QueryClient,
 } from '@tanstack/vue-query';
 import { useNotification } from 'naive-ui';
-import { MaybeRefOrGetter, toValue } from 'vue';
+import { type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   getAllAgreements,

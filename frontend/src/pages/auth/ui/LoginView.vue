@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   type FormInst,
-  FormRules,
+  type FormRules,
   NButton,
   NCard,
   NForm,

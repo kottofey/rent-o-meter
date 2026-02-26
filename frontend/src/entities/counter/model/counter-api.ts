@@ -1,5 +1,5 @@
-import { IAgreement } from '@/entities/agreement/@x/counter';
-import { IBill } from '@/entities/bill/@x/counter';
+import { type IAgreement } from '@/entities/agreement/@x/counter';
+import { type IBill } from '@/entities/bill/@x/counter';
 import { httpMethod, useApi, serializeQuery } from '@/shared/api';
 
 export interface ICounter {

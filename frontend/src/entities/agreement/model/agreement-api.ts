@@ -1,7 +1,7 @@
 import { httpMethod, useApi, serializeQuery } from '@/shared/api';
-import { IRentee } from '@/entities/rentee/@x/agreement';
-import { ICounter } from '@/entities/counter/@x/agreement';
-import { IBill } from '@/entities/bill/@x/agreement';
+import { type IRentee } from '@/entities/rentee/@x/agreement';
+import { type ICounter } from '@/entities/counter/@x/agreement';
+import { type IBill } from '@/entities/bill/@x/agreement';
 
 export interface IAgreement {
   id: number;
@@ -27,7 +27,7 @@ export type IAgreementScopes = {
   'agreements:isNotExpired'?: boolean;
   'agreements:isExpired'?: boolean;
   'agreements:isExpiredAndActive'?: boolean;
-  'agreements:byRentee'?: number;
+  'agreements:byRentee'?: number | null;
   'agreements:withDeleted'?: boolean;
 };
 
