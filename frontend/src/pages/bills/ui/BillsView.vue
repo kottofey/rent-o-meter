@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { NDataTable } from 'naive-ui';
 
 import { columns } from '../config/tableColumns';
@@ -10,6 +10,13 @@ import { AddButton, AppButton } from '@/shared/ui';
 import { ManageBillModal } from '@/features/manage-bill-modal';
 import { ScullCrossBonesIcon as ExpiredIcon } from '@/shared/ui/icons';
 import { SelectRentees } from '@/widgets/select-rentees';
+import { useAuthStore } from '@/shared/store';
+
+// -----------------------------------------------------------------------------
+// Setup
+// -----------------------------------------------------------------------------
+
+const authStore = useAuthStore();
 
 // -----------------------------------------------------------------------------
 // State
@@ -21,12 +28,8 @@ const selectedRenteeAgreements = ref();
 const billToEdit = ref();
 const billToEditId = ref<number | undefined>(undefined);
 
-// -----------------------------------------------------------------------------
-// Setup
-// -----------------------------------------------------------------------------
-
-const { data: bills, isLoading } = useBillsQuery({
-  includes: ['Agreement.Rentee'],
+const billScopes = reactive<IBillScopes>({
+  'bills:byRentee': authStore.user?.rentee_id ?? null,
 });
 
 // -----------------------------------------------------------------------------
@@ -53,13 +56,22 @@ const filteredBills = computed(() =>
 // Table setup
 // -----------------------------------------------------------------------------
 
+const { data: bills, isLoading } = useBillsQuery({
+  includes: ['Agreement.Rentee'],
+  scopes: () => billScopes,
+});
+
 const editRow = (row: IBill) => {
-  return {
-    onClick: () => {
-      billToEditId.value = row.id;
-      isModalOpened.value = true;
-    },
-  };
+  if (authStore.user?.roles?.includes('admin')) {
+    return {
+      onClick: () => {
+        billToEditId.value = row.id;
+        isModalOpened.value = true;
+      },
+    };
+  } else {
+    return {};
+  }
 };
 
 const createRow = () => {
@@ -83,7 +95,11 @@ watch([billToEditId, isModalOpened], () => {
 <template>
   <PageLayout>
     <template #buttons-extra>
-      <AddButton @click="createRow">Новый счёт</AddButton>
+      <AddButton
+        @click="createRow"
+        v-if="authStore.user?.roles?.includes('admin')"
+        >Новый счёт</AddButton
+      >
 
       <AppButton
         @click="withInactiveAgreements = !withInactiveAgreements"
@@ -92,7 +108,10 @@ watch([billToEditId, isModalOpened], () => {
         <template #default>C истёкшими договорами</template>
         <template #icon><ExpiredIcon /></template>
       </AppButton>
-      <div class="menu-block">
+      <div
+        class="menu-block"
+        v-if="authStore.user?.roles?.includes('admin')"
+      >
         <p class="menu-block__title">Фильтр по арендаторам:</p>
         <SelectRentees v-model:agreement-ids="selectedRenteeAgreements" />
       </div>

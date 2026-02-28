@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
-import { NDataTable } from 'naive-ui';
+import { NDataTable, useNotification } from 'naive-ui';
 
 import { columns } from '../config/tableColumns';
 
@@ -13,6 +13,14 @@ import {
 } from '@/entities/rentee';
 import { ManageRenteeModal } from '@/features/manage-rentee-modal';
 import { InfinitiIcon } from '@/shared/ui/icons';
+import { useAuthStore } from '@/shared/store';
+
+// -----------------------------------------------------------------------------
+// Setup
+// -----------------------------------------------------------------------------
+
+const notif = useNotification();
+const authStore = useAuthStore();
 
 // -----------------------------------------------------------------------------
 // State
@@ -25,13 +33,20 @@ const renteeToEdit = ref();
 
 const renteeScopes = reactive<IRenteeScopes>({
   'rentee:withDeleted': false,
+  'rentee:byId': authStore.user?.rentee_id ?? null,
 });
 
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------
 
-const { data: rentees, isLoading } = useRenteesQuery({
+const {
+  data: rentees,
+  isLoading,
+  isError,
+  error,
+  fetchStatus,
+} = useRenteesQuery({
   includes: ['Agreement'],
   scopes: () => renteeScopes,
 });
@@ -68,12 +83,26 @@ watch([renteeToEditId, isModalOpened], () => {
     );
   }
 });
+
+watch(isError, () => {
+  if (isError.value) {
+    notif.error({
+      content: error.value?.message,
+      closable: true,
+      duration: 3000,
+    });
+  }
+});
 </script>
 
 <template>
   <PageLayout>
     <template #buttons-extra>
-      <AddButton @click="createRow">Новый арендатор</AddButton>
+      <AddButton
+        @click="createRow"
+        v-if="authStore.user?.roles?.includes('admin')"
+        >Новый арендатор</AddButton
+      >
 
       <AppButton
         @click="setWithDeleted"
@@ -83,7 +112,7 @@ watch([renteeToEditId, isModalOpened], () => {
         <template #icon><InfinitiIcon /></template>
       </AppButton>
     </template>
-
+    <pre>{{ fetchStatus }}</pre>
     <NDataTable
       :data="rentees"
       :columns="columns"

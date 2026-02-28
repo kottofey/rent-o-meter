@@ -15,6 +15,7 @@ import {
 import { AddButton } from '@/shared/ui';
 import { SelectTarif } from '@/widgets/select-tarif';
 import { dayjs } from '@/shared/lib/dayjs';
+import { useAuthStore } from '@/shared/store';
 
 // -----------------------------------------------------------------------------
 // State
@@ -31,6 +32,7 @@ const tarifToEdit = ref();
 // Setup
 // -----------------------------------------------------------------------------
 const queryClient = useQueryClient();
+const authStore = useAuthStore();
 
 const { data: tarifs, isLoading } = useTarifsQuery({
   scopes: {
@@ -72,12 +74,16 @@ watch([tarifToEditId, isModalOpened], () => {
 // -----------------------------------------------------------------------------
 
 const editRow = (row: ITarif) => {
-  return {
-    onClick: () => {
-      tarifToEditId.value = row.id;
-      isModalOpened.value = true;
-    },
-  };
+  if (authStore.user?.roles?.includes('admin')) {
+    return {
+      onClick: () => {
+        tarifToEditId.value = row.id;
+        isModalOpened.value = true;
+      },
+    };
+  } else {
+    return {};
+  }
 };
 
 const createRow = () => {
@@ -89,7 +95,11 @@ const createRow = () => {
 <template>
   <PageLayout>
     <template #buttons-extra>
-      <AddButton @click="createRow">Новый тариф</AddButton>
+      <AddButton
+        @click="createRow"
+        v-if="authStore.user?.roles?.includes('admin')"
+        >Новый тариф</AddButton
+      >
       <SelectTarif
         label="Фильтр по типу: "
         v-model:value="tarifFilter"

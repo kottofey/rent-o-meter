@@ -26,6 +26,7 @@ export interface IRentee {
 export type IRenteeScopes = {
   'rentee:withActiveAgreement'?: boolean;
   'rentee:withDeleted'?: boolean;
+  'rentee:byId'?: number | null;
 };
 export type IRenteeIncludes = Array<'Agreement'>;
 

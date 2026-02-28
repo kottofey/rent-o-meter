@@ -26,6 +26,7 @@ import { useAuthStore } from '@/shared/store';
 // -----------------------------------------------------------------------------
 
 const { settings } = useSettings();
+const authStore = useAuthStore();
 
 // -----------------------------------------------------------------------------
 // State
@@ -37,6 +38,7 @@ const prevFilter = ref();
 
 const agreementScopes = reactive<IAgreementScopes>({
   'agreements:withDeleted': false,
+  'agreements:byRentee': authStore.user?.rentee_id ?? null,
 });
 
 // -----------------------------------------------------------------------------
@@ -56,12 +58,16 @@ const agreementToEditId = ref<number | undefined>(undefined);
 // -----------------------------------------------------------------------------
 
 const editRow = (row: IAgreement) => {
-  return {
-    onClick: () => {
-      agreementToEditId.value = row.id;
-      isModalOpened.value = true;
-    },
-  };
+  if (authStore.user?.roles?.includes('admin')) {
+    return {
+      onClick: () => {
+        agreementToEditId.value = row.id;
+        isModalOpened.value = true;
+      },
+    };
+  } else {
+    return {};
+  }
 };
 
 const createRow = () => {
@@ -127,7 +133,11 @@ onMounted(() => {
 <template>
   <PageLayout>
     <template #buttons-extra>
-      <AddButton @click="createRow">Новый договор</AddButton>
+      <AddButton
+        @click="createRow"
+        v-if="authStore.user?.roles?.includes('admin')"
+        >Новый договор</AddButton
+      >
 
       <AppButton
         @click="setWithDeleted"

@@ -158,12 +158,12 @@ const onSubmit = async () => {
             clearable
             v-model:value="formData.month"
             @update-value="
-              async (val) => {
+              (val) => {
                 formData.date_start = val;
                 formData.date_end = val;
 
                 if (formData?.agreementId) {
-                  await fetchPrevCounters({
+                  fetchPrevCounters({
                     currentMonth: val,
                     agreementId: formData.agreementId,
                   });
@@ -210,9 +210,9 @@ const onSubmit = async () => {
             placeholder="Выберите арендатора"
             withActiveAgreements
             @update:value="
-              async (val) => {
+              (val) => {
                 if (formData?.month) {
-                  await fetchPrevCounters({
+                  fetchPrevCounters({
                     currentMonth: formData.month,
                     agreementId: val,
                   });

@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/vue-query';
 import { useNotification } from 'naive-ui';
+import { type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   createCounter,
@@ -60,13 +61,13 @@ export const useCountersQuery = ({
   includes,
   isDisabled = false,
 }: {
-  scopes?: ICounterScopes;
+  scopes?: MaybeRefOrGetter<ICounterScopes>;
   includes?: ICounterIncludes;
   isDisabled?: boolean;
 }) => {
   return useQuery({
-    queryKey: counterKeys.list(scopes, includes),
-    queryFn: () => getAllCounters({ scopes, includes }),
+    queryKey: counterKeys.list(toValue(scopes), includes),
+    queryFn: () => getAllCounters({ scopes: toValue(scopes), includes }),
     enabled: !isDisabled,
     select: (data) => {
       return data.filter(
@@ -81,13 +82,13 @@ export const useCounterQuery = ({
   scopes,
   includes,
 }: {
-  scopes?: ICounterScopes;
+  scopes?: MaybeRefOrGetter<ICounterScopes>;
   includes?: ICounterIncludes;
   id: number;
 }) => {
   return useQuery({
-    queryKey: counterKeys.detail({ id, scopes, includes }),
-    queryFn: () => getCounter({ id, scopes, includes }),
+    queryKey: counterKeys.detail({ id, scopes: toValue(scopes), includes }),
+    queryFn: () => getCounter({ id, scopes: toValue(scopes), includes }),
   });
 };
 

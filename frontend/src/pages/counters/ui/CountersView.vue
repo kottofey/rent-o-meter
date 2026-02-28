@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NDataTable } from 'naive-ui';
-import { ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 import { columns } from '../config/tableColumns';
 
@@ -12,6 +12,13 @@ import {
   useCountersQuery,
 } from '@/entities/counter';
 import { ManageCountersModal } from '@/features/manage-counters-modal';
+import { useAuthStore } from '@/shared/store';
+
+// -----------------------------------------------------------------------------
+// Setup
+// -----------------------------------------------------------------------------
+
+const authStore = useAuthStore();
 
 // -----------------------------------------------------------------------------
 // State
@@ -20,18 +27,18 @@ import { ManageCountersModal } from '@/features/manage-counters-modal';
 const isModalOpened = ref(false);
 const counterToEditId = ref<number | undefined>(undefined);
 const counterToEdit = ref();
-
-// -----------------------------------------------------------------------------
-// Setup
-// -----------------------------------------------------------------------------
-
-const { data: counters, isLoading } = useCountersQuery({
-  includes: ['Agreement.Rentee'],
+const counterScopes = reactive<ICounterScopes>({
+  'counter:byRenteeId': authStore.user?.rentee_id ?? null,
 });
 
 // -----------------------------------------------------------------------------
 // Table setup
 // -----------------------------------------------------------------------------
+
+const { data: counters, isLoading } = useCountersQuery({
+  includes: ['Agreement.Rentee'],
+  scopes: () => counterScopes,
+});
 
 const editRow = (row: ICounter) => {
   return {

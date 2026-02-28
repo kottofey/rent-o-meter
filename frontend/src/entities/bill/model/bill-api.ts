@@ -17,7 +17,7 @@ export interface IBill {
 
   deletedAt: Date;
 
-  agreementId: number;
+  agreementId: number | null;
   agreement: IAgreement;
 
   counterId: number;
@@ -28,6 +28,7 @@ export interface IBill {
 
 export type IBillScopes = {
   'bills:isDebt'?: boolean;
+  'bills:byRentee'?: number | null;
 };
 export type IBillIncludes = Array<
   'Agreement' | 'Counter' | 'Tarif' | 'Agreement.Rentee'

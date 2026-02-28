@@ -31,6 +31,7 @@ export type ICounterIncludes = Array<'Agreement' | 'Bill' | 'Agreement.Rentee'>;
 export type ICounterScopes = {
   'counter:byAgreementId'?: number;
   'counter:byMonth'?: string;
+  'counter:byRenteeId'?: number | null;
   'counter:byPeriod'?: {
     start: string;
     end: string;

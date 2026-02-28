@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useLocalStorage } from '@vueuse/core';
-import { NAvatar, NAvatarGroup, NIcon } from 'naive-ui';
+import { NAvatar, NIcon } from 'naive-ui';
 
 import { ChangeThemeButton, LogoutButton } from '@/shared/ui';
 import {
@@ -35,6 +35,7 @@ const { user, full_name } = useAuthStore();
           v-for="role in user.roles"
           :key="role"
           round
+          class="avatar"
         >
           <NIcon v-if="role === 'admin'"><AdminIcon /></NIcon>
           <NIcon v-if="role === 'viewer'"> <ViewerIcon /></NIcon>
@@ -55,6 +56,9 @@ const { user, full_name } = useAuthStore();
       <RouterLink
         :to="{ name: 'rentees.show' }"
         class="link"
+        v-if="
+          user?.roles?.some((role) => role === 'admin' || role === 'viewer')
+        "
       >
         Арендаторы
       </RouterLink>
@@ -147,10 +151,15 @@ const { user, full_name } = useAuthStore();
   align-items: center;
   justify-content: center;
   text-align: center;
+  user-select: none;
 
   &--wrap {
     flex-wrap: wrap;
     row-gap: 20px;
   }
+}
+
+.avatar {
+  background-color: $color-accent;
 }
 </style>

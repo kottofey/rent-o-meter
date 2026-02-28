@@ -21,12 +21,12 @@ export const useBillsQuery = ({
   scopes,
   includes,
 }: {
-  scopes?: IBillScopes;
+  scopes?: MaybeRefOrGetter<IBillScopes>;
   includes?: IBillIncludes;
 }) => {
   return useQuery({
-    queryKey: billKeys.list(scopes, includes),
-    queryFn: () => getAllBills({ scopes, includes }),
+    queryKey: billKeys.list(toValue(scopes), includes),
+    queryFn: () => getAllBills({ scopes: toValue(scopes), includes }),
   });
 };
 
