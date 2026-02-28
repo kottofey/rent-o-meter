@@ -41,6 +41,20 @@ import { Agreement, Bill } from '@/models';
       },
     };
   },
+  'counter:byRenteeId'(renteeId: number | null) {
+    if (renteeId === null) {
+      return {};
+    } else {
+      return {
+        include: {
+          model: Agreement,
+          where: {
+            renteeId,
+          },
+        },
+      };
+    }
+  },
 }))
 @Table({ paranoid: true })
 export default class Counters extends Model {

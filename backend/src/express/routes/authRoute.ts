@@ -85,7 +85,6 @@ async function login(req: Request, res: Response): Promise<void> {
           message: 'Неверные учетные данные',
         });
       }
-
       if (!user?.status) {
         res.status(403).json({
           success: false,
@@ -126,6 +125,7 @@ async function login(req: Request, res: Response): Promise<void> {
         message: 'Успешный вход',
         user: {
           id: user.id,
+          rentee_id: user.rentee_id,
           email: user.email,
           surname: user.surname,
           firstname: user.firstname,

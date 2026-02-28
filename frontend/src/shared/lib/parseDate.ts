@@ -10,5 +10,5 @@ export function parseDate({
   capitalize?: boolean;
 }) {
   const dateParsed = dayjs(date).format(`${format ? format : 'DD MMM YYYY'}`);
-  return `${capitalize ? dateParsed[0].toUpperCase() : dateParsed[0]}${dateParsed.slice(1)}`;
+  return `${capitalize ? dateParsed.charAt(0).toUpperCase() : dateParsed[0]}${dateParsed.slice(1)}`;
 }

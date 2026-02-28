@@ -20,6 +20,10 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     // Bills
     // -----------------------------------------------------------------------------
     'bills:isDebt': () => ({ method: ['bills:isDebt'] }),
+    'bills:byRentee': rawRenteeId => {
+      const renteeId = rawRenteeId as number | null;
+      return { method: ['bills:byRentee', renteeId] };
+    },
 
     // -----------------------------------------------------------------------------
     // Counters
@@ -38,12 +42,17 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       const agreementId = rawAgreementId as number;
       return { method: ['counter:byAgreementId', agreementId] };
     },
+    'counter:byRenteeId': rawRenteeId => {
+      const renteeId = rawRenteeId as number | null;
+      return { method: ['counter:byRenteeId', renteeId] };
+    },
 
     // -----------------------------------------------------------------------------
     // Rentees
     // -----------------------------------------------------------------------------
     'rentee:withActiveAgreement': () => ({ method: ['rentee:withActiveAgreement'] }),
     'rentee:withDeleted': () => ({ method: ['rentee:withDeleted'] }),
+    'rentee:byId': id => ({ method: ['rentee:byId', id] }),
 
     // -----------------------------------------------------------------------------
     // Tarifs
@@ -70,7 +79,7 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     'agreements:isExpiredAndActive': () => ({ method: ['agreements:isExpiredAndActive'] }),
     'agreements:withDeleted': () => ({ method: ['agreements:withDeleted'] }),
     'agreements:byRentee': rawRenteeId => {
-      const renteeId = rawRenteeId as number;
+      const renteeId = rawRenteeId as number | null;
       return { method: ['agreements:byRentee', renteeId] };
     },
   } as const;

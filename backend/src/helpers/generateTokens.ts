@@ -3,8 +3,9 @@ import jwt from 'jsonwebtoken';
 import { User } from '@/models';
 import { jwtConfig } from '@/config';
 
-interface IUserPayload {
+export interface IUserPayload {
   id: number;
+  renteeId: number | null;
   fio: string;
   email: string;
   roles: string[];
@@ -13,12 +14,15 @@ interface IUserPayload {
 export default function generateTokens(userPayload: User) {
   const payload: IUserPayload = {
     id: userPayload.id,
+    renteeId: userPayload.rentee_id,
     fio: userPayload.full_name,
     email: userPayload.email,
     roles: userPayload.roles.map(r => r.name),
   };
 
-  console.log('generateTokens: генерируем токены');
+  console.log(userPayload.rentee_id);
+
+  // console.log('generateTokens: генерируем токены');
 
   const accessToken = jwt.sign(payload, jwtConfig.secret, {
     expiresIn: jwtConfig.expiresIn,
@@ -28,7 +32,7 @@ export default function generateTokens(userPayload: User) {
     expiresIn: jwtConfig.refreshTokenExpiresIn,
   });
 
-  console.log('generateTokens: токены готовы');
+  // console.log('generateTokens: токены готовы');
 
   return { accessToken, refreshToken };
 }

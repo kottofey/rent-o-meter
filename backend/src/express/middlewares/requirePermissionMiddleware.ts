@@ -1,4 +1,10 @@
-export default function requirePermissionMiddleware() {}
+import { NextFunction } from 'express';
+
+export default function requirePermissionMiddleware(resource: string, action: string) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    next();
+  };
+}
 
 // const requirePermission = (resource, action) => {
 //   return (req, res, next) => {

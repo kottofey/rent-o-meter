@@ -36,6 +36,18 @@ import { dayjs } from '@/helpers';
       },
     };
   },
+  'rentee:byId'(id: number | null) {
+    console.log('by id scope');
+    if (id === null) {
+      return {};
+    } else {
+      return {
+        where: {
+          id,
+        },
+      };
+    }
+  },
 }))
 @Table({ paranoid: true })
 export default class Rentee extends Model {

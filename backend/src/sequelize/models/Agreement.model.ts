@@ -55,14 +55,16 @@ import { Bill, Counter, Rentee } from '@/models';
       },
     };
   },
-  'agreements:byRentee'(renteeId: number) {
-    return {
-      where: {
-        renteeId: {
-          [Op.eq]: renteeId,
+  'agreements:byRentee'(renteeId: number | null) {
+    if (renteeId === null) {
+      return {};
+    } else {
+      return {
+        where: {
+          renteeId,
         },
-      },
-    };
+      };
+    }
   },
   'agreements:withDeleted'() {
     return {

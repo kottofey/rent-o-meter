@@ -19,7 +19,11 @@ import {
   usersRoute,
 } from '@/routes';
 
-import { authMiddleware, requireRoleMiddleware } from '@/middlewares';
+import {
+  authMiddleware,
+  requireRoleMiddleware,
+  makeHandlerAwareOfAsyncErrors,
+} from '@/middlewares';
 
 const app = express();
 
@@ -49,17 +53,6 @@ const routes: { [routeName: string]: IRouteController } = {
   bills: billsRoute,
   users: usersRoute,
 };
-
-// We create a wrapper to workaround async errors not being transmitted correctly.
-function makeHandlerAwareOfAsyncErrors(handler: RequestHandler) {
-  return async function (req: Request, res: Response, next: NextFunction) {
-    try {
-      await handler(req, res, next);
-    } catch (error) {
-      next(error);
-    }
-  };
-}
 
 app.get('/api/v1/', (_req: Request, res: Response) => {
   try {

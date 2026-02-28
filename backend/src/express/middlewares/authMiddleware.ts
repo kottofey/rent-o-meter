@@ -5,7 +5,7 @@ import { refreshToken } from 'src/helpers/refreshJwtTokens.ts';
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    console.log('запуск authMiddleware');
+    // console.log('запуск authMiddleware');
     const token = req.cookies.token;
 
     if (!token) {
@@ -20,12 +20,12 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
     jwt.verify(token, jwtConfig.secret as string, async (err: unknown) => {
       if (err) {
         if (err instanceof Error && err.name === 'TokenExpiredError') {
-          console.log('authMiddleware, Токен протух, пробуем обновить');
+          // console.log('authMiddleware, Токен протух, пробуем обновить');
           // Токен протух, пробуем обновить
           await refreshToken(req, res, next);
           return;
         } else {
-          console.log('authMiddleware, Неверный токен');
+          // console.log('authMiddleware, Неверный токен');
           res.status(401).json({
             status: '401',
             reason: 'TokenInvalid',
@@ -35,12 +35,12 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
         }
       }
 
-      console.log('authMiddleware, всё пучком, продолжаем...');
+      // console.log('authMiddleware, всё пучком, продолжаем...');
       // Всё пучком, продолжаем
       next();
     });
   } catch (e) {
-    console.log('authMiddleware, ошибка сервера');
+    // console.log('authMiddleware, ошибка сервера');
     res.status(500).json({
       status: '500',
       reason: 'InternalError',

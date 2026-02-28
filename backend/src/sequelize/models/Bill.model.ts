@@ -24,6 +24,20 @@ import { dayjs } from '@/helpers';
       },
     };
   },
+  'bills:byRentee'(renteeId: number | null) {
+    if (renteeId === null) {
+      return {};
+    } else {
+      return {
+        include: {
+          model: Agreement,
+          where: {
+            renteeId,
+          },
+        },
+      };
+    }
+  },
 }))
 @Table({ paranoid: true })
 export default class Bill extends Model {

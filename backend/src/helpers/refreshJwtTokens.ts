@@ -12,7 +12,7 @@ export async function refreshToken(
   next?: NextFunction,
 ): Promise<void> {
   try {
-    console.log('refreshToken, запуск');
+    // console.log('refreshToken, запуск');
     const refreshToken = req.cookies.refreshToken as string;
 
     if (!refreshToken) {
@@ -24,7 +24,9 @@ export async function refreshToken(
     }
 
     // Проверяем токен через подпись JWT
-    const decoded = jwt.verify(refreshToken, jwtConfig.secret, {}) as Partial<User>;
+    const decoded = jwt.verify(refreshToken, jwtConfig.secret, {
+      ignoreExpiration: true,
+    }) as Partial<User>;
 
     // Находим запись в БД по ХЭШУ токена
     const tokenHash = hashToken(refreshToken);
@@ -36,7 +38,7 @@ export async function refreshToken(
         include: [Role],
       },
     });
-    console.log('refreshToken, Проверяем валидность токена');
+    // console.log('refreshToken, Проверяем валидность токена');
     // Проверяем валидность токена
     if (!storedToken) {
       res.status(401).json({
@@ -60,30 +62,30 @@ export async function refreshToken(
       });
       return;
     } else {
-      console.log('refreshToken, всё ок, Генерируем новые токены');
+      // console.log('refreshToken, всё ок, Генерируем новые токены');
       // Генерируем новые токены
       const st: RefreshToken = storedToken.toJSON();
-      console.log('refreshToken, нашли юзера в токене');
+      // console.log('refreshToken, нашли юзера в токене');
 
       const { accessToken, refreshToken: newRefreshToken } = generateTokens(st.user);
 
-      console.log('refreshToken, токены готовы');
+      // console.log('refreshToken, токены готовы');
 
       await storedToken.update({ token_hash: hashToken(newRefreshToken) });
 
-      console.log('refreshToken, обновили рефреш токен в БД');
+      // console.log('refreshToken, обновили рефреш токен в БД');
 
       res.cookie('token', accessToken, { httpOnly: true });
       res.cookie('refreshToken', newRefreshToken, { httpOnly: true });
 
-      console.log('refreshToken, обновили токены в куки');
+      // console.log('refreshToken, обновили токены в куки');
 
       if (next) {
-        console.log('refreshToken, некст');
+        // console.log('refreshToken, некст');
         // Continue with the request if next function is provided
         next();
       } else {
-        console.log('refreshToken, ретурн');
+        // console.log('refreshToken, ретурн');
         // If called from middleware, we shouldn't send a response here
         // Just return to allow the original request to continue
         return;
@@ -91,7 +93,7 @@ export async function refreshToken(
     }
   } catch (e) {
     if (e instanceof Error && e.name === 'TokenExpiredError') {
-      console.log('refreshToken, протух, отзываем');
+      // console.log('refreshToken, протух, отзываем');
       try {
         const refreshToken = req.cookies.refreshToken as string;
 
@@ -99,7 +101,7 @@ export async function refreshToken(
           ignoreExpiration: true,
         }) as Partial<User>;
 
-        console.log('refreshToken, ищем что отозвать');
+        // console.log('refreshToken, ищем что отозвать');
 
         const tokenToRevoke = await RefreshToken.findOne({
           where: { token_hash: hashToken(refreshToken), user_id: decoded.id },
@@ -110,11 +112,11 @@ export async function refreshToken(
         });
 
         if (tokenToRevoke) {
-          console.log('refreshToken, нашли, отзываем');
+          // console.log('refreshToken, нашли, отзываем');
           await tokenToRevoke.update({ is_revoked: true });
         }
 
-        console.log('refreshToken, отозвали, шлем ответ');
+        // console.log('refreshToken, отозвали, шлем ответ');
 
         res.status(401).json({
           success: false,
@@ -126,7 +128,7 @@ export async function refreshToken(
         console.error('local catch:', e);
       }
     } else {
-      console.log('refreshToken, ошибка сервера?..', e);
+      // console.log('refreshToken, ошибка сервера?..', e);
       res.status(500).json({
         status: '500',
         reason: 'InternalError',
