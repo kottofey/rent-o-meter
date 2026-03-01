@@ -37,7 +37,7 @@ const renteeScopes = reactive<IRenteeScopes>({
 });
 
 // -----------------------------------------------------------------------------
-// Table setup
+// Setup
 // -----------------------------------------------------------------------------
 
 const {
@@ -45,7 +45,6 @@ const {
   isLoading,
   isError,
   error,
-  fetchStatus,
 } = useRenteesQuery({
   includes: ['Agreement'],
   scopes: () => renteeScopes,
@@ -62,6 +61,7 @@ const editRow = (row: IRentee) => {
 
 const createRow = () => {
   renteeToEditId.value = undefined;
+  renteeToEdit.value = undefined;
   isModalOpened.value = true;
 };
 
@@ -112,7 +112,7 @@ watch(isError, () => {
         <template #icon><InfinitiIcon /></template>
       </AppButton>
     </template>
-    <pre>{{ fetchStatus }}</pre>
+
     <NDataTable
       :data="rentees"
       :columns="columns"

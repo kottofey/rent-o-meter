@@ -72,6 +72,7 @@ const editRow = (row: IAgreement) => {
 
 const createRow = () => {
   agreementToEditId.value = undefined;
+  agreementToEdit.value = undefined;
   isModalOpened.value = true;
 };
 

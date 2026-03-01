@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  type FormRules,
+  type FormInst,
   NButton,
   NButtonGroup,
   NCard,
@@ -11,13 +11,15 @@ import {
   NInput,
   NModal,
 } from 'naive-ui';
-import { ref, toRef, unref } from 'vue';
+import { computed, ref, toRef, watch } from 'vue';
 
-import { useAgreementModal } from '../lib/useAgreementModal';
+import { initFormData, createFormRules } from '../config';
 
 import {
   type IAgreement,
+  useCreateAgreementMutation,
   useDeleteAgreementMutation,
+  useEditAgreementMutation,
   useRestoreAgreementMutation,
 } from '@/entities/agreement';
 import { SelectRentees } from '@/widgets/select-rentees';
@@ -26,68 +28,78 @@ import { SelectRentees } from '@/widgets/select-rentees';
 // State
 // -----------------------------------------------------------------------------
 
-const formRef = ref();
-const agreementRef = toRef(() => agreement);
+const formRef = ref<FormInst | null>();
+const formData = ref<Partial<IAgreement>>({ ...initFormData });
 
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
 const isOpened = defineModel('isOpened', { default: false });
 
-const { agreement = undefined } = defineProps<{
+const { agreement } = defineProps<{
   agreement?: IAgreement;
 }>();
 
-const { formData, submit, isPending, isFormValidateError } = useAgreementModal({
-  initialData: agreementRef,
-  formRef: formRef,
-});
+const { mutate: deleteAgreement, isPending: isDeletePending } =
+  useDeleteAgreementMutation();
+const { mutate: restoreAgreement, isPending: isRestorePending } =
+  useRestoreAgreementMutation();
+const { mutate: createAgreement, isPending: isCreatePending } =
+  useCreateAgreementMutation();
 
-const { mutate: deleteAgreement } = useDeleteAgreementMutation();
-const { mutate: restoreAgreement } = useRestoreAgreementMutation();
+const { mutate: editAgreement, isPending: isEditPending } =
+  useEditAgreementMutation();
 
 // -----------------------------------------------------------------------------
-// Form setup
+// Computed
 // -----------------------------------------------------------------------------
 
-const rules: FormRules = {
-  name: {
-    required: true,
-    message: 'Введите название договора',
-  },
-  date_start: {
-    required: true,
-    message: 'Выберите дату начала договора',
-  },
-  date_end: [
-    {
-      required: true,
-      message: 'Выберите дату окончания договора',
-    },
-    {
-      message: 'Дата окончания не может быть перед датой начала',
-      validator(_rule, val) {
-        if (formData.value.date_start) {
-          return formData.value.date_start < val;
-        }
-        return true;
-      },
-    },
-  ],
-  renteeId: {
-    required: true,
-    message: 'Выберите арендатора',
-  },
-};
+const isPending = computed(
+  () =>
+    isCreatePending.value ||
+    isDeletePending.value ||
+    isRestorePending.value ||
+    isEditPending.value,
+);
 
 // -----------------------------------------------------------------------------
 // Actions
 // -----------------------------------------------------------------------------
 
 const onSubmit = async () => {
-  await submit();
-  isOpened.value = isFormValidateError.value;
+  try {
+    await formRef.value?.validate((errors) => {
+      if (!errors) {
+        if (agreement) {
+          editAgreement({
+            id: agreement.id,
+            updatedAgreement: formData.value,
+          });
+        } else {
+          createAgreement({
+            agreement: formData.value,
+          });
+        }
+
+        clearForm();
+        isOpened.value = false;
+      }
+    });
+  } catch (errors) {
+    console.error('Ошибка валидации', JSON.stringify(errors, null, 2));
+  }
 };
+
+const clearForm = () => {
+  formData.value = { ...initFormData };
+};
+
+// -----------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------
+watch([() => agreement, isOpened], () => {
+  formData.value = { ...agreement };
+});
 </script>
 
 <template>
@@ -108,9 +120,9 @@ const onSubmit = async () => {
     >
       <NForm
         :disabled="isPending"
-        :model="unref(formData)"
+        :model="formData"
         ref="formRef"
-        :rules="rules"
+        :rules="createFormRules(toRef(formData))"
         @submit.prevent
         @keyup.prevent.enter="
           async () => {

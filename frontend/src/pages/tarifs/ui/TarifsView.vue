@@ -69,6 +69,7 @@ watch([tarifToEditId, isModalOpened], () => {
     );
   }
 });
+
 // -----------------------------------------------------------------------------
 // Actions
 // -----------------------------------------------------------------------------
@@ -88,6 +89,7 @@ const editRow = (row: ITarif) => {
 
 const createRow = () => {
   tarifToEditId.value = undefined;
+  tarifToEdit.value = undefined;
   isModalOpened.value = true;
 };
 </script>
@@ -98,8 +100,9 @@ const createRow = () => {
       <AddButton
         @click="createRow"
         v-if="authStore.user?.roles?.includes('admin')"
-        >Новый тариф</AddButton
       >
+        Новый тариф
+      </AddButton>
       <SelectTarif
         label="Фильтр по типу: "
         v-model:value="tarifFilter"
@@ -115,6 +118,7 @@ const createRow = () => {
         />
       </div>
     </template>
+
     <NDataTable
       :data="filteredTarifs"
       :columns="columns"

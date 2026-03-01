@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  type FormRules,
+  type FormInst,
   NButton,
   NButtonGroup,
   NCard,
@@ -12,63 +12,95 @@ import {
   NModal,
   NSelect,
 } from 'naive-ui';
-import { ref, toRef, unref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-import { useTarifModal } from '../lib/useTarifModal';
-import { tarifTypeOptions } from '../lib/tarifOptions';
+import { createFormRules, tarifTypeOptions, initFormData } from '../config';
 
-import { type ITarif } from '@/entities/tarif';
+import {
+  type ITarif,
+  useCreateTarifMutation,
+  useDeleteTarifMutation,
+  useEditTarifMutation,
+  useRestoreTarifMutation,
+} from '@/entities/tarif';
 import { parseMoney, parseNumber } from '@/shared/lib';
 
 // -----------------------------------------------------------------------------
 // State
 // -----------------------------------------------------------------------------
 
-const formRef = ref();
-const tarifRef = toRef(() => tarif);
+const formRef = ref<FormInst | null>();
+const formData = ref<Partial<ITarif>>({ ...initFormData });
 
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
+
 const isOpened = defineModel('isOpened', { default: false });
 
-const { tarif = undefined } = defineProps<{
+const { tarif } = defineProps<{
   tarif?: ITarif;
 }>();
 
-const { formData, submit, deleteTarif, isPending, isFormValidateError } =
-  useTarifModal({
-    initialData: tarifRef,
-    formRef: formRef,
-  });
+const { mutate: createTarif, isPending: isCreatePending } =
+  useCreateTarifMutation();
+const { mutate: editTarif, isPending: isEditPending } = useEditTarifMutation();
+
+const { mutate: deleteTarif, isPending: isDeletePending } =
+  useDeleteTarifMutation();
+const { mutate: restoreTarif, isPending: isRestorePending } =
+  useRestoreTarifMutation();
 
 // -----------------------------------------------------------------------------
-// Form Setup
+// Computed
 // -----------------------------------------------------------------------------
 
-const rules: FormRules = {
-  tarif_type: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  rate: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  valid_from: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-};
+const isPending = computed(
+  () =>
+    isCreatePending.value ||
+    isDeletePending.value ||
+    isEditPending.value ||
+    isRestorePending.value,
+);
 
 // -----------------------------------------------------------------------------
 // Actions
 // -----------------------------------------------------------------------------
 
 const onSubmit = async () => {
-  await submit();
-  isOpened.value = isFormValidateError.value;
+  try {
+    await formRef.value?.validate((errors) => {
+      if (!errors) {
+        if (tarif) {
+          editTarif({
+            id: tarif.id,
+            updatedTarif: formData.value,
+          });
+        } else {
+          createTarif({
+            tarif: formData.value,
+          });
+        }
+
+        clearForm();
+        isOpened.value = false;
+      }
+    });
+  } catch (errors) {
+    console.error('Ошибка валидации', JSON.stringify(errors, null, 2));
+  }
 };
+
+const clearForm = () => {
+  formData.value = { ...initFormData };
+};
+
+// -----------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------
+watch([() => tarif, isOpened], () => {
+  formData.value = { ...tarif };
+});
 </script>
 
 <template>
@@ -83,9 +115,9 @@ const onSubmit = async () => {
     >
       <NForm
         :disabled="isPending"
-        :model="unref(formData)"
+        :model="formData"
         ref="formRef"
-        :rules="rules"
+        :rules="createFormRules()"
         @submit.prevent
         @keydown.prevent.stop.enter="
           async () => {
@@ -164,17 +196,22 @@ const onSubmit = async () => {
           "
           >{{ tarif ? 'Сохранить' : 'Создать' }}
         </NButton>
+
         <NButton
+          v-if="tarif"
           type="error"
           @click="
             () => {
-              if (tarifRef) {
-                isOpened = false;
-                deleteTarif({ id: tarifRef.id });
+              if (tarif.deletedAt === null) {
+                deleteTarif({ id: tarif.id });
+              } else {
+                restoreTarif({ id: tarif.id });
               }
+              isOpened = false;
             }
           "
-          >Удалить
+        >
+          {{ tarif.deletedAt === null ? 'Удалить' : 'Восстановить' }}
         </NButton>
         <NButton
           color="black"

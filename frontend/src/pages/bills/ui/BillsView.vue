@@ -76,6 +76,7 @@ const editRow = (row: IBill) => {
 
 const createRow = () => {
   billToEditId.value = undefined;
+  billToEdit.value = undefined;
   isModalOpened.value = true;
 };
 
@@ -83,11 +84,13 @@ const createRow = () => {
 // Watch
 // -----------------------------------------------------------------------------
 
-watch([billToEditId, isModalOpened], () => {
+watch([isModalOpened], () => {
   if (isModalOpened.value && billToEditId.value) {
     billToEdit.value = bills.value?.find(
       (bill) => bill.id === billToEditId.value,
     );
+  } else {
+    billToEdit.value = undefined;
   }
 });
 </script>
@@ -128,7 +131,6 @@ watch([billToEditId, isModalOpened], () => {
   <ManageBillModal
     v-model:is-opened="isModalOpened"
     :bill="billToEdit"
-    @bill-updated="billToEditId = undefined"
   />
 </template>
 

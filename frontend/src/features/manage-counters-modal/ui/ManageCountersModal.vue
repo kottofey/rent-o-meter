@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  type FormRules,
+  type FormInst,
   NButton,
   NButtonGroup,
   NCard,
@@ -11,21 +11,27 @@ import {
   NInputNumber,
   NModal,
 } from 'naive-ui';
-import { ref, toRef, unref } from 'vue';
+import { computed, ref, toRef, watch } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
 
-import { useCountersModal } from '../lib/useCountersModal';
+import { createFormRules } from '../config';
 
-import { type ICounter, useCountersQueryClient } from '@/entities/counter';
+import {
+  type ICounter,
+  useCountersQueryClient,
+  useCreateCounterMutation,
+  useEditCounterMutation,
+} from '@/entities/counter';
 import { SelectAgreements } from '@/widgets/select-agreements';
 import { dayjs } from '@/shared/lib/dayjs';
+import { initFormData } from '@/features/manage-agreement-modal/config';
 
 // -----------------------------------------------------------------------------
 // State
 // -----------------------------------------------------------------------------
 
-const formRef = ref();
-const counterRef = toRef(() => counter);
+const formRef = ref<FormInst | null>();
+const formData = ref<Partial<ICounter>>({ ...initFormData });
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -33,55 +39,20 @@ const counterRef = toRef(() => counter);
 const isOpened = defineModel('isOpened', { default: false });
 const queryClient = useQueryClient();
 
-const { counter = undefined } = defineProps<{
+const { counter } = defineProps<{
   counter?: ICounter;
 }>();
 
-const { formData, submit, isPending, isFormValidateError } = useCountersModal({
-  initialData: counterRef,
-  formRef: formRef,
-});
+const { mutate: createCounter, isPending: isCreatePending } =
+  useCreateCounterMutation();
+const { mutate: editCounter, isPending: isEditPending } =
+  useEditCounterMutation();
 
 // -----------------------------------------------------------------------------
-// Form setup
+// Computed
 // -----------------------------------------------------------------------------
 
-const rules: FormRules = {
-  month: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  date_start: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  date_end: [
-    {
-      required: true,
-      message: 'Обязательное поле',
-    },
-    {
-      message: 'Эта дата не может быть раньше начальной',
-      validator: (_rule, value) => {
-        return !(
-          formData.value.date_start && formData.value.date_start > value
-        );
-      },
-    },
-  ],
-  agreementId: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  counter_water: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-  counter_electricity: {
-    required: true,
-    message: 'Обязательное поле',
-  },
-};
+const isPending = computed(() => isCreatePending.value || isEditPending.value);
 
 // -----------------------------------------------------------------------------
 // Actions
@@ -92,7 +63,7 @@ const fetchPrevCounters = async ({
   agreementId,
 }: {
   currentMonth?: number;
-  agreementId?: number;
+  agreementId?: number | null;
 }) => {
   const prevCounters = await useCountersQueryClient({
     client: queryClient,
@@ -116,16 +87,57 @@ const fetchPrevCounters = async ({
 };
 
 const onSubmit = async () => {
-  await submit();
-  isOpened.value = isFormValidateError.value;
+  try {
+    await formRef.value?.validate((errors) => {
+      if (!errors) {
+        if (counter) {
+          editCounter({
+            id: counter.id,
+            updatedCounter: formData.value,
+          });
+        } else {
+          createCounter({
+            counter: formData.value,
+          });
+        }
+
+        clearForm();
+        isOpened.value = false;
+      }
+    });
+  } catch (errors) {
+    console.error('Ошибка валидации', JSON.stringify(errors, null, 2));
+  }
 };
+
+const clearForm = () => {
+  formData.value = { ...initFormData };
+};
+
+// -----------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------
+
+watch([() => counter, isOpened], () => {
+  formData.value = { ...counter };
+
+  // Удаляем виртуальные поля
+  delete formData.value.electricity_diff;
+  delete formData.value.water_diff;
+});
 </script>
 
 <template>
   <NModal
     :show="isOpened"
-    @mask-click="isOpened = false"
-    @esc="isOpened = false"
+    @mask-click="
+      isOpened = false;
+      clearForm();
+    "
+    @esc="
+      isOpened = false;
+      clearForm();
+    "
     @keyup.prevent.enter="
       async () => {
         await onSubmit();
@@ -138,9 +150,9 @@ const onSubmit = async () => {
     >
       <NForm
         :disabled="isPending"
-        :model="unref(formData)"
+        :model="formData"
         ref="formRef"
-        :rules="rules"
+        :rules="createFormRules(toRef(formData))"
         @submit.prevent
         class="fields"
       >
@@ -157,7 +169,7 @@ const onSubmit = async () => {
             close-on-select
             clearable
             v-model:value="formData.month"
-            @update-value="
+            @update:value="
               (val) => {
                 formData.date_start = val;
                 formData.date_end = val;
@@ -293,7 +305,10 @@ const onSubmit = async () => {
         </NButton>
         <NButton
           type="error"
-          @click="isOpened = false"
+          @click="
+            isOpened = false;
+            clearForm();
+          "
           >Отменить
         </NButton>
       </NButtonGroup>

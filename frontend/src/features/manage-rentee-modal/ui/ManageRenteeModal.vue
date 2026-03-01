@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  type FormRules,
+  type FormInst,
   NButton,
   NButtonGroup,
   NCard,
@@ -11,13 +11,15 @@ import {
   NInput,
   NModal,
 } from 'naive-ui';
-import { ref, toRef, unref } from 'vue';
+import { computed, ref, toRef, watch } from 'vue';
 
-import { useRenteeModal } from '../lib/useRenteeModal';
+import { createFormRules, initFormData } from '../config';
 
 import {
   type IRentee,
+  useCreateRenteeMutation,
   useDeleteRenteeMutation,
+  useEditRenteeMutation,
   useRestoreRenteeMutation,
 } from '@/entities/rentee';
 
@@ -25,73 +27,87 @@ import {
 // State
 // -----------------------------------------------------------------------------
 
-const formRef = ref();
+const formRef = ref<FormInst | null>();
+const formData = ref<Partial<IRentee>>({ ...initFormData });
 
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
+
 const isOpened = defineModel('isOpened', { default: false });
 
-const { rentee = undefined } = defineProps<{
+const { rentee } = defineProps<{
   rentee?: IRentee;
 }>();
 
-const renteeRef = toRef(() => rentee);
-
-const {
-  formData,
-  checkActiveAgreements,
-  isPending,
-  submit,
-  isFormValidateError,
-} = useRenteeModal({
-  initialData: renteeRef,
-  formRef: formRef,
-});
-
-const { mutate: deleteRentee } = useDeleteRenteeMutation();
-const { mutate: restoreRentee } = useRestoreRenteeMutation();
+const { mutate: deleteRentee, isPending: isDeletePending } =
+  useDeleteRenteeMutation();
+const { mutate: restoreRentee, isPending: isRestorePending } =
+  useRestoreRenteeMutation();
+const { mutate: createRentee, isPending: isCreatePending } =
+  useCreateRenteeMutation();
+const { mutate: editRentee, isPending: isEditPending } =
+  useEditRenteeMutation();
 
 // -----------------------------------------------------------------------------
-// Form setup
+// Computed
 // -----------------------------------------------------------------------------
 
-const rules: FormRules = {
-  surname: {
-    required: true,
-    message: 'Введите фамилию',
-  },
-  firstname: {
-    required: true,
-    message: 'Введите имя',
-  },
-  patronymic: {
-    required: true,
-    message: 'Введите отчество',
-  },
-  date_start: {
-    required: true,
-    message: 'Введите дату начала',
-  },
-  date_end: {
-    message: 'Дата окончания не может быть перед датой начала',
-    validator(_rule, val) {
-      if (formData.value.date_start && formData.value.date_end) {
-        return formData.value.date_start < val;
-      }
-      return true;
-    },
-  },
-};
+const isPending = computed(
+  () =>
+    isCreatePending.value ||
+    isDeletePending.value ||
+    isRestorePending.value ||
+    isEditPending.value,
+);
 
 // -----------------------------------------------------------------------------
 // Actions
 // -----------------------------------------------------------------------------
 
 const onSubmit = async () => {
-  await submit();
-  isOpened.value = isFormValidateError.value;
+  try {
+    await formRef.value?.validate((errors) => {
+      if (!errors) {
+        if (rentee) {
+          editRentee({
+            id: rentee.id,
+            updatedRentee: formData.value,
+          });
+        } else {
+          createRentee({
+            rentee: formData.value,
+          });
+        }
+
+        clearForm();
+        isOpened.value = false;
+      }
+    });
+  } catch (errors) {
+    console.error('Ошибка валидации', JSON.stringify(errors, null, 2));
+  }
 };
+
+const checkActiveAgreements = () => {
+  if (rentee) {
+    return !!rentee.agreements?.find((agreement) => agreement.status);
+  }
+};
+
+const clearForm = () => {
+  formData.value = { ...initFormData };
+};
+
+// -----------------------------------------------------------------------------
+// Watch
+// -----------------------------------------------------------------------------
+watch([() => rentee, isOpened], () => {
+  formData.value = { ...rentee };
+
+  // Удаляем виртуальные поля
+  delete formData.value.fullName;
+});
 </script>
 
 <template>
@@ -106,9 +122,9 @@ const onSubmit = async () => {
     >
       <NForm
         :disabled="isPending"
-        :model="unref(formData)"
+        :model="formData"
         ref="formRef"
-        :rules="rules"
+        :rules="createFormRules(toRef(formData))"
         @submit.prevent
         @keyup.prevent.enter="
           async () => {
@@ -233,7 +249,8 @@ const onSubmit = async () => {
           color="black"
           text-color="white"
           @click="isOpened = false"
-          >Отменить
+        >
+          Отменить
         </NButton>
       </NButtonGroup>
     </NCard>

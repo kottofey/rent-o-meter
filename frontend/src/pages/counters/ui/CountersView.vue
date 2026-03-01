@@ -51,6 +51,7 @@ const editRow = (row: ICounter) => {
 
 const createRow = () => {
   counterToEditId.value = undefined;
+  counterToEdit.value = undefined;
   isModalOpened.value = true;
 };
 
