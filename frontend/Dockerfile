@@ -1,7 +1,6 @@
 FROM node:lts-alpine AS build
 
-ENV TZ=Europe/Moscow \
-    NODE_ENV=production
+ENV TZ=Europe/Moscow
 
 LABEL authors="kottofey"
 
