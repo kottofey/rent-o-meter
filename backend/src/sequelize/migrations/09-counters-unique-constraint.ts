@@ -1,4 +1,3 @@
-import { DataTypes } from 'sequelize';
 import type { Sequelize } from 'sequelize-typescript';
 
 import type { Migration } from '../../tools/umzug.ts';

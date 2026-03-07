@@ -2,15 +2,12 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { type IUser } from '@/entities/user';
-
 export const useAuthStore = defineStore('auth', () => {
   // -----------------------------------------------------------------------------
   // State
   // -----------------------------------------------------------------------------
 
   const userData = ref<Partial<IUser> | null>(null);
-  // const isAuthorized = ref(false);
-
   // -----------------------------------------------------------------------------
   // Getters
   // -----------------------------------------------------------------------------
@@ -25,10 +22,15 @@ export const useAuthStore = defineStore('auth', () => {
 
   const full_name = computed(
     () =>
+      user.value &&
       `${userData.value?.surname} ${userData.value?.firstname} ${userData.value?.patronymic}`,
   );
 
-  const isAuthorized = computed(() => !!user.value);
+  const isAuthorized = computed(() => {
+    return !!user.value;
+  });
+
+  const isAdmin = computed(() => user.value?.roles?.includes('admin'));
 
   // -----------------------------------------------------------------------------
   // Actions
@@ -49,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Getters
     user,
     isAuthorized,
+    isAdmin,
     full_name,
 
     // Actions

@@ -37,7 +37,7 @@ export const columns: DataTableColumns<ICounter> = [
     key: 'month',
     align: 'center',
     sorter: 'default',
-    defaultSortOrder: 'descend',
+    defaultSortOrder: 'ascend',
     render: (row: ICounter) =>
       parseDate({ date: row.month, format: 'MMMM YYYY' }),
   },

@@ -6,7 +6,7 @@
   "author": "kottofey",
   "type": "module",
   "scripts": {
-    "lint": "vue-tsc --build --force && eslint --config eslint.config.js --ext .ts,.js --fix ./src",
+    "lint:backend": "vue-tsc --build --force && eslint --config eslint.config.ts --ext .ts,.js --fix ./src",
     "lint:old": "eslint --config eslint.config.js \"**/*.{js,ts}\" --fix --format stylish",
     "start": "nodemon --exec tsx --env-file=.env src/express/bin/www.ts",
     "build": "tsc -b --verbose"

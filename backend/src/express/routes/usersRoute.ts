@@ -1,10 +1,9 @@
 import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
-import { UniqueConstraintError } from 'sequelize';
-import chalk from 'chalk';
 import { getIdParam } from '../helpers.ts';
 import { parseQuery } from '@/helpers';
 import { User } from '@/models';
+import * as bcrypt from 'bcrypt';
 
 const model = sequelize.models.User;
 
@@ -53,28 +52,28 @@ async function getById(req: Request, res: Response) {
   }
 }
 
-async function create(req: Request, res: Response) {
-  if (req.body.id) {
-    res.status(400).send({
-      message: 'ID should not be provided, since it is determined automatically by the database.',
-    });
-    return;
-  }
-
-  try {
-    await model.create(req.body);
-    res
-      .status(201)
-      .send({ ...req.body })
-      .end();
-  } catch (e) {
-    if (e instanceof UniqueConstraintError) {
-      res.status(409).send({ error: e.parent.message }).end();
-    } else {
-      res.status(500).send({ e }).end();
-    }
-  }
-}
+// async function create(req: Request, res: Response) {
+//   if (req.body.id) {
+//     res.status(400).send({
+//       message: 'ID should not be provided, since it is determined automatically by the database.',
+//     });
+//     return;
+//   }
+//
+//   try {
+//     await model.create(req.body);
+//     res
+//       .status(201)
+//       .send({ ...req.body })
+//       .end();
+//   } catch (e) {
+//     if (e instanceof UniqueConstraintError) {
+//       res.status(409).send({ error: e.parent.message }).end();
+//     } else {
+//       res.status(500).send({ e }).end();
+//     }
+//   }
+// }
 
 async function remove(req: Request, res: Response) {
   const id = getIdParam(req);
@@ -102,26 +101,47 @@ async function remove(req: Request, res: Response) {
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { body }: { body: Partial<User> } = req;
+  const { password } = req.body as User;
 
   try {
-    const [rows] = await model.update(body, {
-      where: {
-        id,
+    // Проверка существования пользователя
+    const existingUser = await User.findOne({
+      where: { id },
+      attributes: {
+        exclude: ['createdAt', 'updatedAt', 'password'],
       },
-      paranoid: false,
     });
 
-    if (rows === 0) {
-      res.status(404).send({}).end();
+    if (!existingUser) {
+      res.status(400).json({
+        success: false,
+        message: 'Пользователя не существует',
+      });
     } else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const updatedUser = await existingUser.update({
+        ...req.body,
+        password: hashedPassword,
+      });
+
+      const result = { ...updatedUser.toJSON() };
+      delete result.password;
+
       res
         .status(200)
-        .send({ ...req.body })
+        .send({
+          message: 'Updated',
+          user: result,
+        })
         .end();
     }
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    if (e instanceof Error) {
+      res.status(500).send({ error: e.message }).end();
+    } else {
+      res.status(500).send(e).end();
+    }
   }
 }
 
@@ -137,4 +157,4 @@ async function restore(req: Request, res: Response) {
   }
 }
 
-export default { getById, getAll, create, update, remove, restore };
+export default { getById, getAll, update, remove, restore };

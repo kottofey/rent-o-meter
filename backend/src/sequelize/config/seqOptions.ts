@@ -9,7 +9,7 @@ import chalk from 'chalk';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const env = await fs.readFile(join(__dirname, '../../../.env'), 'utf8');
 
-const { DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST_NAME, DB_PORT, MODE } = dotenv.parse(env);
+const { DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST_NAME, DB_PORT } = dotenv.parse(env);
 
 const options: SequelizeOptions = {
   dialect: 'mysql',

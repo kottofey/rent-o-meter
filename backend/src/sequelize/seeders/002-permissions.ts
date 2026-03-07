@@ -1,6 +1,5 @@
 import { Op, QueryInterface } from 'sequelize';
 import chalk from 'chalk';
-import { log } from 'eslint-import-resolver-typescript/lib/logger';
 
 import { type SeederModule } from '../../tools/seed.ts';
 

@@ -38,14 +38,10 @@ export default async function requireRoleMiddleware(
     .map(roles => roles.map(role => role.name))
     .flat(Infinity)
     .forEach(role => {
-      // console.log('role add', role);
       rolesForRoute.add(role);
     });
 
   const hasRole = userRoles.some(role => rolesForRoute.has(role));
-  // console.log('userRoles', userRoles);
-  // console.log('rolesForRoute', rolesForRoute);
-  // console.log('hasRole', hasRole);
 
   if (!hasRole) {
     res.status(403).json({

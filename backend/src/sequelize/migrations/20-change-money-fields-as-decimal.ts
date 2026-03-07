@@ -3,8 +3,6 @@ import type { Sequelize } from 'sequelize-typescript';
 
 import type { Migration } from '../../tools/umzug.ts';
 
-import { RelBillTarifs } from '@/models';
-
 export const up: Migration = async ({ context: sequelize }: { context: Sequelize }) => {
   const transaction = await sequelize.transaction();
 

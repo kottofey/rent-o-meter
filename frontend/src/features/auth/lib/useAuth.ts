@@ -1,5 +1,3 @@
-import { useLocalStorage } from '@vueuse/core';
-
 import { useApi, httpMethod } from '@/shared/api';
 import { type IUser } from '@/entities/user';
 import { router } from '@/app/router';
@@ -12,6 +10,8 @@ export interface IAuthResponse {
 }
 
 export default function useAuth() {
+  const authStore = useAuthStore();
+
   const login = async ({
     email,
     password,
@@ -20,7 +20,6 @@ export default function useAuth() {
     password: string;
   }) => {
     const authStore = useAuthStore();
-    const me = useLocalStorage<string>('me', null);
 
     try {
       const result = await useApi<IAuthResponse>({
@@ -29,8 +28,7 @@ export default function useAuth() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (result) {
-        me.value = JSON.stringify(result.user);
+      if (result?.user) {
         authStore.setUser(result.user);
         await router.push({ name: 'home.show' });
       }
@@ -54,41 +52,21 @@ export default function useAuth() {
   };
 
   const clearAuthState = () => {
-    const authStore = useAuthStore();
-    const storedUserData = useLocalStorage('me', null);
-
-    // Очищаем данные пользователя из Pinia
     authStore.deleteUser();
-
-    // Очищаем данные пользователя из localStorage
-    storedUserData.value = null;
   };
 
-  const initializeAuthState = () => {
+  const initializeAuthState = async () => {
     const authStore = useAuthStore();
-    const storedUserData = useLocalStorage('me', null);
 
-    // Проверяем, есть ли данные пользователя в localStorage
-    if (storedUserData.value) {
-      try {
-        // Парсим данные пользователя из localStorage
-        const parsedUserData = storedUserData.value
-          ? JSON.parse(storedUserData.value as string)
-          : null;
+    const me = await useApi<IAuthResponse>({
+      route: 'me',
+      method: httpMethod.GET,
+    });
 
-        if (parsedUserData) {
-          // Устанавливаем данные пользователя в Pinia
-          authStore.setUser(parsedUserData);
-        }
-      } catch (error) {
-        console.error(
-          'Ошибка при инициализации состояния аутентификации:',
-          error,
-        );
-        // Очищаем некорректные данные из localStorage
-        storedUserData.value = null;
-        authStore.setUser(null);
-      }
+    if (me?.user.id) {
+      authStore.setUser(me.user);
+    } else {
+      authStore.setUser(null);
     }
   };
 

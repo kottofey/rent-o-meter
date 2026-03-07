@@ -58,6 +58,7 @@ export default async function useApi<T>({
         parentError: err_response,
       });
     }
+    return;
   }
 
   return (await resp.json()) as T;
