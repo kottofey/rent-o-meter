@@ -1,16 +1,15 @@
 meta {
-  name: Test Express
+  name: remote test
   type: http
-  seq: 3
+  seq: 8
 }
 
 get {
-  url: {{BASE_URL}}
+  url: https://rent-o-meter.kottofey.ru/api/v1/rentees
   body: none
   auth: inherit
 }
 
 settings {
   encodeUrl: true
-  timeout: 0
 }

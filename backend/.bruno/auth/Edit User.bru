@@ -1,0 +1,22 @@
+meta {
+  name: Edit User
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{BASE_URL}}/users/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "password": ""
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
