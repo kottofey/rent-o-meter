@@ -38,6 +38,12 @@ const routes: RouteRecordRaw[] = [
     meta: {},
   },
   {
+    path: '/users',
+    name: 'users.show',
+    component: () => import('@/pages/users'),
+    meta: {},
+  },
+  {
     path: '/login',
     name: 'login.show',
     component: () => import('@/pages/auth'),

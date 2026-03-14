@@ -8,12 +8,25 @@ import {
   BelongsTo,
   BelongsToMany,
   ForeignKey,
+  Scopes,
 } from 'sequelize-typescript';
-import { DataTypes } from 'sequelize';
+import { DataTypes, Op } from 'sequelize';
 
 import { RefreshToken, RelUserRole, Rentee, Role } from '@/models';
 import { dayjs } from '@/helpers';
 
+@Scopes(() => ({
+  'user:withDeleted'() {
+    return {
+      paranoid: false,
+      where: {
+        deletedAt: {
+          [Op.ne]: null,
+        },
+      },
+    };
+  },
+}))
 @Table({ paranoid: true })
 export default class User extends Model {
   @Column({ type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true })

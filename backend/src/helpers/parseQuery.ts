@@ -82,6 +82,11 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       const renteeId = rawRenteeId as number | null;
       return { method: ['agreements:byRentee', renteeId] };
     },
+
+    // -----------------------------------------------------------------------------
+    // Users
+    // -----------------------------------------------------------------------------
+    'user:withDeleted': () => ({ method: ['user:withDeleted'] }),
   } as const;
 
   // -----------------------------------------------------------------------------

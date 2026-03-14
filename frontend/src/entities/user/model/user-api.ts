@@ -12,6 +12,8 @@ export interface IUser {
   patronymic: string;
   full_name: string;
 
+  password?: string;
+
   email: string;
   status: boolean;
   last_login: number;
@@ -20,10 +22,13 @@ export interface IUser {
 
   roles: string[];
   rentee?: IRentee;
+
+  deletedAt: number;
 }
 
 export type IUserScopes = {
-  'user:activeOnly': boolean;
+  'user:activeOnly'?: boolean;
+  'user:withDeleted'?: boolean;
 };
 export type IUserIncludes = Array<'Role' | 'Rentee'>;
 
@@ -33,7 +38,7 @@ export async function getAllUsers({
 }: {
   scopes?: IUserScopes;
   includes?: IUserIncludes;
-}): Promise<IUser[]> {
+}): Promise<IUser[] | undefined> {
   return await useApi<IUser[]>({
     route: 'users',
     method: httpMethod.GET,
@@ -41,7 +46,11 @@ export async function getAllUsers({
   });
 }
 
-export async function getUser({ id }: { id: number }): Promise<IUser> {
+export async function getUser({
+  id,
+}: {
+  id: number;
+}): Promise<IUser | undefined> {
   return await useApi<IUser>({
     route: `users/${id}`,
     method: httpMethod.GET,
@@ -52,7 +61,7 @@ export async function createUser({
   user,
 }: {
   user: Partial<IUser>;
-}): Promise<IUser> {
+}): Promise<IUser | undefined> {
   return await useApi<IUser>({
     route: `users`,
     method: httpMethod.POST,
@@ -80,7 +89,7 @@ export async function editUser({
 }: {
   id: number;
   updatedUser: Partial<IUser>;
-}): Promise<IUser> {
+}): Promise<IUser | undefined> {
   return await useApi<IUser>({
     route: `users/${id}`,
     method: httpMethod.PUT,

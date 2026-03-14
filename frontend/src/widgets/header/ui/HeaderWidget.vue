@@ -90,6 +90,14 @@ const { user, full_name } = useAuthStore();
       >
         Тарифы
       </RouterLink>
+
+      <RouterLink
+        :to="{ name: 'users.show' }"
+        class="link"
+        v-if="user?.roles?.some((role) => role === 'admin')"
+      >
+        Пользователи
+      </RouterLink>
     </div>
 
     <div

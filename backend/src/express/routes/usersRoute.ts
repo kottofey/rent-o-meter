@@ -1,9 +1,11 @@
 import { type Request, type Response } from 'express';
 import { sequelize } from '@/sequelize';
 import { getIdParam } from '../helpers.ts';
-import { parseQuery } from '@/helpers';
-import { User } from '@/models';
+import { hashToken, parseQuery } from '@/helpers';
+import { RefreshToken, User } from '@/models';
 import * as bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { jwtConfig } from '@/config';
 
 const model = sequelize.models.User;
 
@@ -101,7 +103,7 @@ async function remove(req: Request, res: Response) {
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { password } = req.body as User;
+  const { password, status } = req.body as User;
 
   try {
     // Проверка существования пользователя
@@ -118,11 +120,13 @@ async function update(req: Request, res: Response) {
         message: 'Пользователя не существует',
       });
     } else {
-      const hashedPassword = await bcrypt.hash(password, 10);
+      if (!status) {
+        await RefreshToken.update({ is_revoked: true }, { where: { user_id: existingUser.id } });
+      }
 
       const updatedUser = await existingUser.update({
         ...req.body,
-        password: hashedPassword,
+        password: password && (await bcrypt.hash(password, 10)),
       });
 
       const result = { ...updatedUser.toJSON() };

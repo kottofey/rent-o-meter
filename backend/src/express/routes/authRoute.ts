@@ -3,7 +3,7 @@ import { jwtConfig } from '@/config';
 
 import jwt from 'jsonwebtoken';
 import { RefreshToken, Role, User } from '@/models';
-import { hashToken, generateTokens, getDeviceId } from '@/helpers';
+import { hashToken, generateTokens, getDeviceId, dayjs } from '@/helpers';
 import * as bcrypt from 'bcrypt';
 
 // -----------------------------------------------------------------------------
@@ -84,12 +84,14 @@ async function login(req: Request, res: Response): Promise<void> {
           success: false,
           message: 'Неверные учетные данные',
         });
+        return;
       }
       if (!user?.status) {
         res.status(403).json({
           success: false,
           message: 'Пользователь заблокирован',
         });
+        return;
       }
 
       // Отзываем старые токены при новом логине
@@ -120,6 +122,10 @@ async function login(req: Request, res: Response): Promise<void> {
       res.cookie('token', accessToken, { httpOnly: true });
       res.cookie('refreshToken', refreshToken, { httpOnly: true });
 
+      await user.update({
+        last_login: dayjs().toDate(),
+      });
+
       res.json({
         success: true,
         message: 'Успешный вход',
@@ -127,6 +133,7 @@ async function login(req: Request, res: Response): Promise<void> {
           id: user.id,
           rentee_id: user.rentee_id,
           email: user.email,
+          status: user.status,
           surname: user.surname,
           firstname: user.firstname,
           patronymic: user.patronymic,
@@ -146,10 +153,11 @@ async function login(req: Request, res: Response): Promise<void> {
 
 async function logout(req: Request, res: Response): Promise<void> {
   try {
-    console.log('logout route');
     // Тупо отзываем refresh token и удаляем куки
     const refreshToken = req.cookies.refreshToken;
-    const decoded = jwt.verify(req.cookies.token, jwtConfig.secret) as Partial<User>;
+    const decoded = jwt.verify(req.cookies.token, jwtConfig.secret, {
+      ignoreExpiration: true,
+    }) as Partial<User>;
 
     if (!refreshToken) {
       res.status(400).json({
@@ -264,6 +272,7 @@ async function me(req: Request, res: Response): Promise<void> {
       user: {
         id: user.id,
         rentee_id: user.rentee_id,
+        status: user.status,
         surname: user.surname,
         firstname: user.firstname,
         patronymic: user.patronymic,

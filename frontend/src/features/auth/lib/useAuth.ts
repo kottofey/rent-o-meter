@@ -71,16 +71,19 @@ export default function useAuth() {
 
   const initializeAuthState = async () => {
     const authStore = useAuthStore();
+    try {
+      const me = await useApi<IAuthResponse>({
+        route: 'me',
+        method: httpMethod.GET,
+      });
 
-    const me = await useApi<IAuthResponse>({
-      route: 'me',
-      method: httpMethod.GET,
-    });
-
-    if (me?.user.id) {
-      authStore.setUser(me.user);
-    } else {
-      authStore.setUser(null);
+      if (me?.user.id) {
+        authStore.setUser(me.user);
+      } else {
+        authStore.setUser(null);
+      }
+    } catch (e) {
+      console.error('init auth error', e);
     }
   };
 

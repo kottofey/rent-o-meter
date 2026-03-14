@@ -27,7 +27,12 @@ export const useAuthStore = defineStore('auth', () => {
   );
 
   const isAuthorized = computed(() => {
-    return !!user.value;
+    if (!!user.value && user.value.status) {
+      return true;
+    }
+
+    deleteUser();
+    return false;
   });
 
   const isAdmin = computed(() => user.value?.roles?.includes('admin'));

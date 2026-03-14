@@ -20,8 +20,6 @@ export default function generateTokens(userPayload: User) {
     roles: userPayload.roles.map(r => r.name),
   };
 
-  console.log(userPayload.rentee_id);
-
   // console.log('generateTokens: генерируем токены');
 
   const accessToken = jwt.sign(payload, jwtConfig.secret, {

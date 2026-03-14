@@ -132,7 +132,7 @@ export async function refreshToken(
       res.status(500).json({
         status: '500',
         reason: 'InternalError',
-        message: 'Внутренняя ошибка сервера',
+        message: '(refresh token) Внутренняя ошибка сервера',
         e,
       });
     }
