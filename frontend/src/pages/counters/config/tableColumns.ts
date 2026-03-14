@@ -1,11 +1,15 @@
 import { type DataTableColumns } from 'naive-ui';
-import { h } from 'vue';
+import { type h } from 'vue';
 
 import { type ICounter } from '@/entities/counter';
 import { parseDate } from '@/shared/lib/parseDate';
 import { RenteeInfoPopover } from '@/shared/ui';
 
-export const columns: DataTableColumns<ICounter> = [
+export const createColumns = ({
+  hFunc,
+}: {
+  hFunc: typeof h;
+}): DataTableColumns<ICounter> => [
   {
     title: 'id',
     key: 'id',
@@ -16,7 +20,7 @@ export const columns: DataTableColumns<ICounter> = [
     key: 'renteeId',
     align: 'center',
     render: (row: ICounter) => {
-      return h(
+      return hFunc(
         RenteeInfoPopover,
         {
           rentee: row.agreement?.rentee,

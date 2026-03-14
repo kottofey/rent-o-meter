@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { NDataTable } from 'naive-ui';
-import { reactive, ref, watch } from 'vue';
+import { h, reactive, ref, watch } from 'vue';
 
-import { columns } from '../config/tableColumns';
+import { createColumns } from '../config/tableColumns';
 
 import { AddButton } from '@/shared/ui';
 import { PageLayout } from '@/app/layouts';
@@ -76,7 +76,7 @@ watch([counterToEditId, isModalOpened], () => {
 
     <NDataTable
       :data="counters"
-      :columns="columns"
+      :columns="createColumns({ hFunc: h })"
       :row-props="editRow"
       :loading="isLoading"
     />

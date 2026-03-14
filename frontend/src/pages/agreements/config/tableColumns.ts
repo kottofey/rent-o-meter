@@ -1,5 +1,5 @@
 import { type DataTableColumns, NTag } from 'naive-ui';
-import { h } from 'vue';
+import { type h } from 'vue';
 
 import { checkExpiry } from '@/shared/lib/checkExpiry';
 import { type IAgreement } from '@/entities/agreement';
@@ -18,7 +18,11 @@ const statusColors = {
   },
 };
 
-export const columns: DataTableColumns<IAgreement> = [
+export const createColumns = ({
+  hFunc,
+}: {
+  hFunc: typeof h;
+}): DataTableColumns<IAgreement> => [
   {
     title: 'id',
     key: 'id',
@@ -41,7 +45,7 @@ export const columns: DataTableColumns<IAgreement> = [
       multiple: 2,
     },
     render: (row: IAgreement) => {
-      return h(
+      return hFunc(
         RenteeInfoPopover,
         {
           rentee: row.rentee,
@@ -74,7 +78,7 @@ export const columns: DataTableColumns<IAgreement> = [
     title: 'Окончание',
     key: 'date_end',
     align: 'center',
-    render: (row: IAgreement) => checkExpiry(row.date_end),
+    render: (row: IAgreement) => checkExpiry({ date_end: row.date_end, hFunc }),
   },
   {
     title: 'Статус',
@@ -103,7 +107,7 @@ export const columns: DataTableColumns<IAgreement> = [
       },
     ],
     render: (row: IAgreement) => {
-      return h(
+      return hFunc(
         NTag,
         {
           color: {

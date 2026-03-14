@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { type DataTableInst, NDataTable } from 'naive-ui';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { h, onMounted, reactive, ref, watch } from 'vue';
 
-import { columns } from '../config/tableColumns';
+import { createColumns } from '../config/tableColumns';
 
 import { useSettings } from '@/app/lib';
 import { PageLayout } from '@/app/layouts';
@@ -179,7 +179,7 @@ onMounted(() => {
     <NDataTable
       ref="table"
       :data="agreements"
-      :columns="columns"
+      :columns="createColumns({ hFunc: h })"
       :row-props="editRow"
       :loading="isFetching"
     />

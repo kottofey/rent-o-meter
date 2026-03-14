@@ -1,5 +1,5 @@
 import { type DataTableColumns, NTag } from 'naive-ui';
-import { h } from 'vue';
+import { type h } from 'vue';
 
 import { type IBill } from '@/entities/bill';
 import { parseDate } from '@/shared/lib/parseDate';
@@ -7,16 +7,20 @@ import { parseMoney } from '@/shared/lib';
 
 const statusColors = {
   paid: {
-    color: 'green',
+    color: 'springgreen',
     textColor: 'black',
   },
   debt: {
-    color: 'red',
+    color: 'tomato',
     textColor: 'black',
   },
 };
 
-export const columns: DataTableColumns<IBill> = [
+export const createColumns = ({
+  hFunc,
+}: {
+  hFunc: typeof h;
+}): DataTableColumns<IBill> => [
   {
     title: 'id',
     key: 'id',
@@ -51,7 +55,7 @@ export const columns: DataTableColumns<IBill> = [
     key: 'status',
     align: 'center',
     render: (row: IBill) => {
-      return h(
+      return hFunc(
         NTag,
         {
           color: {
@@ -84,13 +88,36 @@ export const columns: DataTableColumns<IBill> = [
     render: (row: IBill) =>
       parseMoney({ ammount: row.extra_ammount, mode: 'rubbles' }),
   },
-
   {
     title: 'Оплачено',
     key: 'ammount_paid',
     align: 'center',
     render: (row: IBill) =>
       parseMoney({ ammount: row.ammount_paid, mode: 'rubbles' }),
+  },
+  {
+    title: 'Δ',
+    key: 'ammount_paid',
+    align: 'center',
+    render: (row: IBill) =>
+      hFunc(
+        'p',
+        {
+          style: {
+            color:
+              row.ammount + row.extra_ammount - row.ammount_paid !== 0
+                ? 'red'
+                : 'green',
+          },
+        },
+        {
+          default: () =>
+            parseMoney({
+              ammount: row.ammount + row.extra_ammount - row.ammount_paid,
+              mode: 'rubbles',
+            }),
+        },
+      ),
   },
   {
     title: 'Комментарий',

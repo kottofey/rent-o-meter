@@ -1,5 +1,5 @@
 import { type DataTableColumns, NTag } from 'naive-ui';
-import { h } from 'vue';
+import { type h } from 'vue';
 
 import { type IRentee } from '@/entities/rentee';
 import { dayjs } from '@/shared/lib/dayjs';
@@ -16,7 +16,11 @@ const statusColors = {
   },
 };
 
-export const columns: DataTableColumns<IRentee> = [
+export const createColumns = ({
+  hFunc,
+}: {
+  hFunc: typeof h;
+}): DataTableColumns<IRentee> => [
   {
     title: 'id',
     key: 'id',
@@ -46,7 +50,7 @@ export const columns: DataTableColumns<IRentee> = [
     key: 'status',
     align: 'center',
     render: (row: IRentee) => {
-      return h(
+      return hFunc(
         NTag,
         {
           color: {

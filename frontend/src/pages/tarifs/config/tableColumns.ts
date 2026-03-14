@@ -17,7 +17,7 @@ const tarifTypesMap = {
   domofon: 'Домофон',
 };
 
-export const columns: DataTableColumns<ITarif> = [
+export const createColumns = (): DataTableColumns<ITarif> => [
   {
     title: 'id',
     key: 'id',

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
-import { NDataTable, useNotification } from 'naive-ui';
+import { h, reactive, ref, watch } from 'vue';
+import { NDataTable } from 'naive-ui';
 
-import { columns } from '../config/tableColumns';
+import { createColumns } from '../config/tableColumns';
 
 import { notification } from '@/shared/lib';
 import { PageLayout } from '@/app/layouts';
@@ -116,7 +116,7 @@ watch(isError, () => {
 
     <NDataTable
       :data="rentees"
-      :columns="columns"
+      :columns="createColumns({ hFunc: h })"
       :row-props="editRow"
       :loading="isLoading"
     />

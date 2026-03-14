@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, h, reactive, ref, watch } from 'vue';
 import { NDataTable } from 'naive-ui';
 
-import { columns } from '../config/tableColumns';
+import { createColumns } from '../config/tableColumns';
 
 import { PageLayout } from '@/app/layouts';
 import { type IBill, type IBillScopes, useBillsQuery } from '@/entities/bill';
@@ -122,7 +122,7 @@ watch([isModalOpened], () => {
 
     <NDataTable
       :data="filteredBills"
-      :columns="columns"
+      :columns="createColumns({ hFunc: h })"
       :row-props="editRow"
       :loading="isLoading"
     />

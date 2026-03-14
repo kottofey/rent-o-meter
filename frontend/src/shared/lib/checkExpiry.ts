@@ -1,11 +1,19 @@
 import { NText } from 'naive-ui';
-import { h } from 'vue';
+import type { h } from 'vue';
 
 import { dayjs } from '@/shared/lib/dayjs';
 
-export function checkExpiry(date_end: number, format?: string) {
+export function checkExpiry({
+  date_end,
+  format,
+  hFunc,
+}: {
+  date_end: number;
+  hFunc: typeof h;
+  format?: string;
+}) {
   if (dayjs(date_end).isAfter(dayjs().add(1, 'month'))) {
-    return h(
+    return hFunc(
       NText,
       { type: 'success' },
       {
@@ -17,7 +25,7 @@ export function checkExpiry(date_end: number, format?: string) {
     dayjs(date_end).isBefore(dayjs().add(1, 'month')) &&
     dayjs(date_end).isAfter(dayjs())
   ) {
-    return h(
+    return hFunc(
       NText,
       { type: 'warning' },
       {
@@ -26,7 +34,7 @@ export function checkExpiry(date_end: number, format?: string) {
       },
     );
   } else if (dayjs(date_end).isBefore(dayjs())) {
-    return h(
+    return hFunc(
       NText,
       { type: 'error', bold: true, italic: true },
       {

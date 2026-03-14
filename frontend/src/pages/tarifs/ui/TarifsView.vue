@@ -3,7 +3,7 @@ import { NDataTable, NDatePicker } from 'naive-ui';
 import { ref, watch } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
 
-import { columns } from '../config/tableColumns';
+import { createColumns } from '../config/tableColumns';
 
 import { PageLayout } from '@/app/layouts';
 import { ManageTarifModal } from '@/features/manage-tarif-modal';
@@ -121,7 +121,7 @@ const createRow = () => {
 
     <NDataTable
       :data="filteredTarifs"
-      :columns="columns"
+      :columns="createColumns()"
       :row-props="editRow"
       :loading="isLoading"
     />
