@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import { useNotification } from 'naive-ui';
 import { type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
@@ -15,6 +14,7 @@ import {
 } from './bill-api';
 import { billKeys } from './bill-keys';
 
+import { notification } from '@/shared/lib';
 import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
 export const useBillsQuery = ({
@@ -39,21 +39,20 @@ export const useBillQuery = ({ id }: { id: number }) => {
 
 export const useCreateBillMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationKey: billKeys.lists(),
     mutationFn: ({ bill }: { bill: Partial<IBill> }) => createBill({ bill }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: billKeys.lists() });
-      notif.success({
+      notification.success({
         content: 'Создано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -64,7 +63,6 @@ export const useCreateBillMutation = () => {
 
 export const useEditBillMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({
@@ -79,14 +77,14 @@ export const useEditBillMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: billKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Отредактировано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -97,7 +95,6 @@ export const useEditBillMutation = () => {
 
 export const useDeleteBillMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteBill({ id }),
@@ -106,14 +103,14 @@ export const useDeleteBillMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: billKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Удалено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -124,7 +121,6 @@ export const useDeleteBillMutation = () => {
 
 export const useRestoreBillMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => restoreBill({ id }),
@@ -133,14 +129,14 @@ export const useRestoreBillMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: billKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Восстановлено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,

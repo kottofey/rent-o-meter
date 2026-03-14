@@ -6,7 +6,6 @@ import {
   darkTheme,
   NGlobalStyle,
   NNotificationProvider,
-  NDialogProvider,
 } from 'naive-ui';
 
 import { useSettings } from '@/app/lib';
@@ -21,10 +20,8 @@ const { settings } = useSettings();
     :theme="settings.theme === 'light' ? null : darkTheme"
   >
     <NGlobalStyle />
-    <NDialogProvider>
-      <NNotificationProvider>
-        <RouterView />
-      </NNotificationProvider>
-    </NDialogProvider>
+    <NNotificationProvider>
+      <RouterView />
+    </NNotificationProvider>
   </NConfigProvider>
 </template>

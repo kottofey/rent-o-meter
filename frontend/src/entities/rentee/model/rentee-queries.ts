@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRefOrGetter, toValue } from 'vue';
-import { useNotification } from 'naive-ui';
 
 import {
   getAllRentees,
@@ -15,6 +14,7 @@ import {
 } from './rentee-api';
 import { renteeKeys } from './rentee-keys';
 
+import { notification } from '@/shared/lib';
 import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
 export const useRenteesQuery = ({
@@ -47,7 +47,6 @@ export const useRenteeQuery = ({
 
 export const useCreateRenteeMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationKey: renteeKeys.lists(),
@@ -55,14 +54,14 @@ export const useCreateRenteeMutation = () => {
       createRentee({ rentee }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: renteeKeys.lists() });
-      notif.success({
+      notification.success({
         content: 'Создано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -73,7 +72,6 @@ export const useCreateRenteeMutation = () => {
 
 export const useEditRenteeMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({
@@ -88,14 +86,14 @@ export const useEditRenteeMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: renteeKeys.detail({ id: variables.id }),
       });
-      notif.success({
+      notification.success({
         content: 'Отредактировано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -106,7 +104,6 @@ export const useEditRenteeMutation = () => {
 
 export const useDeleteRenteeMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteRentee({ id }),
@@ -115,14 +112,14 @@ export const useDeleteRenteeMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: renteeKeys.detail({ id: variables.id }),
       });
-      notif.success({
+      notification.success({
         content: 'Удалено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -133,7 +130,6 @@ export const useDeleteRenteeMutation = () => {
 
 export const useRestoreRenteeMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => restoreRentee({ id }),
@@ -142,14 +138,14 @@ export const useRestoreRenteeMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: renteeKeys.detail({ id: variables.id }),
       });
-      notif.success({
+      notification.success({
         content: 'Восстановлено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,

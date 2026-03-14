@@ -2,6 +2,7 @@ import { useApi, httpMethod } from '@/shared/api';
 import { type IUser } from '@/entities/user';
 import { router } from '@/app/router';
 import { useAuthStore } from '@/shared/store';
+import { notification } from '@/shared/lib';
 
 export interface IAuthResponse {
   success: boolean;
@@ -33,7 +34,20 @@ export default function useAuth() {
         await router.push({ name: 'home.show' });
       }
     } catch (e) {
-      console.error(e);
+      if (e instanceof Error) {
+        notification.error({
+          content: e.message,
+          closable: true,
+          duration: 5000,
+        });
+      } else {
+        notification.error({
+          content: 'Ошибка! Подробности в консоли!',
+          closable: true,
+          duration: 5000,
+        });
+        console.error(e);
+      }
     }
   };
 

@@ -4,7 +4,6 @@ import {
   useQueryClient,
   QueryClient,
 } from '@tanstack/vue-query';
-import { useNotification } from 'naive-ui';
 
 import {
   getAllUsers,
@@ -19,6 +18,7 @@ import {
 } from './user-api';
 import { userKeys } from './user-keys';
 
+import { notification } from '@/shared/lib';
 import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
 export const useUserQueryClient = async ({
@@ -77,21 +77,20 @@ export const useUserQuery = ({ id }: { id: number }) => {
 
 export const useCreateUserMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationKey: userKeys.lists(),
     mutationFn: ({ user }: { user: Partial<IUser> }) => createUser({ user }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: userKeys.lists() });
-      notif.success({
+      notification.success({
         content: 'Создано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -102,7 +101,6 @@ export const useCreateUserMutation = () => {
 
 export const useEditUserMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({
@@ -117,14 +115,14 @@ export const useEditUserMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: userKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Отредактировано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -135,7 +133,6 @@ export const useEditUserMutation = () => {
 
 export const useDeleteUserMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteUser({ id }),
@@ -144,14 +141,14 @@ export const useDeleteUserMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: userKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Удалено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -162,7 +159,6 @@ export const useDeleteUserMutation = () => {
 
 export const useRestoreUserMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => restoreUser({ id }),
@@ -171,14 +167,14 @@ export const useRestoreUserMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: userKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Восстановлено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,

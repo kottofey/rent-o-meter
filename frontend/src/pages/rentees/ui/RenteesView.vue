@@ -4,6 +4,7 @@ import { NDataTable, useNotification } from 'naive-ui';
 
 import { columns } from '../config/tableColumns';
 
+import { notification } from '@/shared/lib';
 import { PageLayout } from '@/app/layouts';
 import { AddButton, AppButton } from '@/shared/ui';
 import {
@@ -19,7 +20,6 @@ import { useAuthStore } from '@/shared/store';
 // Setup
 // -----------------------------------------------------------------------------
 
-const notif = useNotification();
 const authStore = useAuthStore();
 
 // -----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ watch([renteeToEditId, isModalOpened], () => {
 
 watch(isError, () => {
   if (isError.value) {
-    notif.error({
+    notification.error({
       content: error.value?.message,
       closable: true,
       duration: 3000,
@@ -101,8 +101,9 @@ watch(isError, () => {
       <AddButton
         @click="createRow"
         v-if="authStore.user?.roles?.includes('admin')"
-        >Новый арендатор</AddButton
       >
+        Новый арендатор
+      </AddButton>
 
       <AppButton
         @click="setWithDeleted"

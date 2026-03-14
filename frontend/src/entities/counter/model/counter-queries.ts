@@ -4,7 +4,6 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/vue-query';
-import { useNotification } from 'naive-ui';
 import { type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
@@ -20,6 +19,7 @@ import {
 } from './counter-api';
 import { counterKeys } from './counter-keys';
 
+import { notification } from '@/shared/lib';
 import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
 export const useCountersQueryClient = async ({
@@ -94,7 +94,6 @@ export const useCounterQuery = ({
 
 export const useCreateCounterMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationKey: counterKeys.lists(),
@@ -102,14 +101,14 @@ export const useCreateCounterMutation = () => {
       createCounter({ counter }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: counterKeys.lists() });
-      notif.success({
+      notification.success({
         content: 'Создано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -120,7 +119,6 @@ export const useCreateCounterMutation = () => {
 
 export const useEditCounterMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({
@@ -135,14 +133,14 @@ export const useEditCounterMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: counterKeys.detail({ id: variables.id }),
       });
-      notif.success({
+      notification.success({
         content: 'Отредактировано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -153,7 +151,6 @@ export const useEditCounterMutation = () => {
 
 export const useDeleteCounterMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteCounter({ id }),
@@ -162,14 +159,14 @@ export const useDeleteCounterMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: counterKeys.detail({ id: variables.id }),
       });
-      notif.success({
+      notification.success({
         content: 'Удалено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -180,7 +177,6 @@ export const useDeleteCounterMutation = () => {
 
 export const useRestoreCounterMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => restoreCounter({ id }),
@@ -189,14 +185,14 @@ export const useRestoreCounterMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: counterKeys.detail({ id: variables.id }),
       });
-      notif.success({
+      notification.success({
         content: 'Восстановлено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,

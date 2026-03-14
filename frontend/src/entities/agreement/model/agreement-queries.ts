@@ -4,7 +4,6 @@ import {
   useQueryClient,
   QueryClient,
 } from '@tanstack/vue-query';
-import { useNotification } from 'naive-ui';
 import { type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
@@ -20,6 +19,7 @@ import {
 } from './agreement-api';
 import { agreementKeys } from './agreement-keys';
 
+import { notification } from '@/shared/lib';
 import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
 export const useAgreementsQuery = ({
@@ -66,7 +66,6 @@ export const useAgreementQueryClient = async ({
 
 export const useCreateAgreementMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationKey: agreementKeys.lists(),
@@ -74,14 +73,14 @@ export const useCreateAgreementMutation = () => {
       createAgreement({ agreement }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: agreementKeys.lists() });
-      notif.success({
+      notification.success({
         content: 'Создано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -92,7 +91,6 @@ export const useCreateAgreementMutation = () => {
 
 export const useEditAgreementMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({
@@ -107,14 +105,14 @@ export const useEditAgreementMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: agreementKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Отредактировано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -125,7 +123,6 @@ export const useEditAgreementMutation = () => {
 
 export const useDeleteAgreementMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteAgreement({ id }),
@@ -134,14 +131,14 @@ export const useDeleteAgreementMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: agreementKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Удалено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -152,7 +149,6 @@ export const useDeleteAgreementMutation = () => {
 
 export const useRestoreAgreementMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => restoreAgreement({ id }),
@@ -161,14 +157,14 @@ export const useRestoreAgreementMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: agreementKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Восстановлено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,

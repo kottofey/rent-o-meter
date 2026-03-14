@@ -4,7 +4,6 @@ import {
   useQueryClient,
   QueryClient,
 } from '@tanstack/vue-query';
-import { useNotification } from 'naive-ui';
 
 import {
   getAllTarifs,
@@ -19,6 +18,7 @@ import {
 } from './tarif-api';
 import { tarifKeys } from './tarif-keys';
 
+import { notification } from '@/shared/lib';
 import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 
 export const useTarifQueryClient = async ({
@@ -77,7 +77,6 @@ export const useTarifQuery = ({ id }: { id: number }) => {
 
 export const useCreateTarifMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationKey: tarifKeys.lists(),
@@ -85,14 +84,14 @@ export const useCreateTarifMutation = () => {
       createTarif({ tarif }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: tarifKeys.lists() });
-      notif.success({
+      notification.success({
         content: 'Создано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -103,7 +102,6 @@ export const useCreateTarifMutation = () => {
 
 export const useEditTarifMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({
@@ -118,14 +116,14 @@ export const useEditTarifMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: tarifKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Отредактировано',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -136,7 +134,6 @@ export const useEditTarifMutation = () => {
 
 export const useDeleteTarifMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => deleteTarif({ id }),
@@ -145,14 +142,14 @@ export const useDeleteTarifMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: tarifKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Удалено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
@@ -163,7 +160,6 @@ export const useDeleteTarifMutation = () => {
 
 export const useRestoreTarifMutation = () => {
   const queryClient = useQueryClient();
-  const notif = useNotification();
 
   return useMutation({
     mutationFn: ({ id }: { id: number }) => restoreTarif({ id }),
@@ -172,14 +168,14 @@ export const useRestoreTarifMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: tarifKeys.detail(variables.id),
       });
-      notif.success({
+      notification.success({
         content: 'Восстановлено',
         closable: true,
         duration: 5000,
       });
     },
     onError: (error: Error) => {
-      notif.error({
+      notification.error({
         content: getErrorMessage({ error }),
         closable: true,
         duration: 5000,
