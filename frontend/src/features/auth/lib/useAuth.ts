@@ -81,6 +81,7 @@ export default function useAuth() {
         authStore.setUser(me.user);
       } else {
         authStore.setUser(null);
+        return;
       }
     } catch (e) {
       console.error('init auth error', e);

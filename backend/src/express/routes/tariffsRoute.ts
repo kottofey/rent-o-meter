@@ -1,26 +1,25 @@
 import { type Request, type Response } from 'express';
-import { sequelize } from '@/sequelize';
-import { UniqueConstraintError } from 'sequelize';
-import chalk from 'chalk';
-import { getIdParam } from '../helpers.ts';
-import { parseQuery } from '@/helpers';
 
-const model = sequelize.models.Tarif;
+import { getIdParam } from '../helpers.ts';
+
+import { parseQuery, useHandleError } from '@/helpers';
+import { Tarif } from '@/models';
+
+const { handleError } = useHandleError();
 
 async function getAll(req: Request, res: Response) {
   try {
     const { includes, scopes } = parseQuery(req.query);
 
-    const found =
-      (await model.scope(scopes).findAll({
-        include: includes,
-        attributes: {
-          exclude: ['createdAt', 'updatedAt'],
-        },
-      })) ?? {};
+    const found = await Tarif.scope(scopes).findAll({
+      include: includes,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+    });
     res.status(200).send(found).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    handleError({ e, res });
   }
 }
 
@@ -37,7 +36,7 @@ async function getById(req: Request, res: Response) {
 
   try {
     const found =
-      (await model.scope(scopes).findOne({
+      (await Tarif.scope(scopes).findOne({
         where: {
           id,
         },
@@ -49,12 +48,14 @@ async function getById(req: Request, res: Response) {
 
     res.status(200).send(found).end();
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    handleError({ e, res });
   }
 }
 
 async function create(req: Request, res: Response) {
-  if (req.body.id) {
+  const tarif = req.body as Partial<Tarif>;
+
+  if (tarif.id) {
     res.status(400).send({
       message: 'ID should not be provided, since it is determined automatically by the database.',
     });
@@ -62,19 +63,17 @@ async function create(req: Request, res: Response) {
   }
 
   try {
-    await model.create(req.body);
+    await Tarif.create(tarif);
     res.status(201).send({ message: 'Created', statusCode: 201 }).end();
   } catch (e) {
-    if (e instanceof UniqueConstraintError) {
-      res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
-    }
+    handleError({ e, res });
   }
 }
 
 async function remove(req: Request, res: Response) {
   const id = getIdParam(req);
 
-  const count = await model.count({
+  const count = await Tarif.count({
     where: { id },
   });
 
@@ -83,7 +82,7 @@ async function remove(req: Request, res: Response) {
     return;
   }
   try {
-    await model.destroy({
+    await Tarif.destroy({
       where: {
         id,
       },
@@ -91,16 +90,16 @@ async function remove(req: Request, res: Response) {
 
     res.status(200).send({ message: 'Deleted' }).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    handleError({ e, res });
   }
 }
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { body }: { body: Partial<unknown> } = req;
+  const tarif = req.body as Partial<Tarif>;
 
   try {
-    const [rows] = await model.update(body, {
+    const [rows] = await Tarif.update(tarif, {
       where: {
         id,
       },
@@ -109,7 +108,7 @@ async function update(req: Request, res: Response) {
 
     res.status(200).send({ rowsAffected: rows }).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    handleError({ e, res });
   }
 }
 
@@ -117,11 +116,11 @@ async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
   try {
-    await model.restore({ where: { id } });
+    await Tarif.restore({ where: { id } });
 
     res.status(200).send({ message: 'Restored' }).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    handleError({ e, res });
   }
 }
 

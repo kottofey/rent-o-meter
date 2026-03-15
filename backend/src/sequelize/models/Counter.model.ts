@@ -9,7 +9,6 @@ import {
   HasOne,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
-import chalk from 'chalk';
 
 import { dayjs } from '@/helpers';
 import { Agreement, Bill } from '@/models';

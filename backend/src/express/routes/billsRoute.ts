@@ -1,28 +1,25 @@
 import { type Request, type Response } from 'express';
-import { sequelize } from '@/sequelize';
-import { UniqueConstraintError } from 'sequelize';
-import chalk from 'chalk';
-import { getIdParam } from '../helpers.ts';
-import { parseQuery } from '@/helpers';
-import { Agreement, Bill, Tarif } from '@/models';
-import { calculateDebt } from '@/helpers';
 
-const model = sequelize.models.Bill;
+import { getIdParam } from '../helpers.ts';
+
+import { parseQuery, useHandleError, calculateDebt } from '@/helpers';
+import { Agreement, Bill } from '@/models';
+
+const { handleError } = useHandleError();
 
 async function getAll(req: Request, res: Response) {
   try {
     const { includes, scopes } = parseQuery(req.query);
 
-    const found =
-      (await model.scope(scopes).findAll({
-        include: includes,
-        attributes: {
-          exclude: ['createdAt', 'updatedAt'],
-        },
-      })) ?? {};
+    const found = await Bill.scope(scopes).findAll({
+      include: includes,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+    });
     res.status(200).send(found).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    handleError({ e, res });
   }
 }
 
@@ -39,7 +36,7 @@ async function getById(req: Request, res: Response) {
 
   try {
     const found =
-      (await model.scope(scopes).findOne({
+      (await Bill.scope(scopes).findOne({
         where: {
           id,
         },
@@ -51,12 +48,12 @@ async function getById(req: Request, res: Response) {
 
     res.status(200).send(found).end();
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    handleError({ e, res });
   }
 }
 
 async function create(req: Request, res: Response) {
-  const { tarifs, ...billData } = req.body;
+  const { tarifs, ...billData } = req.body as Partial<Bill>;
 
   if (billData.id) {
     res.status(400).send({
@@ -64,42 +61,40 @@ async function create(req: Request, res: Response) {
     });
     return;
   }
+
   // TODO написать валидацию прилетевших данных
   try {
-    const bill = (await model.create(billData)) as Bill;
-    await bill.$set(
-      'tarifs',
-      tarifs.map((t: Tarif) => t.id),
-    );
+    const bill = await Bill.create(billData);
+
+    if (tarifs) {
+      await bill.$set(
+        'tarifs',
+        tarifs.map(t => t.id as number),
+      );
+    }
 
     // -----------------------------------------------------------------------------
     // Обновляем значение долга по договру
     // -----------------------------------------------------------------------------
 
-    const thisAgreement = (await sequelize.models.Agreement.findByPk(bill.agreementId, {
-      include: {
-        model: Bill,
-      },
-    })) as Agreement;
+    const thisAgreement = await Agreement.findByPk(bill.agreementId, {
+      include: [Bill],
+    });
 
-    await thisAgreement.update({
+    await thisAgreement?.update({
       debt: calculateDebt(thisAgreement.toJSON()),
     });
 
     res.status(201).send({ message: 'Created', statusCode: 201 }).end();
   } catch (e) {
-    if (e instanceof UniqueConstraintError) {
-      res.status(409).send({ error: e.parent.message, statusCode: 409 }).end();
-    } else {
-      res.status(500).send(e).end();
-    }
+    handleError({ e, res });
   }
 }
 
 async function remove(req: Request, res: Response) {
   const id = getIdParam(req);
 
-  const count = await model.count({
+  const count = await Bill.count({
     where: { id },
   });
 
@@ -108,7 +103,7 @@ async function remove(req: Request, res: Response) {
     return;
   }
   try {
-    await model.destroy({
+    await Bill.destroy({
       where: {
         id,
       },
@@ -116,46 +111,46 @@ async function remove(req: Request, res: Response) {
 
     res.status(200).send({ message: 'Deleted' }).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    handleError({ e, res });
   }
 }
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { tarifs, ...billData } = req.body;
+  const { tarifs, ...billData } = req.body as Partial<Bill>;
 
   try {
-    const bill = (await model.findByPk(id)) as Bill;
-    const updatedBill = await bill.update(billData, {
-      where: { id },
-      paranoid: false,
-    });
-    await bill.$set(
-      'tarifs',
-      tarifs.map((t: Tarif) => t.id),
-    );
+    const bill = await Bill.findByPk(id);
 
-    // -----------------------------------------------------------------------------
-    // Обновляем значение долга по договру
-    // -----------------------------------------------------------------------------
+    if (bill && tarifs) {
+      await Bill.update(billData, {
+        where: { id },
+        paranoid: false,
+      });
 
-    const thisAgreement = (await sequelize.models.Agreement.findByPk(bill.agreementId, {
-      include: {
-        model: Bill,
-      },
-    })) as Agreement;
+      await bill.$set('tarifs', tarifs);
 
-    await thisAgreement.update({
-      debt: calculateDebt(thisAgreement.toJSON()),
-    });
+      // await bill.$set(
+      //   'tarifs',
+      //   tarifs?.map((t: Tarif) => t.id),
+      // );
 
-    res.status(200).send(updatedBill.toJSON()).end();
-  } catch (e) {
-    if (e instanceof Error) {
-      res.status(500).send({ error: e.message }).end();
-    } else {
-      res.status(500).send(e).end();
+      // -----------------------------------------------------------------------------
+      // Обновляем значение долга по договру
+      // -----------------------------------------------------------------------------
+
+      const thisAgreement = await Agreement.findByPk(bill.agreementId, {
+        include: [Bill],
+      });
+
+      await thisAgreement?.update({
+        debt: calculateDebt(thisAgreement.toJSON()),
+      });
+
+      res.status(200).send(bill.toJSON()).end();
     }
+  } catch (e) {
+    handleError({ e, res });
   }
 }
 
@@ -163,11 +158,11 @@ async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
   try {
-    await model.restore({ where: { id } });
+    await Bill.restore({ where: { id } });
 
     res.status(200).send({ message: 'Restored' }).end();
   } catch (e) {
-    res.status(500).send({ e }).end();
+    handleError({ e, res });
   }
 }
 

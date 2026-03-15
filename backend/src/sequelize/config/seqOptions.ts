@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 
 import dotenv from 'dotenv';
 import { SequelizeOptions } from 'sequelize-typescript';
-import chalk from 'chalk';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const env = await fs.readFile(join(__dirname, '../../../.env'), 'utf8');

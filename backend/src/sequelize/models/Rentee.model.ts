@@ -101,7 +101,7 @@ export default class Rentee extends Model {
   // Relations
   // -----------------------------------------------------------------------------
   @HasMany(() => Agreement, { onDelete: 'CASCADE' })
-  agreements: Agreement[];
+  declare agreements: Agreement[];
 
   @HasOne(() => User)
   declare user: User;

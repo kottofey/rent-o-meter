@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import chalk from 'chalk';
 
 export default function getActionFromRoute(req: Request) {
   /**

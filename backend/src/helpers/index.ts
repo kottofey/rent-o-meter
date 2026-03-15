@@ -5,3 +5,5 @@ export { default as hashToken } from './hashToken.ts';
 export { default as generateTokens, type IUserPayload } from './generateTokens.ts';
 export { default as getDeviceId } from './getDeviceId.ts';
 export { default as getActionFromRoute } from './getActionFromRoute.ts';
+
+export { default as useHandleError } from './useHandleResponse.ts';

@@ -1,30 +1,36 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
 import { Permission, Role } from '@/models';
-import chalk from 'chalk';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { jwtConfig } from '@/config';
-import { type IUserPayload, getActionFromRoute } from '@/helpers';
+import { type IUserPayload } from '@/helpers';
 
 export default async function requireRoleMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  const routeName = req.path.replace(/^\/api\/v1\/([^\/]+).*$/, '$1');
+  const routeName = req.path.replace(/^\/api\/v1\/([^/]+).*$/, '$1');
 
   const permissionsForRoute = await Permission.findAll({
     where: {
       resource: routeName,
     },
-    include: Role,
+    include: [
+      {
+        model: Role,
+        as: 'roles',
+      },
+    ],
   });
 
   const token = req.cookies.token as string;
-  const { roles: userRoles } = jwt.verify(token, jwtConfig.secret as string, {
+
+  const { roles: userRoles } = jwt.verify(token, jwtConfig.secret, {
     ignoreExpiration: true,
   }) as IUserPayload;
 
-  if (!userRoles || userRoles.length === 0) {
+  if (userRoles.length === 0) {
     res.status(403).json({
       success: false,
       message: 'Недостаточно прав 1',
@@ -34,7 +40,7 @@ export default async function requireRoleMiddleware(
 
   const rolesForRoute = new Set();
   permissionsForRoute
-    .map(perm => perm.toJSON().roles as Role[])
+    .map(perm => perm.roles)
     .map(roles => roles.map(role => role.name))
     .flat(Infinity)
     .forEach(role => {

@@ -108,5 +108,5 @@ export default class Tarif extends Model {
   // -----------------------------------------------------------------------------
 
   @BelongsToMany(() => Bill, () => RelBillTarifs)
-  bills: (Bill & { RelBillTarifs: RelBillTarifs })[];
+  declare bills: (Bill & { RelBillTarifs: RelBillTarifs })[];
 }

@@ -38,5 +38,5 @@ export default class Permission extends Model {
   // -----------------------------------------------------------------------------
 
   @BelongsToMany(() => Role, () => RelRolePermission)
-  roles: (Role & { RelRolePermissions: RelRolePermission })[];
+  declare roles: (Role & { RelRolePermissions: RelRolePermission })[];
 }

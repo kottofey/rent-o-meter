@@ -1,28 +1,28 @@
 import { type Request, type Response } from 'express';
-import { sequelize } from '@/sequelize';
-import { getIdParam } from '../helpers.ts';
-import { hashToken, parseQuery } from '@/helpers';
-import { RefreshToken, User } from '@/models';
 import * as bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { jwtConfig } from '@/config';
+
+import { getIdParam } from '../helpers.ts';
+
+import { sequelize } from '@/sequelize';
+import { parseQuery, useHandleError } from '@/helpers';
+import { RefreshToken, User } from '@/models';
 
 const model = sequelize.models.User;
+const { handleError, sendCustomResponse } = useHandleError();
 
 async function getAll(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
 
   try {
-    const found =
-      (await model.scope(scopes).findAll({
-        include: includes,
-        attributes: {
-          exclude: ['createdAt', 'updatedAt', 'password'],
-        },
-      })) ?? {};
+    const found = await model.scope(scopes).findAll({
+      include: includes,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt', 'password'],
+      },
+    });
     res.status(200).send(found).end();
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    handleError({ e, res });
   }
 }
 
@@ -31,8 +31,11 @@ async function getById(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
 
   if (!id) {
-    res.status(400).send({
-      message: 'Bad request: proper ID should be provided as parameter',
+    sendCustomResponse({
+      res,
+      respCode: 400,
+      message: 'ID must be provided as parameter',
+      reason: 'NoIdProvided',
     });
     return;
   }
@@ -50,7 +53,7 @@ async function getById(req: Request, res: Response) {
 
     res.status(200).send(found).end();
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    handleError({ e, res });
   }
 }
 
@@ -85,7 +88,12 @@ async function remove(req: Request, res: Response) {
   });
 
   if (count === 0) {
-    res.status(404).send({ message: 'Record not found' }).end();
+    sendCustomResponse({
+      res,
+      respCode: 404,
+      message: 'Record not found',
+      reason: 'NotFound',
+    });
     return;
   }
   try {
@@ -97,13 +105,13 @@ async function remove(req: Request, res: Response) {
 
     res.status(200).send({ message: 'Deleted' }).end();
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    handleError({ e, res });
   }
 }
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { password, status } = req.body as User;
+  const { password, status, ...rest } = req.body as Partial<User>;
 
   try {
     // Проверка существования пользователя
@@ -115,9 +123,11 @@ async function update(req: Request, res: Response) {
     });
 
     if (!existingUser) {
-      res.status(400).json({
-        success: false,
+      sendCustomResponse({
+        res,
+        respCode: 400,
         message: 'Пользователя не существует',
+        reason: 'UserNotFound',
       });
     } else {
       if (!status) {
@@ -125,11 +135,11 @@ async function update(req: Request, res: Response) {
       }
 
       const updatedUser = await existingUser.update({
-        ...req.body,
+        ...rest,
         password: password && (await bcrypt.hash(password, 10)),
       });
 
-      const result = { ...updatedUser.toJSON() };
+      const result: Partial<User> = updatedUser.toJSON();
       delete result.password;
 
       res
@@ -141,11 +151,7 @@ async function update(req: Request, res: Response) {
         .end();
     }
   } catch (e) {
-    if (e instanceof Error) {
-      res.status(500).send({ error: e.message }).end();
-    } else {
-      res.status(500).send(e).end();
-    }
+    handleError({ e, res });
   }
 }
 
@@ -157,7 +163,7 @@ async function restore(req: Request, res: Response) {
 
     res.status(200).send({ message: 'Restored' }).end();
   } catch (e) {
-    res.status(500).send({ error: e }).end();
+    handleError({ e, res });
   }
 }
 

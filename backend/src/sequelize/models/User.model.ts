@@ -76,13 +76,13 @@ export default class User extends Model {
   // -----------------------------------------------------------------------------
 
   @HasMany(() => RefreshToken)
-  refreshTokens: RefreshToken[];
+  declare refreshTokens: RefreshToken[];
 
   @BelongsTo(() => Rentee)
-  rentee: Rentee;
+  declare rentee: Rentee;
 
   @BelongsToMany(() => Role, () => RelUserRole)
-  roles: (Role & { RelUserRoles: RelUserRole })[];
+  declare roles: (Role & { RelUserRoles: RelUserRole })[];
 
   // -----------------------------------------------------------------------------
   // Virtuals

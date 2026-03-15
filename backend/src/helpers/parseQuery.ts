@@ -1,6 +1,5 @@
 import QueryString from 'qs';
 import { Includeable, ScopeOptions } from 'sequelize';
-import chalk from 'chalk';
 
 import { Agreement, Counter, Rentee, Tarif, Bill } from '@/models';
 import { ITarifTypes } from 'src/sequelize/models/Tarif.model.ts';

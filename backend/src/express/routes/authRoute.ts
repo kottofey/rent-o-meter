@@ -1,10 +1,12 @@
 import { type Request, type Response } from 'express';
-import { jwtConfig } from '@/config';
-
 import jwt from 'jsonwebtoken';
-import { RefreshToken, Role, User } from '@/models';
-import { hashToken, generateTokens, getDeviceId, dayjs } from '@/helpers';
 import * as bcrypt from 'bcrypt';
+
+import { jwtConfig } from '@/config';
+import { RefreshToken, Role, User } from '@/models';
+import { hashToken, generateTokens, getDeviceId, dayjs, useHandleError } from '@/helpers';
+
+const { handleError, sendCustomResponse } = useHandleError();
 
 // -----------------------------------------------------------------------------
 // Controllers
@@ -19,51 +21,54 @@ async function register(req: Request, res: Response): Promise<void> {
     // Проверка существования пользователя
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      res.status(400).json({
-        success: false,
+      sendCustomResponse({
+        res,
+        respCode: 400,
         message: 'Пользователь с таким email уже существует',
+        reason: 'UserExists',
       });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
-      email,
-      firstname,
-      surname,
-      patronymic,
-      password: hashedPassword,
-      comment,
-    });
-
     const roleName = role || 'rentee';
     const userRole = await Role.findOne({ where: { name: roleName } });
 
     if (userRole) {
+      const user = await User.create({
+        email,
+        firstname,
+        surname,
+        patronymic,
+        password: hashedPassword,
+        comment,
+      });
+
       await user.$add('Role', userRole);
+
+      res.status(200).json({
+        success: true,
+        message: 'Пользователь зарегистрирован',
+        user: {
+          id: user.id,
+          email: user.email,
+          surname: user.surname,
+          firstname: user.firstname,
+          patronymic: user.patronymic,
+          comment: user.comment,
+        },
+      });
     } else {
-      res.status(400).json({
-        success: false,
+      sendCustomResponse({
+        res,
+        respCode: 400,
         message: `Роли ${roleName} не существует`,
+        reason: 'RoleNotFound',
       });
       return;
     }
-
-    res.status(200).json({
-      success: true,
-      message: 'Пользователь зарегистрирован',
-      user: {
-        id: user.id,
-        email: user.email,
-        surname: user.surname,
-        firstname: user.firstname,
-        patronymic: user.patronymic,
-        comment: user.comment,
-      },
-    });
   } catch (e) {
-    console.error('Ошибка регистрации', e);
-    throw e;
+    handleError({ e, res });
   }
 }
 
@@ -71,12 +76,22 @@ async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body as User;
 
-    const user = await User.findOne({ where: { email }, include: Role });
+    const user = await User.findOne({
+      where: { email },
+      include: [
+        {
+          model: Role,
+          as: 'roles',
+        },
+      ],
+    });
 
     if (user === null) {
-      res.status(404).json({
-        success: false,
+      sendCustomResponse({
+        res,
+        respCode: 404,
         message: 'Пользователь не найден',
+        reason: 'UserNotFound',
       });
     } else {
       if (!(await bcrypt.compare(password, user.password))) {
@@ -84,12 +99,20 @@ async function login(req: Request, res: Response): Promise<void> {
           success: false,
           message: 'Неверные учетные данные',
         });
+        sendCustomResponse({
+          res,
+          respCode: 401,
+          message: 'Неверные учетные данные',
+          reason: 'UserNotAuthorized',
+        });
         return;
       }
-      if (!user?.status) {
-        res.status(403).json({
-          success: false,
+      if (!user.status) {
+        sendCustomResponse({
+          res,
+          respCode: 403,
           message: 'Пользователь заблокирован',
+          reason: 'UserBlocked',
         });
         return;
       }
@@ -137,32 +160,31 @@ async function login(req: Request, res: Response): Promise<void> {
           surname: user.surname,
           firstname: user.firstname,
           patronymic: user.patronymic,
-          roles: (user.toJSON() as User).roles.map(r => r.name),
+          roles: user.roles.map(r => r.name),
         },
       });
     }
   } catch (e) {
-    console.error(e);
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка при входе',
-      e,
-    });
+    handleError({ e, res });
   }
 }
 
 async function logout(req: Request, res: Response): Promise<void> {
   try {
     // Тупо отзываем refresh token и удаляем куки
-    const refreshToken = req.cookies.refreshToken;
-    const decoded = jwt.verify(req.cookies.token, jwtConfig.secret, {
+    const refreshToken = req.cookies.refreshToken as string;
+    const token = req.cookies.token as string;
+
+    const decoded = jwt.verify(token, jwtConfig.secret, {
       ignoreExpiration: true,
     }) as Partial<User>;
 
     if (!refreshToken) {
-      res.status(400).json({
-        success: false,
+      sendCustomResponse({
+        res,
+        respCode: 400,
         message: 'Refresh token не предоставлен',
+        reason: 'RefreshTokenNotFound',
       });
     }
 
@@ -181,114 +203,48 @@ async function logout(req: Request, res: Response): Promise<void> {
       message: 'Выход выполнен успешно',
     });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка при выходе',
-      e,
-    });
+    handleError({ e, res });
   }
 }
-//
-// async function refreshToken(req: Request, res: Response): Promise<void> {
-//   try {
-//     const refreshToken = req.cookies.refreshToken;
-//
-//     if (!refreshToken) {
-//       res.status(400).json({
-//         success: false,
-//         message: 'Refresh token не предоставлен',
-//       });
-//     }
-//
-//     // Проверяем токен через подпись JWT
-//     const decoded = jwt.verify(refreshToken, jwtConfig.secret) as Partial<User>;
-//
-//     // Находим запись в БД по ХЭШУ токена
-//     const tokenHash = hashToken(refreshToken);
-//     const storedToken = await RefreshToken.findOne({
-//       where: { token_hash: tokenHash },
-//       include: {
-//         model: User,
-//       },
-//     });
-//
-//     // Проверяем валидность токена
-//     if (!storedToken || !storedToken.isValid() || storedToken.toJSON().user_id !== decoded.id) {
-//       res.status(401).json({
-//         success: false,
-//         message: 'Неверный или отозванный refresh token',
-//       });
-//     } else {
-//       // Генерируем новые токены
-//       const { accessToken, refreshToken: newRefreshToken } = await generateTokens(
-//         storedToken.toJSON().user,
-//         req,
-//       );
-//
-//       // Отзываем старый refresh token и устанавливаем новые
-//       // TODO дополнить токены опциями secure: true, sameSite: strict
-//       await storedToken.update({ is_revoked: true });
-//       res.cookie('token', accessToken, { httpOnly: true });
-//       res.cookie('refreshToken', newRefreshToken, { httpOnly: true });
-//
-//       res.json({
-//         success: true,
-//         accessToken,
-//         refreshToken: newRefreshToken,
-//       });
-//     }
-//   } catch (e) {
-//     console.error(e);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Ошибка при обновлении токена',
-//       e,
-//     });
-//   }
-// }
 
 async function me(req: Request, res: Response): Promise<void> {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.token as string;
 
     const decoded = jwt.verify(token, jwtConfig.secret) as Partial<User>;
 
-    const userRaw = await User.findByPk(decoded.id, {
-      include: [{ model: Role }],
+    const user = await User.findByPk(decoded.id, {
+      include: [{ model: Role, as: 'roles' }],
     });
 
-    if (!userRaw) {
-      res.status(404).json({
-        success: false,
+    if (!user) {
+      sendCustomResponse({
+        res,
+        respCode: 404,
         message: 'Пользователь не найден',
+        reason: 'UserNotFound',
       });
     }
 
-    const user = userRaw?.toJSON() as User;
-
-    res.status(200).json({
-      success: true,
-      user: {
-        id: user.id,
-        rentee_id: user.rentee_id,
-        status: user.status,
-        surname: user.surname,
-        firstname: user.firstname,
-        patronymic: user.patronymic,
-        email: user.email,
-        roles: user.roles.map(r => r.name),
-        last_login: user.last_login,
-        comment: user.comment,
-      },
-    });
+    if (user) {
+      res.status(200).json({
+        success: true,
+        user: {
+          id: user.id,
+          rentee_id: user.rentee_id,
+          status: user.status,
+          surname: user.surname,
+          firstname: user.firstname,
+          patronymic: user.patronymic,
+          email: user.email,
+          roles: user.roles.map(r => r.name),
+          last_login: user.last_login,
+          comment: user.comment,
+        },
+      });
+    }
   } catch (e) {
-    console.error(e);
-    res.status(500).json({
-      success: false,
-      message: 'Ошибка при получении профиля',
-      e,
-    });
+    handleError({ e, res });
   }
 }
 

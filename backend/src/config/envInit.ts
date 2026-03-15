@@ -4,13 +4,13 @@ import { fileURLToPath } from 'node:url';
 import * as process from 'node:process';
 
 import dotenv from 'dotenv';
-import chalk from 'chalk';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '../..');
 
 const envConfig = dotenv.config({
   path: path.resolve(rootDir, '.env'),
+  quiet: true,
 });
 
 try {

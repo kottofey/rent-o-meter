@@ -1,9 +1,4 @@
-import express, {
-  type Request,
-  type Response,
-  type RequestHandler,
-  type NextFunction,
-} from 'express';
+import express, { type Request, type Response, type NextFunction, json, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from 'cors';
@@ -18,7 +13,6 @@ import {
   authRoute,
   usersRoute,
 } from '@/routes';
-
 import {
   authMiddleware,
   requireRoleMiddleware,
@@ -30,8 +24,8 @@ const app = express();
 app.use(cors({ origin: 'https://rent-o-meter.kottofey.ru', credentials: true }));
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(json());
+app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.set('query parser', (str: string) => qs.parse(str));
@@ -45,7 +39,7 @@ interface IRouteController {
   restore?(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
-const routes: { [routeName: string]: IRouteController } = {
+const routes: Record<string, IRouteController> = {
   rentees: renteeRoute,
   agreements: agreementsRoute,
   counters: countersRoute,
@@ -70,7 +64,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}`,
       authMiddleware,
       requireRoleMiddleware,
-      makeHandlerAwareOfAsyncErrors(routeController.getAll),
+      makeHandlerAwareOfAsyncErrors(routeController.getAll.bind(routeController)),
     );
   }
 
@@ -79,7 +73,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}/:id`,
       authMiddleware,
       requireRoleMiddleware,
-      makeHandlerAwareOfAsyncErrors(routeController.getById),
+      makeHandlerAwareOfAsyncErrors(routeController.getById.bind(routeController)),
     );
   }
 
@@ -88,7 +82,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}`,
       authMiddleware,
       requireRoleMiddleware,
-      makeHandlerAwareOfAsyncErrors(routeController.create),
+      makeHandlerAwareOfAsyncErrors(routeController.create.bind(routeController)),
     );
   }
 
@@ -97,7 +91,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}/:id`,
       authMiddleware,
       requireRoleMiddleware,
-      makeHandlerAwareOfAsyncErrors(routeController.update),
+      makeHandlerAwareOfAsyncErrors(routeController.update.bind(routeController)),
     );
   }
 
@@ -106,7 +100,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}/:id`,
       authMiddleware,
       requireRoleMiddleware,
-      makeHandlerAwareOfAsyncErrors(routeController.remove),
+      makeHandlerAwareOfAsyncErrors(routeController.remove.bind(routeController)),
     );
   }
 
@@ -115,7 +109,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}/:id/restore`,
       authMiddleware,
       requireRoleMiddleware,
-      makeHandlerAwareOfAsyncErrors(routeController.restore),
+      makeHandlerAwareOfAsyncErrors(routeController.restore.bind(routeController)),
     );
   }
 }

@@ -51,7 +51,7 @@ export default class RefreshToken extends Model {
   // -----------------------------------------------------------------------------
 
   @BelongsTo(() => User)
-  user: User;
+  declare user: User;
 
   // -----------------------------------------------------------------------------
   // Methods
