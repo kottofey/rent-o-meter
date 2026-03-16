@@ -98,7 +98,11 @@ const clearForm = () => {
 // Watch
 // -----------------------------------------------------------------------------
 watch([() => agreement, isOpened], () => {
-  formData.value = { ...agreement };
+  if (agreement) {
+    formData.value = { ...agreement };
+  } else {
+    formData.value = { ...initFormData };
+  }
 });
 </script>
 

@@ -103,11 +103,11 @@ const clearForm = () => {
 // Watch
 // -----------------------------------------------------------------------------
 watch([() => user, isOpened], () => {
-  formData.value = { ...user };
-
-  // Удаляем виртуальные поля
-  delete formData.value.full_name;
-  delete formData.value.repeat_password;
+  if (user) {
+    formData.value = { ...user };
+  } else {
+    formData.value = { ...initFormData };
+  }
 });
 </script>
 
@@ -173,14 +173,22 @@ watch([() => user, isOpened], () => {
           label="Пароль"
           path="password"
         >
-          <NInput v-model:value="formData.password" />
+          <NInput
+            v-model:value="formData.password"
+            type="password"
+            showPasswordToggle
+          />
         </NFormItem>
 
         <NFormItem
           label="Еще раз пароль"
           path="repeat_password"
         >
-          <NInput v-model:value="formData.repeat_password" />
+          <NInput
+            v-model:value="formData.repeat_password"
+            type="password"
+            showPasswordToggle
+          />
         </NFormItem>
 
         <!--  Статус  -->

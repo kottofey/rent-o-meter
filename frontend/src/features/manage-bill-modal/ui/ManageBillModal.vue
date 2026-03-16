@@ -134,7 +134,7 @@ watch([() => bill, isOpened], () => {
   if (bill) {
     formData.value = { ...bill };
   } else {
-    clearForm();
+    formData.value = { ...initFormData };
   }
 });
 </script>

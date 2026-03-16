@@ -103,10 +103,11 @@ const clearForm = () => {
 // Watch
 // -----------------------------------------------------------------------------
 watch([() => rentee, isOpened], () => {
-  formData.value = { ...rentee };
-
-  // Удаляем виртуальные поля
-  delete formData.value.fullName;
+  if (rentee) {
+    formData.value = { ...rentee };
+  } else {
+    formData.value = { ...initFormData };
+  }
 });
 </script>
 

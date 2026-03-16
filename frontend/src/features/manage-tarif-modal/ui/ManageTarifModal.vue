@@ -99,7 +99,11 @@ const clearForm = () => {
 // Watch
 // -----------------------------------------------------------------------------
 watch([() => tarif, isOpened], () => {
-  formData.value = { ...tarif };
+  if (tarif) {
+    formData.value = { ...tarif };
+  } else {
+    formData.value = { ...initFormData };
+  }
 });
 </script>
 

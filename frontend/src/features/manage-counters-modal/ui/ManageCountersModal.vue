@@ -119,11 +119,11 @@ const clearForm = () => {
 // -----------------------------------------------------------------------------
 
 watch([() => counter, isOpened], () => {
-  formData.value = { ...counter };
-
-  // Удаляем виртуальные поля
-  delete formData.value.electricity_diff;
-  delete formData.value.water_diff;
+  if (counter) {
+    formData.value = { ...counter };
+  } else {
+    formData.value = { ...initFormData };
+  }
 });
 </script>
 
