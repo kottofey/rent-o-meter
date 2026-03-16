@@ -5,13 +5,18 @@ meta {
 }
 
 post {
-  url: {{BASE_URL}}/agreements
+  url: ?? {}{{BASE_URL}}/agreements
   body: json
   auth: none
 }
 
+params:query {
+  "? {}{{BASE_URL}}/agreements": 
+}
+
 body:json {
   {
+    "id": 100,
     "name": "2025-06-01_001s",
     "renteeId": 1,
     "status": 1,

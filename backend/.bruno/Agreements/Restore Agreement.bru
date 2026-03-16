@@ -1,0 +1,16 @@
+meta {
+  name: Restore Agreement
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{BASE_URL}}/agreements/7/restore
+  body: none
+  auth: none
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
