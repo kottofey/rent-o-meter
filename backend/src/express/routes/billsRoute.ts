@@ -5,7 +5,7 @@ import { getIdParam } from '../helpers.ts';
 import { parseQuery, useHandleError, calculateDebt } from '@/helpers';
 import { Agreement, Bill } from '@/models';
 
-const { handleError } = useHandleError();
+const { handleError, sendCustomResponse } = useHandleError();
 
 async function getAll(req: Request, res: Response) {
   try {
@@ -17,7 +17,7 @@ async function getAll(req: Request, res: Response) {
         exclude: ['createdAt', 'updatedAt'],
       },
     });
-    res.status(200).send(found).end();
+    res.status(200).json(found).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -28,25 +28,24 @@ async function getById(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
 
   if (!id) {
-    res.status(400).send({
+    sendCustomResponse({
+      res,
+      respCode: 400,
       message: 'Bad request: proper ID should be provided as parameter',
+      reason: 'NoIdProvided',
     });
     return;
   }
 
   try {
-    const found =
-      (await Bill.scope(scopes).findOne({
-        where: {
-          id,
-        },
-        include: includes,
-        attributes: {
-          exclude: ['createdAt', 'updatedAt'],
-        },
-      })) ?? {};
+    const found = await Bill.scope(scopes).findByPk(id, {
+      include: includes,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+    });
 
-    res.status(200).send(found).end();
+    res.status(200).json(found).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -56,13 +55,15 @@ async function create(req: Request, res: Response) {
   const { tarifs, ...billData } = req.body as Partial<Bill>;
 
   if (billData.id) {
-    res.status(400).send({
+    sendCustomResponse({
+      res,
+      respCode: 400,
       message: 'ID should not be provided, since it is determined automatically by the database.',
+      reason: 'IncorrectBody',
     });
     return;
   }
 
-  // TODO написать валидацию прилетевших данных
   try {
     const bill = await Bill.create(billData);
 
@@ -85,7 +86,7 @@ async function create(req: Request, res: Response) {
       debt: calculateDebt(thisAgreement.toJSON()),
     });
 
-    res.status(201).send({ message: 'Created', statusCode: 201 }).end();
+    res.status(201).json(bill).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -94,14 +95,6 @@ async function create(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   const id = getIdParam(req);
 
-  const count = await Bill.count({
-    where: { id },
-  });
-
-  if (count === 0) {
-    res.status(404).send({ message: 'Record not found' }).end();
-    return;
-  }
   try {
     await Bill.destroy({
       where: {
@@ -109,7 +102,7 @@ async function remove(req: Request, res: Response) {
       },
     });
 
-    res.status(200).send({ message: 'Deleted' }).end();
+    res.status(200).json({ message: 'Deleted' }).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -128,12 +121,10 @@ async function update(req: Request, res: Response) {
         paranoid: false,
       });
 
-      await bill.$set('tarifs', tarifs);
-
-      // await bill.$set(
-      //   'tarifs',
-      //   tarifs?.map((t: Tarif) => t.id),
-      // );
+      await bill.$set(
+        'tarifs',
+        tarifs.map(t => t.id as number),
+      );
 
       // -----------------------------------------------------------------------------
       // Обновляем значение долга по договру
@@ -147,7 +138,7 @@ async function update(req: Request, res: Response) {
         debt: calculateDebt(thisAgreement.toJSON()),
       });
 
-      res.status(200).send(bill.toJSON()).end();
+      res.status(200).json(bill).end();
     }
   } catch (e) {
     handleError({ e, res });
@@ -158,9 +149,13 @@ async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
   try {
-    await Bill.restore({ where: { id } });
+    await Bill.restore({
+      where: {
+        id,
+      },
+    });
 
-    res.status(200).send({ message: 'Restored' }).end();
+    res.status(200).json({ message: 'Restored' }).end();
   } catch (e) {
     handleError({ e, res });
   }

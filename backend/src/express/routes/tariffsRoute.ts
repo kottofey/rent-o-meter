@@ -5,7 +5,7 @@ import { getIdParam } from '../helpers.ts';
 import { parseQuery, useHandleError } from '@/helpers';
 import { Tarif } from '@/models';
 
-const { handleError } = useHandleError();
+const { handleError, sendCustomResponse } = useHandleError();
 
 async function getAll(req: Request, res: Response) {
   try {
@@ -17,7 +17,7 @@ async function getAll(req: Request, res: Response) {
         exclude: ['createdAt', 'updatedAt'],
       },
     });
-    res.status(200).send(found).end();
+    res.status(200).json(found).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -28,25 +28,24 @@ async function getById(req: Request, res: Response) {
   const { includes, scopes } = parseQuery(req.query);
 
   if (!id) {
-    res.status(400).send({
+    sendCustomResponse({
+      res,
+      respCode: 400,
       message: 'Bad request: proper ID should be provided as parameter',
+      reason: 'NoIdProvided',
     });
     return;
   }
 
   try {
-    const found =
-      (await Tarif.scope(scopes).findOne({
-        where: {
-          id,
-        },
-        include: includes,
-        attributes: {
-          exclude: ['createdAt', 'updatedAt'],
-        },
-      })) ?? {};
+    const found = await Tarif.scope(scopes).findByPk(id, {
+      include: includes,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+    });
 
-    res.status(200).send(found).end();
+    res.status(200).json(found).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -56,15 +55,18 @@ async function create(req: Request, res: Response) {
   const tarif = req.body as Partial<Tarif>;
 
   if (tarif.id) {
-    res.status(400).send({
+    sendCustomResponse({
+      res,
+      respCode: 400,
       message: 'ID should not be provided, since it is determined automatically by the database.',
+      reason: 'IncorrectBody',
     });
     return;
   }
 
   try {
     await Tarif.create(tarif);
-    res.status(201).send({ message: 'Created', statusCode: 201 }).end();
+    res.status(201).json(tarif).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -73,14 +75,6 @@ async function create(req: Request, res: Response) {
 async function remove(req: Request, res: Response) {
   const id = getIdParam(req);
 
-  const count = await Tarif.count({
-    where: { id },
-  });
-
-  if (count === 0) {
-    res.status(404).send({ message: 'Record not found' }).end();
-    return;
-  }
   try {
     await Tarif.destroy({
       where: {
@@ -88,7 +82,7 @@ async function remove(req: Request, res: Response) {
       },
     });
 
-    res.status(200).send({ message: 'Deleted' }).end();
+    res.status(200).json({ message: 'Deleted' }).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -99,14 +93,13 @@ async function update(req: Request, res: Response) {
   const tarif = req.body as Partial<Tarif>;
 
   try {
-    const [rows] = await Tarif.update(tarif, {
+    await Tarif.update(tarif, {
       where: {
         id,
       },
-      paranoid: false,
     });
 
-    res.status(200).send({ rowsAffected: rows }).end();
+    res.status(200).json(tarif).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -116,9 +109,13 @@ async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
   try {
-    await Tarif.restore({ where: { id } });
+    await Tarif.restore({
+      where: {
+        id,
+      },
+    });
 
-    res.status(200).send({ message: 'Restored' }).end();
+    res.status(200).json({ message: 'Restored' }).end();
   } catch (e) {
     handleError({ e, res });
   }

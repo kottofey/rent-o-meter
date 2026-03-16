@@ -12,65 +12,66 @@ const { handleError, sendCustomResponse } = useHandleError();
 // Controllers
 // -----------------------------------------------------------------------------
 
-async function register(req: Request, res: Response): Promise<void> {
-  try {
-    const { surname, firstname, patronymic, email, password, role, comment } = req.body as User & {
-      role: string;
-    };
-
-    // Проверка существования пользователя
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      sendCustomResponse({
-        res,
-        respCode: 400,
-        message: 'Пользователь с таким email уже существует',
-        reason: 'UserExists',
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const roleName = role || 'rentee';
-    const userRole = await Role.findOne({ where: { name: roleName } });
-
-    if (userRole) {
-      const user = await User.create({
-        email,
-        firstname,
-        surname,
-        patronymic,
-        password: hashedPassword,
-        comment,
-      });
-
-      await user.$add('Role', userRole);
-
-      res.status(200).json({
-        success: true,
-        message: 'Пользователь зарегистрирован',
-        user: {
-          id: user.id,
-          email: user.email,
-          surname: user.surname,
-          firstname: user.firstname,
-          patronymic: user.patronymic,
-          comment: user.comment,
-        },
-      });
-    } else {
-      sendCustomResponse({
-        res,
-        respCode: 400,
-        message: `Роли ${roleName} не существует`,
-        reason: 'RoleNotFound',
-      });
-      return;
-    }
-  } catch (e) {
-    handleError({ e, res });
-  }
-}
+// async function register(req: Request, res: Response): Promise<void> {
+//   try {
+//     const { surname, firstname, patronymic, email, password, role, comment } = req.body as User & {
+//       role: string;
+//     };
+//
+//     // Проверка существования пользователя
+//     const existingUser = await User.findOne({ where: { email } });
+//
+//     if (existingUser) {
+//       sendCustomResponse({
+//         res,
+//         respCode: 400,
+//         message: 'Пользователь с таким email уже существует',
+//         reason: 'UserExists',
+//       });
+//     }
+//
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//
+//     const roleName = role || 'rentee';
+//     const userRole = await Role.findOne({ where: { name: roleName } });
+//
+//     if (userRole) {
+//       const user = await User.create({
+//         email,
+//         firstname,
+//         surname,
+//         patronymic,
+//         password: hashedPassword,
+//         comment,
+//       });
+//
+//       await user.$add('Role', userRole);
+//
+//       res.status(200).json({
+//         success: true,
+//         message: 'Пользователь зарегистрирован',
+//         user: {
+//           id: user.id,
+//           email: user.email,
+//           surname: user.surname,
+//           firstname: user.firstname,
+//           patronymic: user.patronymic,
+//           comment: user.comment,
+//         },
+//       });
+//     } else {
+//       sendCustomResponse({
+//         res,
+//         respCode: 400,
+//         message: `Роли ${roleName} не существует`,
+//         reason: 'RoleNotFound',
+//       });
+//       return;
+//     }
+//   } catch (e) {
+//     handleError({ e, res });
+//   }
+// }
 
 async function login(req: Request, res: Response): Promise<void> {
   try {
@@ -249,7 +250,6 @@ async function me(req: Request, res: Response): Promise<void> {
 }
 
 export default {
-  register,
   login,
   logout,
   me,

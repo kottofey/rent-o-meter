@@ -117,10 +117,8 @@ for (const [routeName, routeController] of Object.entries(routes)) {
 // -----------------------------------------------------------------------------
 // Auth routes
 // -----------------------------------------------------------------------------
-app.post('/api/v1/auth/register', makeHandlerAwareOfAsyncErrors(authRoute.register));
 app.post('/api/v1/auth/login', makeHandlerAwareOfAsyncErrors(authRoute.login));
 app.delete('/api/v1/auth/logout', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.logout));
-// app.post('/api/v1/auth/refresh-token', makeHandlerAwareOfAsyncErrors(authRoute.refreshToken));
 app.get('/api/v1/me', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.me));
 
 export default app;
