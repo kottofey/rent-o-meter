@@ -26,7 +26,7 @@ export default async function useApi<T>({
   const resp = await fetch(
     MODE === 'development'
       ? `/api/v1/${route}${parsedQuery}`
-      : `${VITE_API_BASE_URL}:${VITE_API_PORT}/api/v1/${route}${parsedQuery}`,
+      : `${VITE_API_BASE_URL}${VITE_API_PORT ? ':' + VITE_API_PORT : ''}/api/v1/${route}${parsedQuery}`,
     {
       mode: 'cors',
       credentials: 'include',
