@@ -15,6 +15,7 @@ import {
   Permission,
   RefreshToken,
   Seeder,
+  Payment,
 } from '@/models';
 
 export const sequelize = new Sequelize({
@@ -33,5 +34,6 @@ export const sequelize = new Sequelize({
     Permission,
     RefreshToken,
     Seeder,
+    Payment,
   ],
 });

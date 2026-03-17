@@ -8,10 +8,11 @@ import {
   Scopes,
   BelongsToMany,
   Default,
+  HasMany,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
 
-import { Agreement, Counter, Tarif, RelBillTarifs } from '@/models';
+import { Agreement, Counter, Tarif, RelBillTarifs, Payment } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
@@ -107,7 +108,7 @@ export default class Bill extends Model {
   declare agreementId: number;
 
   @BelongsTo(() => Agreement, { onDelete: 'Restrict' })
-  agreement: Agreement;
+  declare agreement: Agreement;
 
   @NotNull
   @ForeignKey(() => Counter)
@@ -115,8 +116,11 @@ export default class Bill extends Model {
   declare counterId: number;
 
   @BelongsTo(() => Counter, { onDelete: 'Restrict' })
-  counter: Counter;
+  declare counter: Counter;
 
   @BelongsToMany(() => Tarif, () => RelBillTarifs)
-  tarifs: (Tarif & { RelBillCounters: RelBillTarifs })[];
+  declare tarifs: (Tarif & { RelBillCounters: RelBillTarifs })[];
+
+  @HasMany(() => Payment, { onDelete: 'Restrict' })
+  declare payments: Payment[];
 }

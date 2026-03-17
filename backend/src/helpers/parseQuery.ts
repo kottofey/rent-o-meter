@@ -1,7 +1,7 @@
 import QueryString from 'qs';
 import { Includeable, ScopeOptions } from 'sequelize';
 
-import { Agreement, Counter, Rentee, Tarif, Bill } from '@/models';
+import { Agreement, Counter, Rentee, Tarif, Bill, Payment } from '@/models';
 import { ITarifTypes } from 'src/sequelize/models/Tarif.model.ts';
 
 export default function parseQuery(query: QueryString.ParsedQs) {
@@ -86,6 +86,14 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     // Users
     // -----------------------------------------------------------------------------
     'user:withDeleted': () => ({ method: ['user:withDeleted'] }),
+
+    // -----------------------------------------------------------------------------
+    // Payments
+    // -----------------------------------------------------------------------------
+    'payment:byBill': rawBillId => {
+      const billId = rawBillId as number | null;
+      return { method: ['payment:byBill', billId] };
+    },
   } as const;
 
   // -----------------------------------------------------------------------------
@@ -108,6 +116,26 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       model: Bill,
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
+    'Bill.Agreement': () => ({
+      model: Bill,
+      include: {
+        model: Agreement,
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    }),
+    'Bill.Agreement.Rentee': () => ({
+      model: Bill,
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: {
+        model: Agreement,
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+        include: {
+          model: Rentee,
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        },
+      },
+    }),
     Counter: () => ({
       model: Counter,
       attributes: { exclude: ['createdAt', 'updatedAt'] },
@@ -118,6 +146,10 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     }),
     Tarif: () => ({
       model: Tarif,
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    }),
+    Payment: () => ({
+      model: Payment,
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
   } as const;

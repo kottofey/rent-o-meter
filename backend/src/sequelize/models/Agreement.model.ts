@@ -130,13 +130,13 @@ export default class Agreement extends Model {
   declare renteeId: number;
 
   @BelongsTo(() => Rentee, { onDelete: 'CASCADE' })
-  rentee: Rentee;
+  declare rentee: Rentee;
 
   @HasMany(() => Counter, { onDelete: 'CASCADE' })
-  counters: Counter[];
+  declare counters: Counter[];
 
   @HasMany(() => Bill, { onDelete: 'CASCADE' })
-  bills: Bill[];
+  declare bills: Bill[];
 
   // -----------------------------------------------------------------------------
   // Virtual fields

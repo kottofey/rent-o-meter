@@ -12,6 +12,7 @@ import {
   billsRoute,
   authRoute,
   usersRoute,
+  paymentsRoute,
 } from '@/routes';
 import {
   authMiddleware,
@@ -46,6 +47,7 @@ const routes: Record<string, IRouteController> = {
   tarifs: tariffsRoute,
   bills: billsRoute,
   users: usersRoute,
+  payments: paymentsRoute,
 };
 
 app.get('/api/v1/', (_req: Request, res: Response) => {

@@ -1,10 +1,8 @@
 import { Op, QueryInterface } from 'sequelize';
-import chalk from 'chalk';
 
 import { type SeederModule } from '../../tools/seed.ts';
 
 import { sequelize } from '@/sequelize';
-import { Permission, Role } from '@/models';
 
 const calcPermissions = async () => {
   const adminRole = (await sequelize.query("SELECT id FROM Roles WHERE name = 'admin'", {

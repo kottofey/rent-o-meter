@@ -4,5 +4,6 @@ export { default as tariffsRoute } from './tariffsRoute';
 export { default as countersRoute } from './countersRoute';
 export { default as billsRoute } from './billsRoute';
 export { default as usersRoute } from './usersRoute';
+export { default as paymentsRoute } from './paymentsRoute';
 
 export { default as authRoute } from './authRoute.ts';

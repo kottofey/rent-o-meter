@@ -2,8 +2,8 @@ import { type Request, type Response } from 'express';
 
 import { getIdParam } from '../helpers.ts';
 
-import { parseQuery, useHandleError, calculateDebt } from '@/helpers';
-import { Agreement, Bill } from '@/models';
+import { parseQuery, useHandleError } from '@/helpers';
+import { Payment } from '@/models';
 
 const { handleError, sendCustomResponse } = useHandleError();
 
@@ -11,7 +11,7 @@ async function getAll(req: Request, res: Response) {
   try {
     const { includes, scopes } = parseQuery(req.query);
 
-    const found = await Bill.scope(scopes).findAll({
+    const found = await Payment.scope(scopes).findAll({
       include: includes,
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
@@ -38,7 +38,7 @@ async function getById(req: Request, res: Response) {
   }
 
   try {
-    const found = await Bill.scope(scopes).findByPk(id, {
+    const found = await Payment.scope(scopes).findByPk(id, {
       include: includes,
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
@@ -52,9 +52,9 @@ async function getById(req: Request, res: Response) {
 }
 
 async function create(req: Request, res: Response) {
-  const { tarifs, ...billData } = req.body as Partial<Bill>;
+  const payment = req.body as Partial<Payment>;
 
-  if (billData.id) {
+  if (payment.id) {
     sendCustomResponse({
       res,
       respCode: 400,
@@ -65,28 +65,8 @@ async function create(req: Request, res: Response) {
   }
 
   try {
-    const bill = await Bill.create(billData);
-
-    if (tarifs) {
-      await bill.$set(
-        'tarifs',
-        tarifs.map(t => t.id as number),
-      );
-    }
-
-    // -----------------------------------------------------------------------------
-    // Обновляем значение долга по договру
-    // -----------------------------------------------------------------------------
-
-    const thisAgreement = await Agreement.findByPk(bill.agreementId, {
-      include: [Bill],
-    });
-
-    await thisAgreement?.update({
-      debt: calculateDebt(thisAgreement.toJSON()),
-    });
-
-    res.status(201).json(bill).end();
+    await Payment.create(payment);
+    res.status(201).json(payment).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -96,7 +76,7 @@ async function remove(req: Request, res: Response) {
   const id = getIdParam(req);
 
   try {
-    await Bill.destroy({
+    await Payment.destroy({
       where: {
         id,
       },
@@ -110,38 +90,16 @@ async function remove(req: Request, res: Response) {
 
 async function update(req: Request, res: Response) {
   const id = getIdParam(req);
-  const { tarifs, ...billData } = req.body as Partial<Bill>;
+  const payment = req.body as Partial<Payment>;
 
   try {
-    const bill = await Bill.findByPk(id);
+    await Payment.update(payment, {
+      where: {
+        id,
+      },
+    });
 
-    if (bill) {
-      await Bill.update(billData, {
-        where: { id },
-        paranoid: false,
-      });
-
-      if (tarifs) {
-        await bill.$set(
-          'tarifs',
-          tarifs.map(t => t.id as number),
-        );
-      }
-
-      // -----------------------------------------------------------------------------
-      // Обновляем значение долга по договру
-      // -----------------------------------------------------------------------------
-
-      const thisAgreement = await Agreement.findByPk(bill.agreementId, {
-        include: [Bill],
-      });
-
-      await thisAgreement?.update({
-        debt: calculateDebt(thisAgreement.toJSON()),
-      });
-
-      res.status(200).json(bill).end();
-    }
+    res.status(200).json(payment).end();
   } catch (e) {
     handleError({ e, res });
   }
@@ -151,7 +109,7 @@ async function restore(req: Request, res: Response) {
   const id = getIdParam(req);
 
   try {
-    await Bill.restore({
+    await Payment.restore({
       where: {
         id,
       },

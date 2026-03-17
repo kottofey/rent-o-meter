@@ -3,6 +3,7 @@ export { default as Agreement } from './Agreement.model.ts';
 export { default as Counter } from './Counter.model.ts';
 export { default as Tarif } from './Tarif.model.ts';
 export { default as Bill } from './Bill.model.ts';
+export { default as Payment } from './Payment.model.ts';
 
 export { default as RefreshToken } from './RefreshToken.model.ts';
 export { default as User } from './User.model.ts';

@@ -42,6 +42,12 @@ const permissions = [
   { name: 'users.update', resource: 'users', action: 'update' },
   { name: 'users.delete', resource: 'users', action: 'delete' },
 
+  // Payments
+  { name: 'payments.create', resource: 'payments', action: 'create' },
+  { name: 'payments.read', resource: 'payments', action: 'read' },
+  { name: 'payments.update', resource: 'payments', action: 'update' },
+  { name: 'payments.delete', resource: 'payments', action: 'delete' },
+
   // System
   { name: 'system.manage', resource: 'system', action: 'manage' },
 ];
@@ -70,19 +76,19 @@ const seeder: SeederModule = {
 
   async down(queryInterface: QueryInterface): Promise<void> {
     const transaction = await sequelize.transaction();
-    console.log(
-      chalk.yellow(
-        JSON.stringify(
-          permissions.map(p => ({
-            ...p,
-            description: `${p.action} ${p.resource}`,
-            status: true,
-          })),
-          null,
-          2,
-        ),
-      ),
-    );
+    // console.log(
+    //   chalk.yellow(
+    //     JSON.stringify(
+    //       permissions.map(p => ({
+    //         ...p,
+    //         description: `${p.action} ${p.resource}`,
+    //         status: true,
+    //       })),
+    //       null,
+    //       2,
+    //     ),
+    //   ),
+    // );
     try {
       await queryInterface.bulkDelete(
         'Permissions',
@@ -94,7 +100,7 @@ const seeder: SeederModule = {
             status: true,
           })),
         },
-        { transaction, logging: console.log },
+        { transaction },
       );
 
       await transaction.commit();
