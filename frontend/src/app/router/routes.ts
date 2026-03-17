@@ -44,6 +44,12 @@ const routes: RouteRecordRaw[] = [
     meta: {},
   },
   {
+    path: '/payments',
+    name: 'payments.show',
+    component: () => import('@/pages/payments'),
+    meta: {},
+  },
+  {
     path: '/login',
     name: 'login.show',
     component: () => import('@/pages/auth'),

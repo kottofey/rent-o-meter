@@ -105,7 +105,7 @@ export const createColumns = ({
         {
           style: {
             color:
-              row.ammount + row.extra_ammount - row.ammount_paid !== 0
+              row.ammount + row.extra_ammount - row.ammount_paid > 0
                 ? 'red'
                 : 'green',
           },

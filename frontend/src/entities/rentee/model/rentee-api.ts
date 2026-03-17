@@ -19,6 +19,7 @@ export interface IRentee {
 
   // Virtuals
   fullName: string;
+  shortName: string;
 }
 
 // TODO дописать скоупы если будут

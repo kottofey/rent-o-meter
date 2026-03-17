@@ -85,6 +85,13 @@ const { user, full_name } = useAuthStore();
       </RouterLink>
 
       <RouterLink
+        :to="{ name: 'payments.show' }"
+        class="link"
+      >
+        Оплаты
+      </RouterLink>
+
+      <RouterLink
         :to="{ name: 'tarifs.show' }"
         class="link"
       >
