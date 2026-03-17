@@ -18,6 +18,8 @@ services:
     volumes:
 #   относительный путь относительно файла docker-compose.yml : абсолютный путь внутри контейнера
       - ./backend/.env:/usr/src/app/.env
+      - ./backend/src/sequelize/seeders/:/usr/src/app/src/sequelize/seeders/
+      - ./backend/src/sequelize/migrations/:/usr/src/app/src/sequelize/migrations/
 
   frontend:
     restart: unless-stopped
