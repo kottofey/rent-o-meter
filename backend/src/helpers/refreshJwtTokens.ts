@@ -77,8 +77,12 @@ export async function refreshToken(
 
       await storedToken.update({ token_hash: hashToken(newRefreshToken) });
 
-      res.cookie('token', accessToken, { httpOnly: true });
-      res.cookie('refreshToken', newRefreshToken, { httpOnly: true });
+      res.cookie('token', accessToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      });
 
       if (next) {
         // Continue with the request if next function is provided

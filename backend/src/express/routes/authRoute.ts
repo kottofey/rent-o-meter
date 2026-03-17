@@ -143,8 +143,12 @@ async function login(req: Request, res: Response): Promise<void> {
 
       // TODO дополнить токены опциями secure: true, sameSite: strict
 
-      res.cookie('token', accessToken, { httpOnly: true });
-      res.cookie('refreshToken', refreshToken, { httpOnly: true });
+      res.cookie('token', accessToken, { httpOnly: true, secure: true, sameSite: 'strict' });
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      });
 
       await user.update({
         last_login: dayjs().toDate(),
