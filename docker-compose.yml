@@ -29,7 +29,7 @@ services:
       context: ./frontend
     volumes:
       #   относительный путь относительно файла docker-compose.yml : абсолютный путь внутри контейнера
-      - ./frontend/src/app/env/:/usr/src/app/.env/
+      - ./frontend/src/app/env/:/usr/src/app/env/
       - ./.ssl/:/usr/src/app/.ssl/
 
     networks:
