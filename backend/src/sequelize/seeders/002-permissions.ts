@@ -31,10 +31,10 @@ const permissions = [
   { name: 'rentees.delete', resource: 'rentees', action: 'delete' },
 
   // Tariffs
-  { name: 'tariffs.create', resource: 'tariffs', action: 'create' },
-  { name: 'tariffs.read', resource: 'tariffs', action: 'read' },
-  { name: 'tariffs.update', resource: 'tariffs', action: 'update' },
-  { name: 'tariffs.delete', resource: 'tariffs', action: 'delete' },
+  { name: 'tarifs.create', resource: 'tarifs', action: 'create' },
+  { name: 'tarifs.read', resource: 'tarifs', action: 'read' },
+  { name: 'tarifs.update', resource: 'tarifs', action: 'update' },
+  { name: 'tarifs.delete', resource: 'tarifs', action: 'delete' },
 
   // Users
   { name: 'users.create', resource: 'users', action: 'create' },
