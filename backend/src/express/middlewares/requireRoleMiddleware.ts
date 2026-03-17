@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken';
 
 import { Permission, Role } from '@/models';
 import { jwtConfig } from '@/config';
-import { type IUserPayload } from '@/helpers';
+import { type IUserPayload, useHandleError } from '@/helpers';
+
+const { sendCustomResponse } = useHandleError();
 
 export default async function requireRoleMiddleware(
   req: Request,
@@ -31,9 +33,11 @@ export default async function requireRoleMiddleware(
   }) as IUserPayload;
 
   if (userRoles.length === 0) {
-    res.status(403).json({
-      success: false,
+    sendCustomResponse({
+      res,
+      respCode: 403,
       message: 'Недостаточно прав 1',
+      reason: 'UserHasNoPermission',
     });
     return;
   }
@@ -50,9 +54,11 @@ export default async function requireRoleMiddleware(
   const hasRole = userRoles.some(role => rolesForRoute.has(role));
 
   if (!hasRole) {
-    res.status(403).json({
-      success: false,
+    sendCustomResponse({
+      res,
+      respCode: 403,
       message: 'Недостаточно прав 2',
+      reason: 'UserHasNoPermission',
     });
     return;
   }

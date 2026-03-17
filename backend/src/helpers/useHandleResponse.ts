@@ -13,6 +13,7 @@ type IRespReasons =
   | 'UserNotFound'
   | 'UserNotAuthorized'
   | 'UserBlocked'
+  | 'UserHasNoPermission'
   // Roles
   | 'RoleNotFound'
   // General
