@@ -1,7 +1,7 @@
 import { Model, Table, Column, NotNull, ForeignKey, BelongsTo, Scopes } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
 
-import { Bill } from '@/models';
+import { Agreement, Bill } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
@@ -16,6 +16,31 @@ import { dayjs } from '@/helpers';
             id: billId,
           },
         },
+      };
+    }
+  },
+  'payment:byRentee'(renteeId: number | null) {
+    if (renteeId === null) {
+      return {};
+    } else {
+      return {
+        where: {
+          '$bill.agreement.renteeId$': renteeId,
+        },
+        include: [
+          {
+            model: Bill,
+            include: [
+              {
+                model: Agreement,
+                required: false,
+                where: {
+                  renteeId,
+                },
+              },
+            ],
+          },
+        ],
       };
     }
   },

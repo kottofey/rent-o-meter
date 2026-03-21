@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { NDataTable } from 'naive-ui';
-import { ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 
 import { createColumns } from '../config/tableColumns';
 
 import { PageLayout } from '@/app/layouts';
-import { type IPayment, usePaymentsQuery } from '@/entities/payment';
+import {
+  type IPayment,
+  type IPaymentScopes,
+  usePaymentsQuery,
+} from '@/entities/payment';
 import { AddButton } from '@/shared/ui';
 import { useAuthStore } from '@/shared/store';
 import { ManagePaymentModal } from '@/features/manage-payment-modal';
@@ -26,9 +30,9 @@ const isModalOpened = ref(false);
 const paymentToEdit = ref();
 const paymentToEditId = ref<number | undefined>(undefined);
 
-// const paymentScopes = reactive<IPaymentScopes>({
-//   'payment:byBill': authStore.user?.rentee_id ?? null,
-// });
+const paymentScopes = reactive<IPaymentScopes>({
+  'payment:byRentee': authStore.user?.rentee_id ?? null,
+});
 
 // -----------------------------------------------------------------------------
 // Computed
@@ -56,7 +60,7 @@ const paymentToEditId = ref<number | undefined>(undefined);
 
 const { data: payments, isLoading } = usePaymentsQuery({
   includes: ['Bill.Agreement.Rentee'],
-  // scopes: () => paymentScopes,
+  scopes: () => paymentScopes,
 });
 
 const editRow = (row: IPayment) => {

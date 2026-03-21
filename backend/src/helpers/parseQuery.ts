@@ -94,6 +94,10 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       const billId = rawBillId as number | null;
       return { method: ['payment:byBill', billId] };
     },
+    'payment:byRentee': rawRenteeId => {
+      const renteeId = rawRenteeId as number | null;
+      return { method: ['payment:byRentee', renteeId] };
+    },
   } as const;
 
   // -----------------------------------------------------------------------------
