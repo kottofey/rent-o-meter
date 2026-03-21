@@ -30,6 +30,7 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.set('query parser', (str: string) => qs.parse(str));
+app.set('trust proxy', true);
 
 interface IRouteController {
   getById?(req: Request, res: Response, next: NextFunction): Promise<void>;

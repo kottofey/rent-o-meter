@@ -1,5 +1,7 @@
 FROM node:lts-alpine
 
+WORKDIR /usr/src/app
+
 ENV TZ=Europe/Moscow \
     NODE_ENV=production
 

@@ -6,6 +6,7 @@ volumes:
 
 services:
   backend:
+    working_dir: /usr/src/app
     depends_on:
       - db
     restart: unless-stopped
@@ -22,6 +23,7 @@ services:
       - ./backend/src/sequelize/migrations/:/usr/src/app/src/sequelize/migrations/
 
   frontend:
+    working_dir: /usr/src/app
     restart: unless-stopped
     ports:
       - "8893:8893"
