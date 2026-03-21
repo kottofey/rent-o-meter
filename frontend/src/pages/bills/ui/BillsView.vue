@@ -57,7 +57,7 @@ const filteredBills = computed(() =>
 // -----------------------------------------------------------------------------
 
 const { data: bills, isLoading } = useBillsQuery({
-  includes: ['Agreement.Rentee'],
+  includes: ['Agreement.Rentee', 'Payment'],
   scopes: () => billScopes,
 });
 
@@ -101,8 +101,9 @@ watch([isModalOpened], () => {
       <AddButton
         @click="createRow"
         v-if="authStore.user?.roles?.includes('admin')"
-        >Новый счёт</AddButton
       >
+        Новый счёт
+      </AddButton>
 
       <AppButton
         @click="withInactiveAgreements = !withInactiveAgreements"
@@ -111,6 +112,7 @@ watch([isModalOpened], () => {
         <template #default>C истёкшими договорами</template>
         <template #icon><ExpiredIcon /></template>
       </AppButton>
+
       <div
         class="menu-block"
         v-if="authStore.user?.roles?.includes('admin')"
