@@ -2,6 +2,7 @@ import { httpMethod, useApi, serializeQuery } from '@/shared/api';
 import { type IAgreement } from '@/entities/agreement/@x/bill';
 import { type ICounter } from '@/entities/counter/@x/bill';
 import { type ITarif } from '@/entities/tarif/@x/bill';
+import type { IPayment } from '@/entities/payment';
 
 export interface IBill {
   id: number;
@@ -11,7 +12,6 @@ export interface IBill {
 
   ammount: number;
   extra_ammount: number;
-  ammount_paid: number;
 
   comment: string;
 
@@ -24,6 +24,8 @@ export interface IBill {
   counter: ICounter;
 
   tarifs: ITarif[];
+
+  payments: IPayment[];
 }
 
 export type IBillScopes = {
@@ -31,7 +33,7 @@ export type IBillScopes = {
   'bills:byRentee'?: number | null;
 };
 export type IBillIncludes = Array<
-  'Agreement' | 'Counter' | 'Tarif' | 'Agreement.Rentee'
+  'Agreement' | 'Counter' | 'Tarif' | 'Agreement.Rentee' | 'Payment'
 >;
 
 export async function getAllBills({

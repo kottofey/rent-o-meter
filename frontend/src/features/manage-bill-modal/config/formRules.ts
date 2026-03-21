@@ -14,11 +14,4 @@ export const rules: FormRules = {
     required: true,
     message: 'Выберите арендатора',
   },
-
-  ammount_paid: {
-    message: 'Не может быть null',
-    validator(_rule, val) {
-      return val !== null;
-    },
-  },
 };

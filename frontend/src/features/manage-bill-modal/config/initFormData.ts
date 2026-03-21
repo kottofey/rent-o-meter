@@ -6,7 +6,6 @@ export const initFormData = {
   month: dayjs().startOf('month').valueOf(),
 
   extra_ammount: 0,
-  ammount_paid: 0,
 
   status: false,
   comment: '',

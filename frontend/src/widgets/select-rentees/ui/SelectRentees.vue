@@ -62,5 +62,3 @@ watch(value, () => {
     :consistent-menu-width="false"
   />
 </template>
-
-<style scoped></style>

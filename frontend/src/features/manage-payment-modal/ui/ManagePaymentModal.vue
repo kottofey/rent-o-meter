@@ -25,11 +25,7 @@ import {
   useRestorePaymentMutation,
 } from '@/entities/payment';
 import { parseDate, parseMoney, parseNumber } from '@/shared/lib';
-import {
-  type IBillScopes,
-  useBillsQuery,
-  useEditBillMutation,
-} from '@/entities/bill';
+import { type IBillScopes, useBillsQuery } from '@/entities/bill';
 import { SelectRentees } from '@/widgets/select-rentees';
 
 // -----------------------------------------------------------------------------
@@ -46,20 +42,18 @@ const billScopes = reactive<IBillScopes>({
   'bills:byRentee': formData.value.rentee_id,
 });
 
-const billsOptions = computed(() => {
-  return (
-    bills.value?.reduce<SelectMixedOption[]>((acc, b) => {
-      if (b.agreement.renteeId === formData.value.rentee_id) {
-        acc.push({
-          label: `#${b.id}: ${parseDate({ date: b.month, format: 'MMM YYYY' })}`,
-          value: b.id,
-        });
-      }
+const billsOptions = computed(() =>
+  bills.value?.reduce<SelectMixedOption[]>((acc, b) => {
+    if (b.agreement.renteeId === formData.value.rentee_id) {
+      acc.push({
+        label: `#${b.id}: ${parseDate({ date: b.month, format: 'MMM YYYY' })}`,
+        value: b.id,
+      });
+    }
 
-      return acc;
-    }, []) ?? []
-  );
-});
+    return acc;
+  }, []),
+);
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -81,10 +75,8 @@ const { mutate: restorePayment, isPending: isRestorePending } =
 
 const { data: bills } = useBillsQuery({
   scopes: () => billScopes,
-  includes: ['Agreement'],
+  includes: ['Agreement', 'Payment'],
 });
-
-const { mutate: editBill } = useEditBillMutation();
 
 // -----------------------------------------------------------------------------
 // Actions
@@ -105,38 +97,12 @@ const onSubmit = async () => {
           });
         }
 
-        if (formData.value.bill_id && formData.value.ammount) {
-          updateBillAmmount({
-            bill_id: formData.value.bill_id,
-            ammount: formData.value.ammount,
-          });
-        }
         clearForm();
         isOpened.value = false;
       }
     });
   } catch (errors) {
     console.error('Ошибка валидации', JSON.stringify(errors, null, 2));
-  }
-};
-
-const updateBillAmmount = ({
-  bill_id,
-  ammount,
-}: {
-  bill_id: number;
-  ammount: number;
-}) => {
-  // Обновляем оплаченную сумму в счетах
-  const billToEdit = bills.value?.find((b) => b.id === formData.value.bill_id);
-
-  if (billToEdit) {
-    editBill({
-      id: bill_id,
-      updatedBill: {
-        ammount_paid: ammount + billToEdit.ammount_paid,
-      },
-    });
   }
 };
 
@@ -179,8 +145,10 @@ watch(
   () => {
     const bill = bills.value?.find((b) => b.id === formData.value.bill_id);
     if (bill) {
+      const ammount_paid = bill.payments.reduce((acc, p) => acc + p.ammount, 0);
+
       formData.value.ammount_remain =
-        bill.ammount + bill.extra_ammount - bill.ammount_paid;
+        bill.ammount + bill.extra_ammount - ammount_paid;
     }
   },
 );
@@ -343,20 +311,8 @@ watch(
             () => {
               if (payment.deletedAt === null) {
                 deletePayment({ id: payment.id });
-                if (payment.bill_id !== null) {
-                  updateBillAmmount({
-                    bill_id: payment.bill_id,
-                    ammount: payment.ammount * -1,
-                  });
-                }
               } else {
                 restorePayment({ id: payment.id });
-                if (payment.bill_id !== null) {
-                  updateBillAmmount({
-                    bill_id: payment.bill_id,
-                    ammount: payment.ammount,
-                  });
-                }
               }
               isOpened = false;
             }

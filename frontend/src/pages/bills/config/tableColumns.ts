@@ -92,20 +92,29 @@ export const createColumns = ({
     title: 'Оплачено',
     key: 'ammount_paid',
     align: 'center',
-    render: (row: IBill) =>
-      parseMoney({ ammount: row.ammount_paid, mode: 'rubbles' }),
+    render: (row: IBill) => {
+      const ammount = row.payments.reduce(
+        (acc, payment) => acc + payment.ammount,
+        0,
+      );
+      return parseMoney({ ammount, mode: 'rubbles' });
+    },
   },
   {
     title: 'Δ',
     key: 'ammount_paid',
     align: 'center',
-    render: (row: IBill) =>
-      hFunc(
+    render: (row: IBill) => {
+      const ammount_paid = row.payments.reduce(
+        (acc, payment) => acc + payment.ammount,
+        0,
+      );
+      return hFunc(
         'p',
         {
           style: {
             color:
-              row.ammount + row.extra_ammount - row.ammount_paid > 0
+              row.ammount + row.extra_ammount - ammount_paid > 0
                 ? 'red'
                 : 'green',
           },
@@ -113,11 +122,12 @@ export const createColumns = ({
         {
           default: () =>
             parseMoney({
-              ammount: row.ammount + row.extra_ammount - row.ammount_paid,
+              ammount: row.ammount + row.extra_ammount - ammount_paid,
               mode: 'rubbles',
             }),
         },
-      ),
+      );
+    },
   },
   {
     title: 'Комментарий',

@@ -87,15 +87,6 @@ export default class Bill extends Model {
     return parseFloat(raw);
   }
 
-  @Column({ type: DataTypes.DECIMAL(8, 2), defaultValue: 0 })
-  set ammount_paid(value: number) {
-    this.setDataValue('ammount_paid', value);
-  }
-  get ammount_paid() {
-    const raw: string = this.getDataValue('ammount_paid') as string;
-    return parseFloat(raw);
-  }
-
   @Column(DataTypes.TEXT)
   declare comment: string;
 

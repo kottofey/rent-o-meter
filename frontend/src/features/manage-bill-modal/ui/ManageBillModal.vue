@@ -225,22 +225,6 @@ watch([() => bill, isOpened], () => {
           />
         </NFormItem>
 
-        <NFormItem
-          label="Оплачено"
-          path="ammount_paid"
-        >
-          <NInputNumber
-            v-model:value="formData.ammount_paid"
-            :show-button="false"
-            clearable
-            :parse="(value) => parseNumber(value)"
-            :format="
-              (val) =>
-                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''
-            "
-          />
-        </NFormItem>
-
         <!--  Статус  -->
         <NFormItem
           label="Статус"
