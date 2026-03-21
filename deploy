@@ -6,7 +6,7 @@ else exit;
 fi
 
 printf "%s\n" "Запускаем билд..."
-if docker compose up --build -d
+if docker compose down && docker compose up --build -d
 then printf "%s\n\n" "Успешно!";
 else exit;
 fi
