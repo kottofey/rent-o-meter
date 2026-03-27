@@ -21,6 +21,19 @@ services:
       - ./backend/.env:/usr/src/app/.env
       - ./backend/src/sequelize/seeders/:/usr/src/app/src/sequelize/seeders/
       - ./backend/src/sequelize/migrations/:/usr/src/app/src/sequelize/migrations/
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
     working_dir: /usr/src/app
@@ -33,9 +46,13 @@ services:
       #   относительный путь относительно файла docker-compose.yml : абсолютный путь внутри контейнера
       - ./frontend/src/app/env/:/usr/src/app/env/
       - ./.ssl/:/usr/src/app/.ssl/
-
     networks:
       - rent-o-meter
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
     networks:
@@ -49,3 +66,8 @@ services:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
     volumes:
       - db:/var/lib/mysql
+    command:
+      - --innodb-buffer-pool-size=256M
+      - --max-connections=50
+      - --innodb-log-buffer-size=16M
+      - --key-buffer-size=32M
