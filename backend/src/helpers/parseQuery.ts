@@ -41,9 +41,9 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       const agreementId = rawAgreementId as number;
       return { method: ['counter:byAgreementId', agreementId] };
     },
-    'counter:byRenteeId': rawRenteeId => {
+    'counter:byRentee': rawRenteeId => {
       const renteeId = rawRenteeId as number | null;
-      return { method: ['counter:byRenteeId', renteeId] };
+      return { method: ['counter:byRentee', renteeId] };
     },
 
     // -----------------------------------------------------------------------------
@@ -167,9 +167,6 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     RefreshToken: () => ({
       model: RefreshToken,
       require: false,
-      where: {
-        is_revoked: false,
-      },
     }),
   } as const;
 

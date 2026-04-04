@@ -40,7 +40,7 @@ import { Agreement, Bill } from '@/models';
       },
     };
   },
-  'counter:byRenteeId'(renteeId: number | null) {
+  'counter:byRentee'(renteeId: number | null) {
     if (renteeId === null) {
       return {};
     } else {

@@ -147,15 +147,15 @@ async function logout(req: Request, res: Response): Promise<void> {
 }
 
 async function me(req: Request, res: Response): Promise<void> {
-  console.log('auth route/me, начинаем');
+  // console.log('auth route/me, начинаем');
 
   try {
     const token = req.cookies.token as string;
 
-    console.log('auth route/me, достали токен', token);
+    // console.log('auth route/me, достали токен', token);
     const decoded = jwt.verify(token, jwtConfig.secret) as Partial<User>;
 
-    console.log('auth route/me, есть токен, ищем юзера');
+    // console.log('auth route/me, есть токен, ищем юзера');
 
     const user = await User.findByPk(decoded.id, {
       include: [{ model: Role, as: 'roles' }],
@@ -171,7 +171,7 @@ async function me(req: Request, res: Response): Promise<void> {
     }
 
     if (user) {
-      console.log('auth route/me, Юзер есть, всё ок, шлем ответ /me');
+      // console.log('auth route/me, Юзер есть, всё ок, шлем ответ /me');
 
       res.status(200).json({
         success: true,
@@ -190,7 +190,7 @@ async function me(req: Request, res: Response): Promise<void> {
       });
     }
   } catch (e) {
-    console.log('auth route/me, ошибка');
+    // console.log('auth route/me, ошибка');
     handleError({ e, res });
   }
 }

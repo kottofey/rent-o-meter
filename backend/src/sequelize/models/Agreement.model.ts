@@ -8,6 +8,7 @@ import {
   Model,
   NotNull,
   Scopes,
+  Sequelize,
   Table,
 } from 'sequelize-typescript';
 import { DataTypes, Op } from 'sequelize';
@@ -57,7 +58,9 @@ import { Bill, Counter, Rentee } from '@/models';
   },
   'agreements:byRentee'(renteeId: number | null) {
     if (renteeId === null) {
-      return {};
+      return {
+        where: Sequelize.literal('1=0'),
+      };
     } else {
       return {
         where: {

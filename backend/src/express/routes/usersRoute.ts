@@ -159,6 +159,7 @@ async function update(req: Request, res: Response) {
 
       const updatedUser = await existingUser.update({
         ...rest,
+        status,
         password: password && (await bcrypt.hash(password, 10)),
       });
 

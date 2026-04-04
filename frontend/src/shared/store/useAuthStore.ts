@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
     return false;
   });
 
-  const isAdmin = computed(() => user.value?.roles?.includes('admin'));
+  const isAdmin = computed(() => user.value?.roles?.includes('admin') ?? false);
 
   // -----------------------------------------------------------------------------
   // Actions

@@ -34,7 +34,7 @@ const authStore = useAuthStore();
 
 const isModalOpened = ref(false);
 const agreementToEdit = ref();
-const prevFilter = ref();
+const previousFilter = ref();
 
 const agreementScopes = reactive<IAgreementScopes>({
   'agreements:withDeleted': false,
@@ -92,10 +92,10 @@ const setWithDeleted = () => {
   settings.value.agreements.withDeleted =
     !settings.value.agreements.withDeleted;
   if (settings.value.agreements.withDeleted) {
-    prevFilter.value = settings.value.agreements.filter;
+    previousFilter.value = settings.value.agreements.filter;
     setAll();
   } else {
-    settings.value.agreements.filter = prevFilter.value;
+    settings.value.agreements.filter = previousFilter.value;
   }
 };
 

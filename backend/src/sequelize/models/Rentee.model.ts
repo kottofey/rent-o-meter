@@ -114,7 +114,7 @@ export default class Rentee extends Model {
     return `${this.surname} ${this.firstname} ${this.patronymic}`;
   }
   set fullName(value) {
-    throw new Error('Do not try to set the `renteeFullName` value!');
+    // throw new Error('Do not try to set the `renteeFullName` value!');
   }
 
   @Column({ type: DataTypes.VIRTUAL })
@@ -122,6 +122,6 @@ export default class Rentee extends Model {
     return `${this.surname} ${this.firstname.charAt(0)}. ${this.patronymic.charAt(0)}.`;
   }
   set shortName(value) {
-    throw new Error('Do not try to set the `shortName` value!');
+    // throw new Error('Do not try to set the `shortName` value!');
   }
 }

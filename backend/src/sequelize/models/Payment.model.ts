@@ -1,4 +1,13 @@
-import { Model, Table, Column, NotNull, ForeignKey, BelongsTo, Scopes } from 'sequelize-typescript';
+import {
+  Model,
+  Table,
+  Column,
+  NotNull,
+  ForeignKey,
+  BelongsTo,
+  Scopes,
+  Sequelize,
+} from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
 
 import { Agreement, Bill } from '@/models';
@@ -21,7 +30,7 @@ import { dayjs } from '@/helpers';
   },
   'payment:byRentee'(renteeId: number | null) {
     if (renteeId === null) {
-      return {};
+      return { where: Sequelize.literal('1=0') };
     } else {
       return {
         where: {
