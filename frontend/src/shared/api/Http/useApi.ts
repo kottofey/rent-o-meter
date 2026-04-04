@@ -1,6 +1,5 @@
 import { CustomError } from './error';
 
-import { router } from '@/app/router';
 import { useAuth } from '@/features/auth';
 
 export default async function useApi<T>({

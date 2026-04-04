@@ -65,8 +65,10 @@ const onSubmit = async () => {
         const actualCounters = await useCountersQueryClient({
           client: queryClient,
           scopes: {
-            'counter:byMonth': dayjs(formData.value.month).format('YYYY-MM-DD'),
-            'counter:byAgreementId': formData.value.agreementId,
+            'counters:byMonth': dayjs(formData.value.month).format(
+              'YYYY-MM-DD',
+            ),
+            'counters:byAgreementId': formData.value.agreementId,
           },
         });
 
@@ -78,7 +80,7 @@ const onSubmit = async () => {
           const actualTarifs = await useTarifQueryClient({
             client: queryClient,
             scopes: {
-              'tarif:actualBetween': {
+              'tarifs:actualBetween': {
                 dateStart: dayjs(actualCounters[0].date_start).format(
                   'YYYY-MM-DD',
                 ),

@@ -1,9 +1,9 @@
-import { User, Role } from '@/models';
+import { IUserPayload } from '@/helpers';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: User & { roles: Role[] };
+      user?: IUserPayload;
     }
   }
 }

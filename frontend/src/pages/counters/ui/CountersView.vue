@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NDataTable } from 'naive-ui';
-import { h, reactive, ref, watch } from 'vue';
+import { computed, h, ref, watch } from 'vue';
 
 import { createColumns } from '../config/tableColumns';
 
@@ -27,9 +27,14 @@ const authStore = useAuthStore();
 const isModalOpened = ref(false);
 const counterToEditId = ref<number | undefined>(undefined);
 const counterToEdit = ref();
-const counterScopes = reactive<ICounterScopes>({
-  'counter:byRenteeId': authStore.user?.rentee_id ?? null,
-});
+const counterScopes = computed<ICounterScopes>(() => ({
+  'counters:byRentee':
+    authStore.user?.rentee_id === null ? null : authStore.user?.rentee_id,
+}));
+
+const isEnabled = computed(
+  () => !!authStore.user?.rentee_id || authStore.isAdmin,
+);
 
 // -----------------------------------------------------------------------------
 // Table setup
@@ -37,16 +42,21 @@ const counterScopes = reactive<ICounterScopes>({
 
 const { data: counters, isLoading } = useCountersQuery({
   includes: ['Agreement.Rentee'],
-  scopes: () => counterScopes,
+  scopes: counterScopes,
+  isEnabled,
 });
 
 const editRow = (row: ICounter) => {
-  return {
-    onClick: () => {
-      counterToEditId.value = row.id;
-      isModalOpened.value = true;
-    },
-  };
+  if (authStore.user?.roles?.includes('admin')) {
+    return {
+      onClick: () => {
+        counterToEditId.value = row.id;
+        isModalOpened.value = true;
+      },
+    };
+  } else {
+    return {};
+  }
 };
 
 const createRow = () => {
@@ -70,7 +80,10 @@ watch([counterToEditId, isModalOpened], () => {
 
 <template>
   <PageLayout>
-    <template #buttons-extra>
+    <template
+      #buttons-extra
+      v-if="isEnabled"
+    >
       <AddButton @click="createRow">Новые показания</AddButton>
     </template>
 

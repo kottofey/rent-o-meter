@@ -16,7 +16,7 @@ import { RefreshToken, RelUserRole, Rentee, Role } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
-  'user:withDeleted'() {
+  'users:withDeleted'() {
     return {
       paranoid: false,
       where: {

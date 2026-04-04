@@ -4,7 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/vue-query';
-import { type MaybeRefOrGetter, toValue } from 'vue';
+import { computed, type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   createCounter,
@@ -59,16 +59,16 @@ export const useCounterQueryClient = async ({
 export const useCountersQuery = ({
   scopes,
   includes,
-  isDisabled = false,
+  isEnabled,
 }: {
   scopes?: MaybeRefOrGetter<ICounterScopes>;
   includes?: ICounterIncludes;
-  isDisabled?: boolean;
+  isEnabled?: MaybeRefOrGetter<boolean>;
 }) => {
   return useQuery({
-    queryKey: counterKeys.list(toValue(scopes), includes),
+    queryKey: computed(() => counterKeys.list(toValue(scopes), includes)),
     queryFn: () => getAllCounters({ scopes: toValue(scopes), includes }),
-    enabled: !isDisabled,
+    enabled: computed(() => toValue(isEnabled)),
     select: (data) => {
       return data.filter(
         (counter: ICounter) => counter.agreement && counter.agreement.status,

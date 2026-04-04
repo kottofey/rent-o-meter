@@ -11,14 +11,14 @@ then printf "%s\n\n" "Успешно!";
 else exit;
 fi
 
-#printf "%s\n" "Запускаем миграции..."
-#if docker exec -it rent-o-meter-backend-1 node --import=tsx src/tools/migrate.ts up
-#then printf "%s\n\n" "Миграции прошли успешно!";
-#else exit;
-#fi
+printf "%s\n" "Запускаем миграции..."
+if docker exec -it rent-o-meter-backend-1 node --import=tsx src/tools/migrate.ts up
+then printf "%s\n\n" "Миграции прошли успешно!";
+else exit;
+fi
 
-#printf "%s\n" "Чистим за собой..."
-#if docker builder prune --filter "until=24h" --force
-#then printf "%s\n\n" "Всё готово!!!";
-#else exit;
-#fi
+printf "%s\n" "Чистим за собой..."
+if docker builder prune --filter "until=24h" --force
+then printf "%s\n\n" "Всё готово!!!";
+else exit;
+fi

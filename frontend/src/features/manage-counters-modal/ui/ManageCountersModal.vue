@@ -68,8 +68,8 @@ const fetchPrevCounters = async ({
   const prevCounters = await useCountersQueryClient({
     client: queryClient,
     scopes: {
-      'counter:byAgreementId': agreementId,
-      'counter:byMonth': dayjs(currentMonth)
+      'counters:byAgreementId': agreementId,
+      'counters:byMonth': dayjs(currentMonth)
         .startOf('month')
         .subtract(1, 'month')
         .format('YYYY-MM-DD'),

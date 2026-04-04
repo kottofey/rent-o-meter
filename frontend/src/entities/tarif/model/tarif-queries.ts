@@ -4,6 +4,7 @@ import {
   useQueryClient,
   QueryClient,
 } from '@tanstack/vue-query';
+import { computed, type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   getAllTarifs,
@@ -55,16 +56,16 @@ export const useTarifsQueryClient = async ({
 export const useTarifsQuery = ({
   scopes,
   includes,
-  isDisabled = false,
+  isEnabled,
 }: {
-  scopes?: ITarifScopes;
+  scopes?: MaybeRefOrGetter<ITarifScopes>;
   includes?: ITarifIncludes;
-  isDisabled?: boolean;
+  isEnabled?: MaybeRefOrGetter<boolean>;
 }) => {
   return useQuery({
-    queryKey: tarifKeys.list(scopes, includes),
-    queryFn: () => getAllTarifs({ scopes, includes }),
-    enabled: !isDisabled,
+    queryKey: computed(() => tarifKeys.list(toValue(scopes), includes)),
+    queryFn: () => getAllTarifs({ scopes: toValue(scopes), includes }),
+    enabled: computed(() => toValue(isEnabled)),
   });
 };
 

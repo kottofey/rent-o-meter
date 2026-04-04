@@ -14,7 +14,7 @@ import { dayjs } from '@/helpers';
 import { Agreement, Bill } from '@/models';
 
 @Scopes(() => ({
-  'counter:byPeriod'({ start, end }: { start: number; end: number }) {
+  'counters:byPeriod'({ start, end }: { start: number; end: number }) {
     return {
       where: {
         month: {
@@ -24,7 +24,7 @@ import { Agreement, Bill } from '@/models';
       },
     };
   },
-  'counter:byMonth'(month: number) {
+  'counters:byMonth'(month: number) {
     return {
       where: {
         month: {
@@ -33,14 +33,14 @@ import { Agreement, Bill } from '@/models';
       },
     };
   },
-  'counter:byAgreementId'(agreementId: number) {
+  'counters:byAgreementId'(agreementId: number) {
     return {
       where: {
         agreementId,
       },
     };
   },
-  'counter:byRentee'(renteeId: number | null) {
+  'counters:byRentee'(renteeId: number | null) {
     if (renteeId === null) {
       return {};
     } else {

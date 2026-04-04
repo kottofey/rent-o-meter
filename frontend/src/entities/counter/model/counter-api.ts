@@ -29,10 +29,10 @@ export interface ICounter {
 export type ICounterIncludes = Array<'Agreement' | 'Bill' | 'Agreement.Rentee'>;
 
 export type ICounterScopes = {
-  'counter:byAgreementId'?: number | null;
-  'counter:byMonth'?: string;
-  'counter:byRenteeId'?: number | null;
-  'counter:byPeriod'?: {
+  'counters:byAgreementId'?: number | null;
+  'counters:byMonth'?: string;
+  'counters:byRentee'?: number | null;
+  'counters:byPeriod'?: {
     start: string;
     end: string;
   };

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, reactive, ref, watch } from 'vue';
+import { computed, h, ref, watch } from 'vue';
 import { NDataTable } from 'naive-ui';
 
 import { createColumns } from '../config/tableColumns';
@@ -28,13 +28,18 @@ const selectedRenteeAgreements = ref();
 const billToEdit = ref();
 const billToEditId = ref<number | undefined>(undefined);
 
-const billScopes = reactive<IBillScopes>({
-  'bills:byRentee': authStore.user?.rentee_id ?? null,
-});
+const billScopes = computed<IBillScopes>(() => ({
+  'bills:byRentee':
+    authStore.user?.rentee_id === null ? null : authStore.user?.rentee_id,
+}));
 
 // -----------------------------------------------------------------------------
 // Computed
 // -----------------------------------------------------------------------------
+
+const isEnabled = computed(
+  () => !!authStore.user?.rentee_id || authStore.isAdmin,
+);
 
 const filteredBills = computed(() =>
   bills.value?.filter((bill) => {
@@ -58,7 +63,8 @@ const filteredBills = computed(() =>
 
 const { data: bills, isLoading } = useBillsQuery({
   includes: ['Agreement.Rentee', 'Payment'],
-  scopes: () => billScopes,
+  scopes: billScopes,
+  isEnabled,
 });
 
 const editRow = (row: IBill) => {
@@ -97,7 +103,10 @@ watch([isModalOpened], () => {
 
 <template>
   <PageLayout>
-    <template #buttons-extra>
+    <template
+      #buttons-extra
+      v-if="isEnabled"
+    >
       <AddButton
         @click="createRow"
         v-if="authStore.user?.roles?.includes('admin')"

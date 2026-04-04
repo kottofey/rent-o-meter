@@ -4,7 +4,7 @@ import {
   useQueryClient,
   QueryClient,
 } from '@tanstack/vue-query';
-import { type MaybeRefOrGetter, toValue } from 'vue';
+import { type MaybeRefOrGetter, toValue, computed } from 'vue';
 
 import {
   getAllAgreements,
@@ -25,13 +25,16 @@ import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 export const useAgreementsQuery = ({
   scopes,
   includes,
+  isEnabled,
 }: {
   scopes?: MaybeRefOrGetter<IAgreementScopes>;
   includes?: IAgreementIncludes;
+  isEnabled?: MaybeRefOrGetter<boolean>;
 }) => {
   return useQuery({
-    queryKey: agreementKeys.list(toValue(scopes), includes),
+    queryKey: computed(() => agreementKeys.list(toValue(scopes), includes)),
     queryFn: () => getAllAgreements({ scopes: toValue(scopes), includes }),
+    enabled: computed(() => toValue(isEnabled)),
   });
 };
 

@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { jwtConfig } from '@/config';
 import { RefreshToken, User } from '@/models';
 import { refreshToken } from 'src/helpers/refreshJwtTokens.ts';
-import { useHandleError } from '@/helpers';
+import { IUserPayload, useHandleError } from '@/helpers';
 
 const { sendCustomResponse, handleError } = useHandleError();
 
@@ -23,6 +23,8 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
       });
       return;
     }
+
+    req.user = jwt.verify(token, jwtConfig.secret, { ignoreExpiration: true }) as IUserPayload;
 
     // console.log('auth mw, Декодируем токен, exp игнорируем');
 

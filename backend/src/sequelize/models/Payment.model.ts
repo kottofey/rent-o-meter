@@ -14,7 +14,7 @@ import { Agreement, Bill } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
-  'payment:byBill'(billId: number | null) {
+  'payments:byBill'(billId: number | null) {
     if (billId === null) {
       return {};
     } else {
@@ -28,7 +28,7 @@ import { dayjs } from '@/helpers';
       };
     }
   },
-  'payment:byRentee'(renteeId: number | null) {
+  'payments:byRentee'(renteeId: number | null) {
     if (renteeId === null) {
       return { where: Sequelize.literal('1=0') };
     } else {

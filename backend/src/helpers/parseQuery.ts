@@ -27,46 +27,46 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     // -----------------------------------------------------------------------------
     // Counters
     // -----------------------------------------------------------------------------
-    'counter:byPeriod': rawDates => {
+    'counters:byPeriod': rawDates => {
       if (rawDates && typeof rawDates === 'object') {
         const dates = rawDates as { start: number; end: number };
         return { method: ['counter:byPeriod', { start: dates.start, end: dates.end }] };
       }
     },
-    'counter:byMonth': rawMonth => {
+    'counters:byMonth': rawMonth => {
       const month = rawMonth as number;
-      return { method: ['counter:byMonth', month] };
+      return { method: ['counters:byMonth', month] };
     },
-    'counter:byAgreementId': rawAgreementId => {
+    'counters:byAgreementId': rawAgreementId => {
       const agreementId = rawAgreementId as number;
-      return { method: ['counter:byAgreementId', agreementId] };
+      return { method: ['counters:byAgreementId', agreementId] };
     },
-    'counter:byRentee': rawRenteeId => {
+    'counters:byRentee': rawRenteeId => {
       const renteeId = rawRenteeId as number | null;
-      return { method: ['counter:byRentee', renteeId] };
+      return { method: ['counters:byRentee', renteeId] };
     },
 
     // -----------------------------------------------------------------------------
     // Rentees
     // -----------------------------------------------------------------------------
-    'rentee:withActiveAgreement': () => ({ method: ['rentee:withActiveAgreement'] }),
-    'rentee:withDeleted': () => ({ method: ['rentee:withDeleted'] }),
-    'rentee:byId': id => ({ method: ['rentee:byId', id] }),
+    'rentees:withActiveAgreement': () => ({ method: ['rentees:withActiveAgreement'] }),
+    'rentees:withDeleted': () => ({ method: ['rentees:withDeleted'] }),
+    'rentees:byId': id => ({ method: ['rentees:byId', id] }),
 
     // -----------------------------------------------------------------------------
     // Tarifs
     // -----------------------------------------------------------------------------
-    'tarif:actualOnDate': rawDate => {
+    'tarifs:actualOnDate': rawDate => {
       const date = rawDate as number;
-      return { method: ['tarif:actualOnDate', date] };
+      return { method: ['tarifs:actualOnDate', date] };
     },
-    'tarif:actualBetween': rawDates => {
+    'tarifs:actualBetween': rawDates => {
       const { dateStart, dateEnd } = rawDates as { dateStart: number; dateEnd: number };
-      return { method: ['tarif:actualBetween', { dateStart, dateEnd }] };
+      return { method: ['tarifs:actualBetween', { dateStart, dateEnd }] };
     },
-    'tarif:byType': rawType => {
+    'tarifs:byType': rawType => {
       const tarif_type = rawType as ITarifTypes;
-      return { method: ['tarif:byType', tarif_type] };
+      return { method: ['tarifs:byType', tarif_type] };
     },
 
     // -----------------------------------------------------------------------------
@@ -85,18 +85,18 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     // -----------------------------------------------------------------------------
     // Users
     // -----------------------------------------------------------------------------
-    'user:withDeleted': () => ({ method: ['user:withDeleted'] }),
+    'users:withDeleted': () => ({ method: ['users:withDeleted'] }),
 
     // -----------------------------------------------------------------------------
     // Payments
     // -----------------------------------------------------------------------------
-    'payment:byBill': rawBillId => {
+    'payments:byBill': rawBillId => {
       const billId = rawBillId as number | null;
-      return { method: ['payment:byBill', billId] };
+      return { method: ['payments:byBill', billId] };
     },
-    'payment:byRentee': rawRenteeId => {
+    'payments:byRentee': rawRenteeId => {
       const renteeId = rawRenteeId as number | null;
-      return { method: ['payment:byRentee', renteeId] };
+      return { method: ['payments:byRentee', renteeId] };
     },
   } as const;
 

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import { type MaybeRefOrGetter, toValue } from 'vue';
+import { computed, type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   getAllBills,
@@ -20,12 +20,15 @@ import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 export const useBillsQuery = ({
   scopes,
   includes,
+  isEnabled,
 }: {
   scopes?: MaybeRefOrGetter<IBillScopes>;
   includes?: IBillIncludes;
+  isEnabled?: MaybeRefOrGetter<boolean>;
 }) => {
   return useQuery({
-    queryKey: billKeys.list(toValue(scopes), includes),
+    enabled: computed(() => toValue(isEnabled)),
+    queryKey: computed(() => billKeys.list(toValue(scopes), includes)),
     queryFn: () => getAllBills({ scopes: toValue(scopes), includes }),
   });
 };

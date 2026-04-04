@@ -14,7 +14,7 @@ import { Agreement, User } from '@/models';
 import { dayjs } from '@/helpers';
 
 @Scopes(() => ({
-  'rentee:withActiveAgreement'() {
+  'rentees:withActiveAgreement'() {
     return {
       include: {
         model: Agreement,
@@ -26,7 +26,7 @@ import { dayjs } from '@/helpers';
       },
     };
   },
-  'rentee:withDeleted'() {
+  'rentees:withDeleted'() {
     return {
       paranoid: false,
       where: {
@@ -36,7 +36,7 @@ import { dayjs } from '@/helpers';
       },
     };
   },
-  'rentee:byId'(id: number | null) {
+  'rentees:byId'(id: number | null) {
     console.log('by id scope');
     if (id === null) {
       return {};

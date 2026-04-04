@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NDataTable } from 'naive-ui';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { createColumns } from '../config/tableColumns';
 
@@ -30,9 +30,13 @@ const byBillFilter = ref<number | null>(null);
 const paymentToEdit = ref();
 const paymentToEditId = ref<number | undefined>(undefined);
 
-const paymentScopes = reactive<IPaymentScopes>({
-  'payment:byRentee': authStore.user?.rentee_id ?? null,
-});
+const paymentScopes = computed<IPaymentScopes>(() => ({
+  'payments:byRentee': authStore.user?.rentee_id ?? null,
+}));
+
+const isEnabled = computed(
+  () => !!authStore.user?.rentee_id || authStore.isAdmin,
+);
 
 // -----------------------------------------------------------------------------
 // Computed
@@ -53,7 +57,8 @@ const filteredPayments = computed(() =>
 
 const { data: payments, isLoading } = usePaymentsQuery({
   includes: ['Bill.Agreement.Rentee'],
-  scopes: () => paymentScopes,
+  scopes: paymentScopes,
+  isEnabled,
 });
 
 const editRow = (row: IPayment) => {
@@ -92,7 +97,10 @@ watch([isModalOpened], () => {
 
 <template>
   <PageLayout>
-    <template #buttons-extra>
+    <template
+      #buttons-extra
+      v-if="isEnabled"
+    >
       <AddButton
         @click="createRow"
         v-if="authStore.user?.roles?.includes('admin')"

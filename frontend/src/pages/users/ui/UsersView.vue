@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, reactive, ref, watch } from 'vue';
+import { computed, h, ref, watch } from 'vue';
 import { NDataTable } from 'naive-ui';
 
 import { createColumns } from '../config/tableColumns';
@@ -27,9 +27,9 @@ const withDeleted = ref(false);
 const userToEditId = ref<number | undefined>(undefined);
 const userToEdit = ref();
 
-const userScopes = reactive<IUserScopes>({
-  'user:withDeleted': false,
-});
+const userScopes = computed<IUserScopes>(() => ({
+  'users:withDeleted': withDeleted.value,
+}));
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -67,10 +67,6 @@ const setWithDeleted = () => {
 // -----------------------------------------------------------------------------
 // Watch
 // -----------------------------------------------------------------------------
-
-watch(withDeleted, () => {
-  userScopes['user:withDeleted'] = withDeleted.value;
-});
 
 watch([userToEditId, isModalOpened], () => {
   if (isModalOpened.value && userToEditId.value) {

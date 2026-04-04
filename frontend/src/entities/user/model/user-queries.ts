@@ -4,6 +4,7 @@ import {
   useQueryClient,
   QueryClient,
 } from '@tanstack/vue-query';
+import { computed, type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   getAllUsers,
@@ -55,16 +56,16 @@ export const useUsersQueryClient = async ({
 export const useUsersQuery = ({
   scopes,
   includes,
-  isDisabled = false,
+  isEnabled,
 }: {
-  scopes?: IUserScopes;
+  scopes?: MaybeRefOrGetter<IUserScopes>;
   includes?: IUserIncludes;
-  isDisabled?: boolean;
+  isEnabled?: MaybeRefOrGetter<boolean>;
 }) => {
   return useQuery({
-    queryKey: userKeys.list(scopes, includes),
-    queryFn: () => getAllUsers({ scopes, includes }),
-    enabled: !isDisabled,
+    queryKey: computed(() => userKeys.list(toValue(scopes), includes)),
+    queryFn: () => getAllUsers({ scopes: toValue(scopes), includes }),
+    enabled: computed(() => toValue(isEnabled)),
   });
 };
 

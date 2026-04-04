@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, reactive, ref, watch } from 'vue';
+import { computed, h, ref, watch } from 'vue';
 import { NDataTable } from 'naive-ui';
 
 import { createColumns } from '../config/tableColumns';
@@ -31,10 +31,10 @@ const withDeleted = ref(false);
 const renteeToEditId = ref<number | undefined>(undefined);
 const renteeToEdit = ref();
 
-const renteeScopes = reactive<IRenteeScopes>({
-  'rentee:withDeleted': false,
-  'rentee:byId': authStore.user?.rentee_id ?? null,
-});
+const renteeScopes = computed<IRenteeScopes>(() => ({
+  'rentees:withDeleted': withDeleted.value,
+  'rentees:byId': authStore.user?.rentee_id ?? null,
+}));
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -47,7 +47,7 @@ const {
   error,
 } = useRenteesQuery({
   includes: ['Agreement'],
-  scopes: () => renteeScopes,
+  scopes: renteeScopes,
 });
 
 const editRow = (row: IRentee) => {
@@ -72,9 +72,6 @@ const setWithDeleted = () => {
 // -----------------------------------------------------------------------------
 // Watch
 // -----------------------------------------------------------------------------
-watch(withDeleted, () => {
-  renteeScopes['rentee:withDeleted'] = withDeleted.value;
-});
 
 watch([renteeToEditId, isModalOpened], () => {
   if (isModalOpened.value && renteeToEditId.value) {

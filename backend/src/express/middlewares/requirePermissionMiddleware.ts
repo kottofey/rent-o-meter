@@ -1,6 +1,7 @@
 import { NextFunction } from 'express';
 
 export default function requirePermissionMiddleware(resource: string, action: string) {
+  console.log('req permission for ', resource, action);
   return (req: Request, res: Response, next: NextFunction) => {
     next();
   };

@@ -82,7 +82,7 @@ export default function useAuth() {
       } else {
         clearAuthState();
       }
-    } catch (e) {
+    } catch {
       clearAuthState();
     } finally {
       authStore.isAuthInitialized = true;

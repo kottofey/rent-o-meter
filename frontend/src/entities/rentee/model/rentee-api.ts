@@ -25,9 +25,9 @@ export interface IRentee {
 // TODO дописать скоупы если будут
 // TODO написать алгоритм сериализации с проверкой через zod
 export type IRenteeScopes = {
-  'rentee:withActiveAgreement'?: boolean;
-  'rentee:withDeleted'?: boolean;
-  'rentee:byId'?: number | null;
+  'rentees:withActiveAgreement'?: boolean;
+  'rentees:withDeleted'?: boolean;
+  'rentees:byId'?: number | null;
 };
 export type IRenteeIncludes = Array<'Agreement'>;
 

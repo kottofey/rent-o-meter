@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NDataTable, NDatePicker } from 'naive-ui';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
 
 import { createColumns } from '../config/tableColumns';
@@ -9,6 +9,7 @@ import { PageLayout } from '@/app/layouts';
 import { ManageTarifModal } from '@/features/manage-tarif-modal';
 import {
   type ITarif,
+  type ITarifScopes,
   useTarifsQuery,
   useTarifsQueryClient,
 } from '@/entities/tarif';
@@ -28,6 +29,13 @@ const filteredTarifs = ref<ITarif[]>();
 const tarifToEditId = ref<number | undefined>(undefined);
 const tarifToEdit = ref();
 
+const tarifScopes = computed<ITarifScopes>(() => ({
+  'tarifs:actualOnDate': actualOnDateFilter.value
+    ? dayjs(actualOnDateFilter.value).format('YYYY-MM-DD')
+    : undefined,
+  'tarifs:byType': tarifFilter.value ?? undefined,
+}));
+
 // -----------------------------------------------------------------------------
 // Setup
 // -----------------------------------------------------------------------------
@@ -35,12 +43,7 @@ const queryClient = useQueryClient();
 const authStore = useAuthStore();
 
 const { data: tarifs, isLoading } = useTarifsQuery({
-  scopes: {
-    'tarif:actualOnDate': actualOnDateFilter.value
-      ? dayjs(actualOnDateFilter.value).format('YYYY-MM-DD')
-      : undefined,
-    'tarif:byType': tarifFilter.value ?? undefined,
-  },
+  scopes: tarifScopes,
 });
 
 // -----------------------------------------------------------------------------
@@ -50,8 +53,8 @@ watch([actualOnDateFilter, tarifFilter], async () => {
   filteredTarifs.value = await useTarifsQueryClient({
     client: queryClient,
     scopes: {
-      'tarif:byType': tarifFilter.value ? tarifFilter.value : undefined,
-      'tarif:actualOnDate': actualOnDateFilter.value
+      'tarifs:byType': tarifFilter.value ? tarifFilter.value : undefined,
+      'tarifs:actualOnDate': actualOnDateFilter.value
         ? dayjs(actualOnDateFilter.value).format('YYYY-MM-DD')
         : undefined,
     },

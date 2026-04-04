@@ -16,8 +16,8 @@ export interface IPayment {
 // TODO дописать скоупы если будут
 // TODO написать алгоритм сериализации с проверкой через zod
 export type IPaymentScopes = {
-  'payment:byBill'?: number | null;
-  'payment:byRentee'?: number | null;
+  'payments:byBill'?: number | null;
+  'payments:byRentee'?: number | null;
 };
 export type IPaymentIncludes = Array<
   'Bill' | 'Bill.Agreement' | 'Bill.Agreement.Rentee'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type DataTableInst, NDataTable } from 'naive-ui';
-import { h, onMounted, reactive, ref, watch } from 'vue';
+import { computed, h, onMounted, ref, watch } from 'vue';
 
 import { createColumns } from '../config/tableColumns';
 
@@ -36,10 +36,15 @@ const isModalOpened = ref(false);
 const agreementToEdit = ref();
 const previousFilter = ref();
 
-const agreementScopes = reactive<IAgreementScopes>({
-  'agreements:withDeleted': false,
-  'agreements:byRentee': authStore.user?.rentee_id ?? null,
-});
+const agreementScopes = computed<IAgreementScopes>(() => ({
+  'agreements:withDeleted': settings.value.agreements.withDeleted,
+  'agreements:byRentee':
+    authStore.user?.rentee_id === null ? null : authStore.user?.rentee_id,
+}));
+
+const isEnabled = computed(
+  () => !!authStore.user?.rentee_id || authStore.isAdmin,
+);
 
 // -----------------------------------------------------------------------------
 // Table setup
@@ -47,7 +52,8 @@ const agreementScopes = reactive<IAgreementScopes>({
 
 const { data: agreements, isFetching } = useAgreementsQuery({
   includes: ['Rentee'],
-  scopes: () => agreementScopes,
+  scopes: agreementScopes,
+  isEnabled,
 });
 
 const table = ref<DataTableInst | null>(null);
@@ -115,8 +121,6 @@ watch(
   settings.value.agreements,
   () => {
     table.value?.filter({ status: settings.value.agreements.filter });
-    agreementScopes['agreements:withDeleted'] =
-      settings.value.agreements.withDeleted;
   },
   {
     deep: true,
@@ -124,16 +128,16 @@ watch(
 );
 
 onMounted(() => {
-  // Загружаем сохраненные установки
   table.value?.filter({ status: settings.value.agreements.filter });
-  agreementScopes['agreements:withDeleted'] =
-    settings.value.agreements.withDeleted;
 });
 </script>
 
 <template>
   <PageLayout>
-    <template #buttons-extra>
+    <template
+      #buttons-extra
+      v-if="isEnabled"
+    >
       <AddButton
         @click="createRow"
         v-if="authStore.user?.roles?.includes('admin')"

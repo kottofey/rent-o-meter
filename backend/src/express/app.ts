@@ -18,6 +18,7 @@ import {
   authMiddleware,
   requireRoleMiddleware,
   makeHandlerAwareOfAsyncErrors,
+  enforceRenteeScopeMiddleware,
 } from '@/middlewares';
 
 const app = express();
@@ -67,6 +68,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}`,
       authMiddleware,
       requireRoleMiddleware,
+      enforceRenteeScopeMiddleware(routeName),
       makeHandlerAwareOfAsyncErrors(routeController.getAll.bind(routeController)),
     );
   }
@@ -76,6 +78,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}/:id`,
       authMiddleware,
       requireRoleMiddleware,
+      enforceRenteeScopeMiddleware(routeName),
       makeHandlerAwareOfAsyncErrors(routeController.getById.bind(routeController)),
     );
   }
@@ -85,6 +88,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}`,
       authMiddleware,
       requireRoleMiddleware,
+      enforceRenteeScopeMiddleware(routeName),
       makeHandlerAwareOfAsyncErrors(routeController.create.bind(routeController)),
     );
   }
@@ -94,6 +98,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}/:id`,
       authMiddleware,
       requireRoleMiddleware,
+      enforceRenteeScopeMiddleware(routeName),
       makeHandlerAwareOfAsyncErrors(routeController.update.bind(routeController)),
     );
   }
@@ -112,6 +117,7 @@ for (const [routeName, routeController] of Object.entries(routes)) {
       `/api/v1/${routeName}/:id/restore`,
       authMiddleware,
       requireRoleMiddleware,
+      enforceRenteeScopeMiddleware(routeName),
       makeHandlerAwareOfAsyncErrors(routeController.restore.bind(routeController)),
     );
   }
@@ -122,6 +128,11 @@ for (const [routeName, routeController] of Object.entries(routes)) {
 // -----------------------------------------------------------------------------
 app.post('/api/v1/auth/login', makeHandlerAwareOfAsyncErrors(authRoute.login));
 app.delete('/api/v1/auth/logout', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.logout));
-app.get('/api/v1/me', authMiddleware, makeHandlerAwareOfAsyncErrors(authRoute.me));
+app.get(
+  '/api/v1/me',
+  authMiddleware,
+  enforceRenteeScopeMiddleware('me'),
+  makeHandlerAwareOfAsyncErrors(authRoute.me),
+);
 
 export default app;

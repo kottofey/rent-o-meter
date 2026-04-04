@@ -24,7 +24,7 @@ const { withActiveAgreements = false, placeholder = 'Выберите аренд
 const { data: rentees, isLoading } = useRenteesQuery({
   includes: ['Agreement'],
   scopes: {
-    'rentee:withActiveAgreement': withActiveAgreements ? true : undefined,
+    'rentees:withActiveAgreement': withActiveAgreements ? true : undefined,
   },
 });
 

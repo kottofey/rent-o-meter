@@ -27,8 +27,8 @@ export interface IUser {
 }
 
 export type IUserScopes = {
-  'user:activeOnly'?: boolean;
-  'user:withDeleted'?: boolean;
+  'users:activeOnly'?: boolean;
+  'users:withDeleted'?: boolean;
 };
 export type IUserIncludes = Array<'Role' | 'Rentee' | 'RefreshToken'>;
 

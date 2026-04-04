@@ -17,7 +17,7 @@ export type ITarifTypes =
   | 'domofon';
 
 @Scopes(() => ({
-  'tarif:actualOnDate'(actualOn: number) {
+  'tarifs:actualOnDate'(actualOn: number) {
     return {
       where: {
         valid_from: {
@@ -32,7 +32,7 @@ export type ITarifTypes =
       },
     };
   },
-  'tarif:actualBetween'({ dateStart, dateEnd }: { dateStart: string; dateEnd: string }) {
+  'tarifs:actualBetween'({ dateStart, dateEnd }: { dateStart: string; dateEnd: string }) {
     return {
       where: {
         valid_from: {
@@ -42,7 +42,7 @@ export type ITarifTypes =
       },
     };
   },
-  'tarif:byType'(tarif_type: ITarifTypes) {
+  'tarifs:byType'(tarif_type: ITarifTypes) {
     return {
       where: { tarif_type },
     };

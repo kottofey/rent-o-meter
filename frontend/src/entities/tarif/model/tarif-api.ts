@@ -29,9 +29,9 @@ export interface ITarif {
 }
 
 export type ITarifScopes = {
-  'tarif:actualOnDate'?: string;
-  'tarif:actualBetween'?: { dateStart: string; dateEnd: string };
-  'tarif:byType'?: ITarif['tarif_type'];
+  'tarifs:actualOnDate'?: string;
+  'tarifs:actualBetween'?: { dateStart: string; dateEnd: string };
+  'tarifs:byType'?: ITarif['tarif_type'];
 };
 export type ITarifIncludes = Array<'Bill'>;
 

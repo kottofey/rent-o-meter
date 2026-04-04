@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import { type MaybeRefOrGetter, toValue } from 'vue';
+import { computed, type MaybeRefOrGetter, toValue } from 'vue';
 
 import {
   getAllRentees,
@@ -20,13 +20,18 @@ import { getErrorMessage } from '@/shared/lib/tanstack/onError';
 export const useRenteesQuery = ({
   scopes,
   includes,
+  isEnabled,
 }: {
   scopes?: MaybeRefOrGetter<IRenteeScopes>;
   includes?: IRenteeIncludes;
+  isEnabled?: MaybeRefOrGetter<boolean>;
 }) => {
   return useQuery({
-    queryKey: renteeKeys.list({ scopes: toValue(scopes), includes }),
+    queryKey: computed(() =>
+      renteeKeys.list({ scopes: toValue(scopes), includes }),
+    ),
     queryFn: () => getAllRentees({ scopes: toValue(scopes), includes }),
+    enabled: computed(() => toValue(isEnabled)),
   });
 };
 
