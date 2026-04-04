@@ -138,7 +138,10 @@ async function update(req: Request, res: Response) {
       // -----------------------------------------------------------------------------
 
       const thisAgreement = await Agreement.findByPk(bill.agreementId, {
-        include: [Bill],
+        include: {
+          model: Bill,
+          include: [Payment],
+        },
       });
 
       await thisAgreement?.update({
