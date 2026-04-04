@@ -128,6 +128,14 @@ export default function parseQuery(query: QueryString.ParsedQs) {
       },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
     }),
+    'Bill.Payment': () => ({
+      model: Bill,
+      include: {
+        model: Payment,
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    }),
     'Bill.Agreement.Rentee': () => ({
       model: Bill,
       attributes: { exclude: ['createdAt', 'updatedAt'] },

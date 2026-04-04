@@ -3,7 +3,7 @@ import { type Request, type Response } from 'express';
 import { getIdParam } from '../helpers.ts';
 
 import { parseQuery, useHandleError, calculateDebt } from '@/helpers';
-import { Agreement, Bill } from '@/models';
+import { Agreement, Bill, Payment } from '@/models';
 
 const { handleError, sendCustomResponse } = useHandleError();
 
@@ -79,7 +79,12 @@ async function create(req: Request, res: Response) {
     // -----------------------------------------------------------------------------
 
     const thisAgreement = await Agreement.findByPk(bill.agreementId, {
-      include: [Bill],
+      include: [
+        {
+          model: Bill,
+          include: [Payment],
+        },
+      ],
     });
 
     await thisAgreement?.update({
