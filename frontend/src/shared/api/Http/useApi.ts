@@ -44,10 +44,8 @@ export default async function useApi<T>({
     // TODO Типизировать надо бы  ответы от бэкенда. И стандартизировать.
     if (err_response?.reason === 'RefreshTokenExpired') {
       clearAuthState();
-      await router.push({ path: '/login' });
     } else if (err_response?.reason === 'TokenMissing') {
       clearAuthState();
-      await router.push({ path: '/login' });
     } else {
       throw new CustomError({
         status: resp.status,

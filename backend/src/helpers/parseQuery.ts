@@ -1,7 +1,7 @@
 import QueryString from 'qs';
 import { Includeable, ScopeOptions } from 'sequelize';
 
-import { Agreement, Counter, Rentee, Tarif, Bill, Payment } from '@/models';
+import { Agreement, Counter, Rentee, Tarif, Bill, Payment, RefreshToken } from '@/models';
 import { ITarifTypes } from 'src/sequelize/models/Tarif.model.ts';
 
 export default function parseQuery(query: QueryString.ParsedQs) {
@@ -155,6 +155,13 @@ export default function parseQuery(query: QueryString.ParsedQs) {
     Payment: () => ({
       model: Payment,
       attributes: { exclude: ['createdAt', 'updatedAt'] },
+    }),
+    RefreshToken: () => ({
+      model: RefreshToken,
+      require: false,
+      where: {
+        is_revoked: false,
+      },
     }),
   } as const;
 

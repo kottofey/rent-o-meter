@@ -3,7 +3,13 @@ import type { RouteLocationNormalizedGeneric } from 'vue-router';
 import { useAuthStore } from '@/shared/store';
 
 export const requireAuth = (to: RouteLocationNormalizedGeneric) => {
-  const { isAuthorized } = useAuthStore();
+  const authStore = useAuthStore();
+
+  if (!authStore.isAuthInitialized) {
+    return { path: '/login' };
+  }
+
+  const { isAuthorized } = authStore;
 
   if (!isAuthorized && to.name !== 'login.show') {
     return { path: '/login' };

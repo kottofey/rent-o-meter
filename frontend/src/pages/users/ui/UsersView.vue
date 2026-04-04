@@ -42,6 +42,7 @@ const {
   error,
 } = useUsersQuery({
   scopes: userScopes,
+  includes: ['RefreshToken'],
 });
 
 const editRow = (row: IUser) => {

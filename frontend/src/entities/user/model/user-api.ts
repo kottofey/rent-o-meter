@@ -30,7 +30,7 @@ export type IUserScopes = {
   'user:activeOnly'?: boolean;
   'user:withDeleted'?: boolean;
 };
-export type IUserIncludes = Array<'Role' | 'Rentee'>;
+export type IUserIncludes = Array<'Role' | 'Rentee' | 'RefreshToken'>;
 
 export async function getAllUsers({
   scopes,

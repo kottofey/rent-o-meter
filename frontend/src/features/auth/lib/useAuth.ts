@@ -77,14 +77,15 @@ export default function useAuth() {
         method: httpMethod.GET,
       });
 
-      if (me?.user.id) {
+      if (me?.user?.id) {
         authStore.setUser(me.user);
       } else {
-        authStore.setUser(null);
-        return;
+        clearAuthState();
       }
     } catch (e) {
-      console.error('init auth error', e);
+      clearAuthState();
+    } finally {
+      authStore.isAuthInitialized = true;
     }
   };
 

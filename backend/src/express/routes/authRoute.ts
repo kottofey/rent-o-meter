@@ -12,67 +12,6 @@ const { handleError, sendCustomResponse } = useHandleError();
 // Controllers
 // -----------------------------------------------------------------------------
 
-// async function register(req: Request, res: Response): Promise<void> {
-//   try {
-//     const { surname, firstname, patronymic, email, password, role, comment } = req.body as User & {
-//       role: string;
-//     };
-//
-//     // Проверка существования пользователя
-//     const existingUser = await User.findOne({ where: { email } });
-//
-//     if (existingUser) {
-//       sendCustomResponse({
-//         res,
-//         respCode: 400,
-//         message: 'Пользователь с таким email уже существует',
-//         reason: 'UserExists',
-//       });
-//     }
-//
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//
-//     const roleName = role || 'rentee';
-//     const userRole = await Role.findOne({ where: { name: roleName } });
-//
-//     if (userRole) {
-//       const user = await User.create({
-//         email,
-//         firstname,
-//         surname,
-//         patronymic,
-//         password: hashedPassword,
-//         comment,
-//       });
-//
-//       await user.$add('Role', userRole);
-//
-//       res.status(200).json({
-//         success: true,
-//         message: 'Пользователь зарегистрирован',
-//         user: {
-//           id: user.id,
-//           email: user.email,
-//           surname: user.surname,
-//           firstname: user.firstname,
-//           patronymic: user.patronymic,
-//           comment: user.comment,
-//         },
-//       });
-//     } else {
-//       sendCustomResponse({
-//         res,
-//         respCode: 400,
-//         message: `Роли ${roleName} не существует`,
-//         reason: 'RoleNotFound',
-//       });
-//       return;
-//     }
-//   } catch (e) {
-//     handleError({ e, res });
-//   }
-// }
-
 async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body as User;
@@ -90,16 +29,12 @@ async function login(req: Request, res: Response): Promise<void> {
     if (user === null) {
       sendCustomResponse({
         res,
-        respCode: 404,
-        message: 'Пользователь не найден',
-        reason: 'UserNotFound',
+        respCode: 401,
+        message: 'Неверные учетные данные',
+        reason: 'UserNotAuthorized',
       });
     } else {
       if (!(await bcrypt.compare(password, user.password))) {
-        res.status(401).json({
-          success: false,
-          message: 'Неверные учетные данные',
-        });
         sendCustomResponse({
           res,
           respCode: 401,
@@ -108,6 +43,7 @@ async function login(req: Request, res: Response): Promise<void> {
         });
         return;
       }
+
       if (!user.status) {
         sendCustomResponse({
           res,
@@ -140,8 +76,6 @@ async function login(req: Request, res: Response): Promise<void> {
         ip: req.ip ?? req.headers['x-forwarded-for'],
         device_id: getDeviceId(req),
       });
-
-      // TODO дополнить токены опциями secure: true, sameSite: strict
 
       res.cookie('token', accessToken, { httpOnly: true, secure: true, sameSite: 'strict' });
       res.cookie('refreshToken', refreshToken, {
@@ -213,10 +147,15 @@ async function logout(req: Request, res: Response): Promise<void> {
 }
 
 async function me(req: Request, res: Response): Promise<void> {
+  console.log('auth route/me, начинаем');
+
   try {
     const token = req.cookies.token as string;
 
+    console.log('auth route/me, достали токен', token);
     const decoded = jwt.verify(token, jwtConfig.secret) as Partial<User>;
+
+    console.log('auth route/me, есть токен, ищем юзера');
 
     const user = await User.findByPk(decoded.id, {
       include: [{ model: Role, as: 'roles' }],
@@ -232,6 +171,8 @@ async function me(req: Request, res: Response): Promise<void> {
     }
 
     if (user) {
+      console.log('auth route/me, Юзер есть, всё ок, шлем ответ /me');
+
       res.status(200).json({
         success: true,
         user: {
@@ -249,6 +190,7 @@ async function me(req: Request, res: Response): Promise<void> {
       });
     }
   } catch (e) {
+    console.log('auth route/me, ошибка');
     handleError({ e, res });
   }
 }

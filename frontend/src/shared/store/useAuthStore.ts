@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   // -----------------------------------------------------------------------------
 
   const userData = ref<Partial<IUser> | null>(null);
+  const isAuthInitialized = ref(false);
   // -----------------------------------------------------------------------------
   // Getters
   // -----------------------------------------------------------------------------
@@ -51,7 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     //State
-    // userData,
+    isAuthInitialized,
 
     // Getters
     user,

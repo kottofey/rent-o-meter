@@ -13,6 +13,7 @@ export async function refreshToken(
   next?: NextFunction,
 ): Promise<void> {
   try {
+    console.log('refresh token, достаем токен');
     const refreshToken = req.cookies.refreshToken as string;
 
     if (!refreshToken) {
@@ -25,10 +26,14 @@ export async function refreshToken(
       return;
     }
 
+    console.log('refresh token, есть токен, Проверяем токен через подпись JWT без exp');
+
     // Проверяем токен через подпись JWT
     const decoded = jwt.verify(refreshToken, jwtConfig.secret, {
       ignoreExpiration: true,
     }) as Partial<User>;
+
+    console.log('refresh token, Находим запись в БД по ХЭШУ токена');
 
     // Находим запись в БД по ХЭШУ токена
     const tokenHash = hashToken(refreshToken);
@@ -41,6 +46,8 @@ export async function refreshToken(
       },
     });
 
+    console.log('refresh token, Нашли токен в БД, Проверяем валидность токена');
+
     // Проверяем валидность токена
     if (!storedToken) {
       sendCustomResponse({
@@ -51,6 +58,8 @@ export async function refreshToken(
       });
       return;
     } else if (storedToken.isExpired()) {
+      console.log('refresh token, refresh token протух, сессия завершена');
+
       await storedToken.update({ is_revoked: true });
       sendCustomResponse({
         res,
@@ -71,6 +80,8 @@ export async function refreshToken(
       return;
     } else {
       // Генерируем новые токены
+      console.log('refresh token, Вроде все ок, Обновляем обычный токен');
+
       const st: RefreshToken = storedToken.toJSON();
 
       const { accessToken, refreshToken: newRefreshToken } = generateTokens(st.user);
@@ -84,18 +95,27 @@ export async function refreshToken(
         sameSite: 'strict',
       });
 
+      req.cookies.token = accessToken;
+      req.cookies.refreshToken = newRefreshToken;
+      console.log('refresh token, выслали новые куки с рефреш и обычным токеном и обновили req');
+
       if (next) {
+        console.log('refresh token, некст');
         // Continue with the request if next function is provided
         next();
       } else {
         // If called from middleware, we shouldn't send a response here
         // Just return to allow the original request to continue
+        console.log('refresh token, ретурн');
         return;
       }
     }
   } catch (e: unknown) {
+    console.log('refresh token, глобальный catch, определяем ошибку');
+
     if (e instanceof Error && e.name === 'TokenExpiredError') {
       const refreshToken = req.cookies.refreshToken as string;
+      console.log('refresh token, рефреш токен таки протух, отзываем из БД');
 
       const decoded = jwt.verify(refreshToken, jwtConfig.secret, {
         ignoreExpiration: true,
@@ -121,6 +141,8 @@ export async function refreshToken(
       });
       return;
     } else {
+      console.log('refresh token, НЕчто иное...');
+
       handleError({ e, res });
     }
   }
