@@ -8,7 +8,7 @@ export interface IBill {
   id: number;
   status: boolean;
   bill_date: number;
-  month: number;
+  month: number | null;
 
   ammount: number;
   extra_ammount: number;

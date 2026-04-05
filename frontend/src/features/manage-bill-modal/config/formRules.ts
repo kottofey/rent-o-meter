@@ -1,17 +1,31 @@
 import type { FormRules } from 'naive-ui';
+import type { Ref } from 'vue';
 
-export const rules: FormRules = {
-  month: {
+import type { IBill } from '@/entities/bill';
+
+export const createFormRules = (formData: Ref<Partial<IBill>>): FormRules => ({
+  agreementId: {
     required: true,
-    message: 'Введите название договора',
+    message: 'Выберите арендатора',
   },
+
   bill_date: {
     required: true,
     message: 'Выберите дату начала договора',
   },
 
-  agreementId: {
-    required: true,
-    message: 'Выберите арендатора',
-  },
-};
+  ammount: [
+    {
+      required: !formData.value.month,
+      message: 'Введите сумму',
+    },
+    {
+      message: 'Отсутствуют показания счетчиков за выбранный месяц',
+      validator: (_rule, value?: number) => {
+        if (formData.value.month) {
+          return !!value && value !== 0;
+        }
+      },
+    },
+  ],
+});

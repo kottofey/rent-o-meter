@@ -1,2 +1,2 @@
 export { initFormData } from './initFormData.ts';
-export { rules } from './formRules.ts';
+export { createFormRules } from './formRules.ts';

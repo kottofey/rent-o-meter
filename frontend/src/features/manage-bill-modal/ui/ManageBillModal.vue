@@ -12,10 +12,10 @@ import {
   NInputNumber,
   NModal,
 } from 'naive-ui';
-import { ref, watch } from 'vue';
+import { ref, toRef, watch } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
 
-import { rules, initFormData } from '../config';
+import { createFormRules, initFormData } from '../config';
 import { calculateAmmount } from '../lib/calculateAmmount.ts';
 
 import {
@@ -58,53 +58,6 @@ const onSubmit = async () => {
   try {
     await formRef.value?.validate(async (errors) => {
       if (!errors && formData.value?.agreementId) {
-        // -----------------------------------------------------------------------------
-        // Вычисляем актуальные счетчики и тарифы
-        // -----------------------------------------------------------------------------
-
-        const actualCounters = await useCountersQueryClient({
-          client: queryClient,
-          scopes: {
-            'counters:byMonth': dayjs(formData.value.month).format(
-              'YYYY-MM-DD',
-            ),
-            'counters:byAgreementId': formData.value.agreementId,
-          },
-        });
-
-        if (actualCounters.length > 1) {
-          throw new Error('More than one counter exist, check counters!');
-        }
-
-        if (actualCounters[0]) {
-          const actualTarifs = await useTarifQueryClient({
-            client: queryClient,
-            scopes: {
-              'tarifs:actualBetween': {
-                dateStart: dayjs(actualCounters[0].date_start).format(
-                  'YYYY-MM-DD',
-                ),
-                dateEnd: dayjs(actualCounters[0].date_end).format('YYYY-MM-DD'),
-              },
-            },
-          });
-
-          formData.value = {
-            ...formData.value,
-
-            counterId: actualCounters[0].id,
-            tarifs: actualTarifs,
-          };
-
-          formData.value.ammount = calculateAmmount({
-            tarifs: actualTarifs,
-            counter: actualCounters[0],
-          }).total;
-        }
-
-        // -----------------------------------------------------------------------------
-        // Выполняем сабмит
-        // -----------------------------------------------------------------------------
         if (bill) {
           editBill({
             id: bill.id,
@@ -139,6 +92,46 @@ watch([() => bill, isOpened], () => {
     formData.value = { ...initFormData };
   }
 });
+
+watch([() => formData.value.month, isOpened], async () => {
+  if (isOpened.value && formData.value.month && formData.value.agreementId) {
+    const actualCounters = await useCountersQueryClient({
+      client: queryClient,
+      scopes: {
+        'counters:byMonth': dayjs(formData.value.month).format('YYYY-MM-DD'),
+        'counters:byAgreementId': formData.value.agreementId,
+      },
+    });
+
+    if (actualCounters.length > 1) {
+      throw new Error('More than one counter exist, check counters!');
+    }
+
+    if (actualCounters[0]) {
+      const actualTarifs = await useTarifQueryClient({
+        client: queryClient,
+        scopes: {
+          'tarifs:actualBetween': {
+            dateStart: dayjs(actualCounters[0].date_start).format('YYYY-MM-DD'),
+            dateEnd: dayjs(actualCounters[0].date_end).format('YYYY-MM-DD'),
+          },
+        },
+      });
+
+      formData.value = {
+        ...formData.value,
+
+        counterId: actualCounters[0].id,
+        tarifs: actualTarifs,
+      };
+
+      formData.value.ammount = calculateAmmount({
+        tarifs: actualTarifs,
+        counter: actualCounters[0],
+      }).total;
+    }
+  }
+});
 </script>
 
 <template>
@@ -162,7 +155,7 @@ watch([() => bill, isOpened], () => {
         :disabled="isCreatePending || isEditPending"
         :model="formData"
         ref="formRef"
-        :rules="rules"
+        :rules="createFormRules(toRef(formData))"
         @submit.prevent
         @keyup.prevent.enter="
           async () => {
@@ -212,8 +205,26 @@ watch([() => bill, isOpened], () => {
         <!--  суммы  -->
 
         <NFormItem
+          label="Cумма"
+          path="ammount"
+        >
+          <NInputNumber
+            v-model:value="formData.ammount"
+            :show-button="false"
+            clearable
+            :disabled="!!formData.month"
+            :parse="(value) => parseNumber(value)"
+            :format="
+              (val) =>
+                val ? parseMoney({ ammount: val, mode: 'rubbles' }) : ''
+            "
+          />
+        </NFormItem>
+
+        <NFormItem
           label="Доп. сумма"
           path="extra_ammount"
+          v-if="!!formData.month"
         >
           <NInputNumber
             v-model:value="formData.extra_ammount"

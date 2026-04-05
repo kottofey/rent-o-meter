@@ -20,6 +20,7 @@ const {
   placeholder,
   label,
   disablePaid = true,
+  disabled,
   withPaid = false,
   renteeId,
   withBorder,
@@ -27,6 +28,7 @@ const {
   placeholder?: string;
   label?: string;
   disablePaid?: boolean;
+  disabled?: boolean;
   withPaid?: boolean;
   renteeId?: number;
   withBorder?: boolean;
@@ -46,7 +48,11 @@ const billsOptions = computed(() =>
       return acc;
     }
 
-    const date = parseDate({ date: bill.month, format: 'MMM YYYY' });
+    const date = bill.month
+      ? parseDate({ date: bill.month, format: 'MMM YYYY' })
+      : bill.comment +
+        ` (от ${parseDate({ date: bill.bill_date, format: 'DD MMM YYYY' })})`;
+
     if (renteeId && bill.agreement.renteeId !== renteeId) {
       return acc;
     }
@@ -83,6 +89,7 @@ const billsOptions = computed(() =>
       :loading="isFetching"
       :options="billsOptions"
       clearable
+      :disabled="disabled"
       :consistent-menu-width="false"
       :placeholder="placeholder ? placeholder : 'Выберите счет'"
       filterable

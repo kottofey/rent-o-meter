@@ -10,10 +10,8 @@ import {
   NInput,
   NInputNumber,
   NModal,
-  NSelect,
 } from 'naive-ui';
-import { computed, reactive, ref, watch } from 'vue';
-import type { SelectMixedOption } from 'naive-ui/es/select/src/interface';
+import { reactive, ref, watch } from 'vue';
 
 import { rules, initFormData } from '../config';
 
@@ -24,9 +22,10 @@ import {
   useEditPaymentMutation,
   useRestorePaymentMutation,
 } from '@/entities/payment';
-import { parseDate, parseMoney, parseNumber } from '@/shared/lib';
+import { parseMoney, parseNumber } from '@/shared/lib';
 import { type IBillScopes, useBillsQuery } from '@/entities/bill';
 import { SelectRentees } from '@/widgets/select-rentees';
+import { SelectBills } from '@/widgets/select-bills';
 
 // -----------------------------------------------------------------------------
 // State
@@ -41,19 +40,6 @@ const formData = ref<
 const billScopes = reactive<IBillScopes>({
   'bills:byRentee': formData.value.rentee_id,
 });
-
-const billsOptions = computed(() =>
-  bills.value?.reduce<SelectMixedOption[]>((acc, b) => {
-    if (b.agreement.renteeId === formData.value.rentee_id) {
-      acc.push({
-        label: `#${b.id}: ${parseDate({ date: b.month, format: 'MMM YYYY' })}`,
-        value: b.id,
-      });
-    }
-
-    return acc;
-  }, []),
-);
 
 // -----------------------------------------------------------------------------
 // Setup
@@ -227,10 +213,10 @@ watch(
             rowGap: '10px',
           }"
         >
-          <NSelect
+          <SelectBills
             v-model:value="formData.bill_id"
-            :options="billsOptions"
             :style="{ width: '100%' }"
+            :rentee-id="formData.rentee_id"
             :disabled="!formData.rentee_id"
             :placeholder="
               !formData.rentee_id

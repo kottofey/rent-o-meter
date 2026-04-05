@@ -26,7 +26,12 @@ export const createColumns = (): DataTableColumns<IPayment> => [
     align: 'center',
     render: (row: IPayment) => {
       if (row.bill) {
-        return parseDate({ date: row.bill.month, format: 'MMMM YYYY' });
+        return row.bill.month
+          ? parseDate({
+              date: row.bill.month,
+              format: 'MMMM YYYY',
+            })
+          : '-//-';
       } else {
         return '???';
       }

@@ -51,7 +51,7 @@ const isEnabled = computed(
 // -----------------------------------------------------------------------------
 
 const { data: agreements, isFetching } = useAgreementsQuery({
-  includes: ['Rentee'],
+  includes: ['Rentee', 'Bill', 'Bill.Payment'],
   scopes: agreementScopes,
   isEnabled,
 });

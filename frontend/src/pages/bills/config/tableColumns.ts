@@ -47,7 +47,9 @@ export const createColumns = ({
     key: 'month',
     align: 'center',
     render: (row: IBill) => {
-      return parseDate({ date: row.month, format: 'MMMM YYYY' });
+      return row.month
+        ? parseDate({ date: row.month, format: 'MMMM YYYY' })
+        : '-//-';
     },
   },
   {

@@ -31,7 +31,9 @@ export type IAgreementScopes = {
   'agreements:withDeleted'?: boolean;
 };
 
-export type IAgreementIncludes = Array<'Rentee' | 'Counter' | 'Bill'>;
+export type IAgreementIncludes = Array<
+  'Rentee' | 'Counter' | 'Bill' | 'Bill.Payment'
+>;
 
 export async function getAllAgreements({
   scopes,

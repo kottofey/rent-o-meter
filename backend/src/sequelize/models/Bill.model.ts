@@ -56,10 +56,9 @@ export default class Bill extends Model {
     return dayjs(raw).toDate().valueOf();
   }
 
-  @NotNull
-  @Column({ type: DataTypes.DATEONLY, allowNull: false })
-  set month(date: number) {
-    this.setDataValue('month', dayjs(date).startOf('month').toDate());
+  @Column({ type: DataTypes.DATEONLY })
+  set month(date: number | null) {
+    this.setDataValue('month', date ? dayjs(date).startOf('month').toDate() : null);
   }
   get month() {
     const raw: string = this.getDataValue('month') as string;
@@ -67,6 +66,7 @@ export default class Bill extends Model {
   }
 
   @NotNull
+  @Default(0)
   @Column({ type: DataTypes.DECIMAL(8, 2), allowNull: false })
   set ammount(value: number) {
     this.setDataValue('ammount', value);
@@ -101,9 +101,8 @@ export default class Bill extends Model {
   @BelongsTo(() => Agreement, { onDelete: 'Restrict' })
   declare agreement: Agreement;
 
-  @NotNull
   @ForeignKey(() => Counter)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  @Column({ type: DataTypes.INTEGER })
   declare counterId: number;
 
   @BelongsTo(() => Counter, { onDelete: 'Restrict' })

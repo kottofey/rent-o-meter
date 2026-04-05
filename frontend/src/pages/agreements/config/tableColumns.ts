@@ -60,7 +60,38 @@ export const createColumns = ({
     title: 'Долг',
     key: 'debt',
     align: 'center',
-    render: (row: IAgreement) => parseMoney({ ammount: row.debt }),
+    render: (row: IAgreement) => {
+      const ammount = row.bills.reduce((acc, bill) => acc + bill.ammount, 0);
+
+      const extra_ammount = row.bills.reduce(
+        (acc, bill) => acc + bill.extra_ammount,
+        0,
+      );
+
+      const ammount_paid = row.bills.reduce(
+        (acc, bill) =>
+          acc + bill.payments.reduce((acc, p) => acc + p.ammount, 0),
+        0,
+      );
+
+      const total = ammount + extra_ammount - ammount_paid;
+
+      return hFunc(
+        'p',
+        {
+          style: {
+            color: total > 0 ? 'red' : 'green',
+          },
+        },
+        {
+          default: () =>
+            parseMoney({
+              ammount: total,
+              mode: 'rubbles',
+            }),
+        },
+      );
+    },
   },
   {
     title: 'Начало',
